@@ -55,6 +55,9 @@ std::string Shader::loadShaderSource(const char* filePath) {
 	std::stringstream shaderStream;
 
 	shaderFile.open(filePath);
+	if (!shaderFile.is_open()) {
+		LOG(Error) << "SHADER_FILE_NOT_FOUND: " << filePath;
+	}
 	shaderStream << shaderFile.rdbuf();
 	shaderFile.close();
 

@@ -6,7 +6,7 @@
  * \____/\__,_|_| |_| |_|\___|_|  \__,_|
  * 
  * @file Camera.hpp
- * @author ClemtoClem
+ * @author @ClemtoClem
  * @date 09/07/2024
  */
 

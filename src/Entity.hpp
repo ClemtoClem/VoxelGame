@@ -7,7 +7,7 @@
  *                      |___/ 
  * 
  * @file Entity.hpp
- * @author ClemtoClem
+ * @author @ClemtoClem
  * @date 09/07/2024
  */
 

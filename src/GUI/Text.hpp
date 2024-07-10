@@ -6,7 +6,7 @@
  *  \/   \___/_/\_\\__|
  *
  * @file Text.cpp
- * @author ClemtoClem
+ * @author @ClemtoClem
  * @date 09/07/2024
  */
 
@@ -25,6 +25,8 @@ public:
     ~Text();
 
     void setText(const std::string& text);
+    std::string getText() const { return _text; }
+
     virtual void handleEvent(SDL_Event& evt) override;
     virtual void update(float dt) override;
     virtual void render() const override;

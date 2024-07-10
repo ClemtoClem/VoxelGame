@@ -45,6 +45,7 @@ void Game::run(int argc, char *argv[]) {
         _window.warpMouseCenter();
         firstMouse = true;
     }
+    _gui.setScreenSize(_window.getWidth(), _window.getHeight());
 
     _running = true;
 
@@ -172,6 +173,11 @@ bool Game::init(int argc, char *argv[]) {
         return false;
     }
 
+    if (!_gui.init()) {
+        LOG(Fatal) << "Failed to initialize GUI" << std::endl;
+        return false;
+    }
+
     _shader = std::make_shared<Shader>("./shaders/vertex_shader.glsl", "./shaders/fragment_shader.glsl");
     _camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
     _scene = std::make_shared<Scene>(_camera, _shader);
@@ -192,7 +198,7 @@ bool Game::load() {
         std::shared_ptr<Frame> mainFrame = std::make_shared<Frame>();
         _gui.addWidget(mainFrame);
 
-        std::shared_ptr<Button> button = std::make_shared<Button>(FONT_PATH + "arial.ttf", 24, "Click Me", Color::PURPLE2);
+        std::shared_ptr<Button> button = std::make_shared<Button>(FONT_PATH + "arial.ttf", 24, "Click Me", Color::PURPLE2, Color::WHITE);
         button->setPosition(glm::vec2(200.0f, 150.0f));
         button->setSize(glm::vec2(200.0f, 50.0f));
         button->setCallback([]() {

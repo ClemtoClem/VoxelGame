@@ -8,8 +8,16 @@ void Widget::setPosition(const glm::vec2& position) {
     _position = position;
 }
 
+glm::vec2 Widget::getPosition() const {
+    return _position;
+}
+
 void Widget::setSize(const glm::vec2& size) {
     _size = size;
+}
+
+glm::vec2 Widget::getSize() const {
+    return _size;
 }
 
 void Widget::setColor(const glm::vec4& color) { 
@@ -18,6 +26,14 @@ void Widget::setColor(const glm::vec4& color) {
 
 glm::vec4 Widget::getColor() const {
     return _color;
+}
+
+void Widget::setHoverColor(const glm::vec4 &color) {
+    _hoverColor = color;
+}
+
+glm::vec4 Widget::getHoverColor() const {
+    return _hoverColor;
 }
 
 void Widget::setBackgroundColor(const glm::vec4& color) {
@@ -50,4 +66,12 @@ void Widget::setBorderWidth(float width) {
 
 float Widget::getBorderWidth() const {
     return _borderWidth;
+}
+
+void Widget::setVisible(bool visible) {
+    _visible = visible;
+}
+
+bool Widget::isVisible() const {
+    return _visible;
 }

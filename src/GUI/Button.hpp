@@ -8,8 +8,10 @@
 
 class Button : public Widget {
 public:
-    Button(const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color);
+    Button(const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& backgroundColor, const glm::vec4& textColor);
     ~Button();
+
+    std::shared_ptr<Widget> getTextWidget() const;
 
     void setCallback(std::function<void()> callback);
     virtual void handleEvent(SDL_Event& evt) override;
@@ -17,10 +19,8 @@ public:
     virtual void render() const override;
 
 private:
-    std::string _text;
     std::function<void()> _callback;
     std::shared_ptr<Widget> _textWidget;
-    bool _isHovered = false;
 };
 
 #endif // BUTTON_HPP

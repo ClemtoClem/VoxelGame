@@ -57,7 +57,17 @@ void Text::setText(const std::string& text) {
 }
 
 void Text::handleEvent(SDL_Event& evt) {
-    // Text widget doesn't handle events directly
+    if (_visible) {
+        if (evt.type == SDL_MOUSEMOTION) {
+            int x = evt.motion.x;
+            int y = evt.motion.y;
+            if (x > _position.x && x < _position.x + _size.x && y > _position.y && y < _position.y + _size.y) {
+                _isHovered = true;
+            } else {
+                _isHovered = false;
+            }
+        }
+    }
 }
 
 void Text::update(float dt) {
@@ -65,39 +75,45 @@ void Text::update(float dt) {
 }
 
 void Text::render() const {
-    // Render background
-    glColor4f(_backgroundColor.r, _backgroundColor.g, _backgroundColor.b, _backgroundColor.a);
-    glBegin(GL_QUADS);
-    glVertex2f(_position.x, _position.y);
-    glVertex2f(_position.x + _size.x, _position.y);
-    glVertex2f(_position.x + _size.x, _position.y + _size.y);
-    glVertex2f(_position.x, _position.y + _size.y);
-    glEnd();
-
-    // Render border
-    if (_borderWidth > 0.0f) {
-        glColor4f(_borderColor.r, _borderColor.g, _borderColor.b, _borderColor.a);
-        glLineWidth(_borderWidth);
-        glBegin(GL_LINE_LOOP);
+    if (_visible) {
+            
+        // Render background
+        // Render the frame (e.g., as a colored rectangle)
+        glm::vec4 bgColor = _isHovered ? _hoverBackgroundColor : _backgroundColor;
+        glColor4f(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+        glBegin(GL_QUADS);
         glVertex2f(_position.x, _position.y);
         glVertex2f(_position.x + _size.x, _position.y);
         glVertex2f(_position.x + _size.x, _position.y + _size.y);
         glVertex2f(_position.x, _position.y + _size.y);
         glEnd();
+
+        // Render border
+        if (_borderWidth > 0.0f) {
+            glColor4f(_borderColor.r, _borderColor.g, _borderColor.b, _borderColor.a);
+            glLineWidth(_borderWidth);
+            glBegin(GL_LINE_LOOP);
+            glVertex2f(_position.x, _position.y);
+            glVertex2f(_position.x + _size.x, _position.y);
+            glVertex2f(_position.x + _size.x, _position.y + _size.y);
+            glVertex2f(_position.x, _position.y + _size.y);
+            glEnd();
+        }
+
+        // Render text
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, _texture);
+
+        glm::vec4 color = _isHovered ? _hoverColor : _color;
+        glColor4f(color.r, color.g, color.b, color.a);
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(_position.x, _position.y);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(_position.x + _textSize.x, _position.y);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(_position.x + _textSize.x, _position.y + _textSize.y);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(_position.x, _position.y + _textSize.y);
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
     }
-
-    // Render text
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, _texture);
-
-    glColor4f(_color.r, _color.g, _color.b, _color.a);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2f(_position.x, _position.y);
-    glTexCoord2f(1.0f, 1.0f); glVertex2f(_position.x + _textSize.x, _position.y);
-    glTexCoord2f(1.0f, 0.0f); glVertex2f(_position.x + _textSize.x, _position.y + _textSize.y);
-    glTexCoord2f(0.0f, 0.0f); glVertex2f(_position.x, _position.y + _textSize.y);
-    glEnd();
-
-    glDisable(GL_TEXTURE_2D);
 }

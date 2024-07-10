@@ -6,7 +6,7 @@
  * \_____/_|\___/ \___|_|\_\
  *
  * @file Block.hpp
- * @author ClemtoClem
+ * @author @ClemtoClem
  * @date 09/07/2024
 */
 

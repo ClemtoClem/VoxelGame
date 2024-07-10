@@ -6,7 +6,7 @@
  * \__/\___\___|_| |_|\___|
  * 
  * @file Scene.hpp
- * @author ClemtoClem
+ * @author @ClemtoClem
  * @date 09/07/2024
  */
 
