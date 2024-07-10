@@ -22,7 +22,7 @@ public:
 
 	glm::mat4 getViewMatrix() const;
 	glm::mat4 getProjectionMatrix(float aspectRatio) const;
-	void processKeyboard(float deltaTime, bool forward, bool backward, bool left, bool right);
+	void processKeyboard(float deltaTime, bool forward, bool backward, bool left, bool right, bool down, bool up);
 	void processMouseMovement(float xoffset, float yoffset);
 	void processMouseScroll(float yoffset);
 
@@ -31,17 +31,17 @@ public:
 private:
 	void updateCameraVectors();
 
-	glm::vec3 m_position;
-	glm::vec3 m_front;
-	glm::vec3 m_up;
-	glm::vec3 m_right;
-	glm::vec3 m_worldUp;
+	glm::vec3 _position;
+	glm::vec3 _front;
+	glm::vec3 _up;
+	glm::vec3 _right;
+	glm::vec3 _worldUp;
 
-	float m_yaw;
-	float m_pitch;
-	float m_movementSpeed;
-	float m_mouseSensitivity;
-	float m_zoom;
+	float _yaw;
+	float _pitch;
+	float _movementSpeed;
+	float _mouseSensitivity;
+	float _zoom;
 };
 
 #endif // CAMERA_HPP

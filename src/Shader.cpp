@@ -12,42 +12,42 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	GLuint vertexShader = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
 	GLuint fragmentShader = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
 
-	m_programID = glCreateProgram();
-	glAttachShader(m_programID, vertexShader);
-	glAttachShader(m_programID, fragmentShader);
-	glLinkProgram(m_programID);
-	checkCompileErrors(m_programID, "PROGRAM");
+	_programID = glCreateProgram();
+	glAttachShader(_programID, vertexShader);
+	glAttachShader(_programID, fragmentShader);
+	glLinkProgram(_programID);
+	checkCompileErrors(_programID, "PROGRAM");
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }
 
 Shader::~Shader() {
-	glDeleteProgram(m_programID);
+	glDeleteProgram(_programID);
 }
 
 void Shader::use() const {
-	glUseProgram(m_programID);
+	glUseProgram(_programID);
 }
 
 void Shader::setBool(const std::string &name, bool value) const {
-	glUniform1i(glGetUniformLocation(m_programID, name.c_str()), (int)value);
+	glUniform1i(glGetUniformLocation(_programID, name.c_str()), (int)value);
 }
 
 void Shader::setInt(const std::string &name, int value) const {
-	glUniform1i(glGetUniformLocation(m_programID, name.c_str()), value);
+	glUniform1i(glGetUniformLocation(_programID, name.c_str()), value);
 }
 
 void Shader::setFloat(const std::string &name, float value) const {
-	glUniform1f(glGetUniformLocation(m_programID, name.c_str()), value);
+	glUniform1f(glGetUniformLocation(_programID, name.c_str()), value);
 }
 
 void Shader::setVec3(const std::string &name, const glm::vec3 &value) const {
-	glUniform3fv(glGetUniformLocation(m_programID, name.c_str()), 1, glm::value_ptr(value));
+	glUniform3fv(glGetUniformLocation(_programID, name.c_str()), 1, glm::value_ptr(value));
 }
 
 void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
-	glUniformMatrix4fv(glGetUniformLocation(m_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+	glUniformMatrix4fv(glGetUniformLocation(_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 std::string Shader::loadShaderSource(const char* filePath) {
@@ -76,13 +76,13 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			LOG(Error) << "SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			LOG(Error) << "SHADER_COMPILATION_ERROR of type: " << type << "\n\t\t" << infoLog;
 		}
 	} else {
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			LOG(Error) << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			LOG(Error) << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n\t\t" << infoLog;
 		}
 	}
 }

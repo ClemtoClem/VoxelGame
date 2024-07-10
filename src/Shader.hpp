@@ -30,7 +30,7 @@ public:
 	void setMat4(const std::string &name, const glm::mat4 &value) const;
 
 private:
-	GLuint m_programID;
+	GLuint _programID;
 	std::string loadShaderSource(const char* filePath);
 	GLuint compileShader(const char* source, GLenum shaderType);
 	void checkCompileErrors(GLuint shader, std::string type);

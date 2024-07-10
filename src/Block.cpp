@@ -1,29 +1,30 @@
 #include "Block.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <SDL2/SDL_image.h>
 
 Block::Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles)
-	: m_position(position) {
+	: _position(position) {
 	loadTextures(textureFiles);
 	setupMesh();
 }
 
 Block::~Block() {
-	glDeleteVertexArrays(1, &m_vao);
-	glDeleteBuffers(1, &m_vbo);
-	glDeleteBuffers(1, &m_ebo);
-	glDeleteTextures(6, m_textures);
+	glDeleteVertexArrays(1, &_vao);
+	glDeleteBuffers(1, &_vbo);
+	glDeleteBuffers(1, &_ebo);
+	glDeleteTextures(6, _textures);
 }
 
 void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
-	glGenTextures(6, m_textures);
+	glGenTextures(6, _textures);
 
 	for (int i = 0; i < 6; ++i) {
-		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+		glBindTexture(GL_TEXTURE_2D, _textures[i]);
 
 		SDL_Surface *surface = IMG_Load(textureFiles[i].c_str());
 		if (!surface) {
-			std::cerr << "Failed to load texture: " << textureFiles[i] << " " << IMG_GetError() << std::endl;
+			LOG(Error) << "Failed to load texture: " << textureFiles[i] << " " << IMG_GetError();
 			continue;
 		}
 
@@ -86,16 +87,16 @@ void Block::setupMesh() {
 		20, 21, 22, 22, 23, 20,
 	};
 
-	glGenVertexArrays(1, &m_vao);
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ebo);
+	glGenVertexArrays(1, &_vao);
+	glGenBuffers(1, &_vbo);
+	glGenBuffers(1, &_ebo);
 
-	glBindVertexArray(m_vao);
+	glBindVertexArray(_vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -109,11 +110,11 @@ void Block::setupMesh() {
 }
 
 glm::vec3 &Block::position() {
-	return m_position;
+	return _position;
 }
 
 void Block::position(const glm::vec3 &point) {
-	m_position = point;
+	_position = point;
 }
 
 void Block::update(float dt) {
@@ -121,10 +122,10 @@ void Block::update(float dt) {
 }
 
 void Block::render() const {
-	glBindVertexArray(m_vao);
+	glBindVertexArray(_vao);
 
 	for (int i = 0; i < 6; ++i) {
-		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+		glBindTexture(GL_TEXTURE_2D, _textures[i]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(i * 6 * sizeof(unsigned int)));
 	}
 

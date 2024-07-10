@@ -34,9 +34,9 @@ private:
 	void loadTextures(const std::array<std::string, 6> &textureFiles);
 	void setupMesh();
 
-	glm::vec3 m_position;
-	GLuint m_textures[6];
-	GLuint m_vao, m_vbo, m_ebo;
+	glm::vec3 _position;
+	GLuint _textures[6];
+	GLuint _vao, _vbo, _ebo;
 };
 
 #endif // BLOCK_HPP
