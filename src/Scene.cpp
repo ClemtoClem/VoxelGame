@@ -35,7 +35,7 @@ void Scene::render(float aspectRatio) const {
 		if (isEntityInFrustum(entity, viewProjMatrix)) {
 			glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), entity->position());
 			_shader->setMat4("model", modelMatrix);
-			entity->render();
+			entity->render(*_shader);
 		}
 	}
 }
@@ -43,9 +43,18 @@ void Scene::render(float aspectRatio) const {
 bool Scene::isEntityInFrustum(std::shared_ptr<Entity> entity, const glm::mat4& viewProjMatrix) const {
 	// Simplified frustum culling: checks if the entity's position is inside the frustum.
 	// This can be improved by checking bounding boxes or spheres.
-	glm::vec4 entityPos = viewProjMatrix * glm::vec4(entity->position().x, entity->position().y, entity->position().z, 1.0f);
-	return entityPos.x > -entityPos.w && entityPos.x < entityPos.w &&
-		   entityPos.y > -entityPos.w && entityPos.y < entityPos.w &&
-		   entityPos.z > -entityPos.w && entityPos.z < entityPos.w;
+	auto corners = entity->getBoundingBoxCorners();
+    for (const auto& corner : corners) {
+        glm::vec4 transformedCorner = viewProjMatrix * glm::vec4(corner, 1.0f);
+        if (isPointInFrustum(transformedCorner)) {
+            return true;
+        }
+    }
+    return false;
 }
 
+bool Scene::isPointInFrustum(const glm::vec4 &point) const {
+    return point.x > -point.w && point.x < point.w &&
+           point.y > -point.w && point.y < point.w &&
+           point.z > -point.w && point.z < point.w;
+}

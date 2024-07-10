@@ -3,18 +3,22 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <glm/glm.hpp>
 #include <iostream>
 
-#include "Logger.hpp"
+#include "Shader.hpp"
 #include "Window.hpp"
 #include "Scene.hpp"
-#include "Block.hpp"
+#include "GUI/GUI.hpp"
+
 #include <memory>
 #include <string>
 
+const std::string FONT_PATH = "res/fonts/";
+const std::string IMAGE_PATH = "res/images/";
 
 class Game {
 public:
@@ -39,10 +43,13 @@ private:
     bool initSDL();
     void closeSDL();
 
+    bool initOpenGL();
+
     bool _isLoad;
     bool _running;
 
     Window _window;
+    GUI    _gui;
 
     std::shared_ptr<Shader> _shader;
     std::shared_ptr<Camera> _camera;

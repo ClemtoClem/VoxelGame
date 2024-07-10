@@ -54,8 +54,21 @@ void Camera::processMouseScroll(float yoffset) {
 		_zoom = 45.0f;
 }
 
-glm::vec3 Camera::getPosition() const {
-	return _position;
+void Camera::setPosition(glm::vec3 position) {
+	_position = position;
+}
+
+glm::vec3 Camera::getPosition() const
+{
+    return _position;
+}
+
+void Camera::setMovementSpeed(float movementSpeed) {
+	_movementSpeed = movementSpeed;
+}
+
+float Camera::getMovementSpeed() const {
+    return _movementSpeed;
 }
 
 void Camera::updateCameraVectors() {

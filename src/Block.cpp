@@ -2,6 +2,7 @@
 #include "Logger.hpp"
 #include <iostream>
 #include <SDL2/SDL_image.h>
+#include <glm/glm.hpp>
 
 Block::Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles)
 	: _position(position) {
@@ -14,6 +15,22 @@ Block::~Block() {
 	glDeleteBuffers(1, &_vbo);
 	glDeleteBuffers(1, &_ebo);
 	glDeleteTextures(6, _textures);
+}
+
+std::array<glm::vec3, 8> Block::getBoundingBoxCorners() const {
+    glm::vec3 min = _position - glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 max = _position + glm::vec3(0.5f, 0.5f, 0.5f);
+
+    return {
+        min,
+        glm::vec3(max.x, min.y, min.z),
+        glm::vec3(max.x, max.y, min.z),
+        glm::vec3(min.x, max.y, min.z),
+        glm::vec3(min.x, min.y, max.z),
+        glm::vec3(max.x, min.y, max.z),
+        glm::vec3(max.x, max.y, max.z),
+        glm::vec3(min.x, max.y, max.z)
+    };
 }
 
 void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
@@ -121,7 +138,7 @@ void Block::update(float dt) {
 	// Update logic for Block
 }
 
-void Block::render() const {
+void Block::render(const Shader &shader) const {
 	glBindVertexArray(_vao);
 
 	for (int i = 0; i < 6; ++i) {

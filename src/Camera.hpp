@@ -26,7 +26,11 @@ public:
 	void processMouseMovement(float xoffset, float yoffset);
 	void processMouseScroll(float yoffset);
 
+	void setPosition(glm::vec3 position);
 	glm::vec3 getPosition() const;
+
+	void setMovementSpeed(float movementSpeed);
+	float getMovementSpeed() const;
 
 private:
 	void updateCameraVectors();

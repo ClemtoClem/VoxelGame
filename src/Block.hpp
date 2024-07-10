@@ -17,18 +17,22 @@
 #include <string>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Entity.hpp"
+#include "Shader.hpp"
 
 class Block : public Entity {
 public:
 	Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles);
 	virtual ~Block();
 
+	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const override;
+
 	virtual glm::vec3 &position() override;
 	virtual void position(const glm::vec3 &point) override;
 
 	virtual void update(float dt) override;
-	virtual void render() const override;
+	virtual void render(const Shader &shader) const override;
 
 private:
 	void loadTextures(const std::array<std::string, 6> &textureFiles);

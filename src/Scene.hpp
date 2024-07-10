@@ -34,6 +34,7 @@ public:
 
 private:
 	bool isEntityInFrustum(std::shared_ptr<Entity> entity, const glm::mat4& viewProjMatrix) const;
+    bool isPointInFrustum(const glm::vec4& point) const;
 
 	std::shared_ptr<Camera> _camera;
     std::shared_ptr<Shader> _shader;
