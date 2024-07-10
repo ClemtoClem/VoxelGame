@@ -8,32 +8,36 @@
 
 class GUI {
 public:
-    GUI();
-    ~GUI();
+	GUI();
+	~GUI();
 
-    bool init();
+	bool init();
 
-    void setScreenSize(int width, int height);
+	void setScreenSize(int width, int height);
 
-    void reset();
+	void addChild(std::shared_ptr<Widget> widget);
 
-    void addWidget(std::shared_ptr<Widget> widget);
+	void deleteChild(const std::string &name);
 
-    void handleEvent(SDL_Event& evt);
+	std::shared_ptr<Widget> getChild(const std::string &name) const;
 
-    void update(float dt);
-    
-    void render() const;
+	void deleteChilden();
+
+	void handleEvent(SDL_Event& evt);
+
+	void update(float dt);
+	
+	void render() const;
 
 private:
-    void initRenderData();
-    
-    std::shared_ptr<Shader> _shader2D;
-    GLuint _vao, _vbo;
+	void initRenderData();
+	
+	std::shared_ptr<Shader> _shader2D;
+	GLuint _vao, _vbo;
 
-    std::vector<std::shared_ptr<Widget>> _widgets;
-    int _screenWidth;
-    int _screenHeight;
+	std::vector<std::shared_ptr<Widget>> _children;
+	int _screenWidth;
+	int _screenHeight;
 
 };
 

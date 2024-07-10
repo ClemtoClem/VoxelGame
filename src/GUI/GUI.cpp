@@ -8,89 +8,113 @@
 GUI::GUI() {}
 
 GUI::~GUI() {
-    glDeleteVertexArrays(1, &_vao);
-    glDeleteBuffers(1, &_vbo);
+	glDeleteVertexArrays(1, &_vao);
+	glDeleteBuffers(1, &_vbo);
 }
 
 bool GUI::init() {
-    LOG(Debug) << "GUI::init()";
-    _shader2D = std::make_shared<Shader>("./shaders/vertex_shader_2d.glsl", "./shaders/fragment_shader_2d.glsl");
-    initRenderData();
+	LOG(Debug) << "GUI::init()";
+	_shader2D = std::make_shared<Shader>("./shaders/vertex_shader_2d.glsl", "./shaders/fragment_shader_2d.glsl");
+	initRenderData();
 
-    return true;
+	return true;
 }
 
-void GUI::reset() {
-    _widgets.clear();
+void GUI::addChild(std::shared_ptr<Widget> widget) {
+	_children.push_back(widget);
 }
 
-void GUI::addWidget(std::shared_ptr<Widget> widget) {
-    _widgets.push_back(widget);
+void GUI::deleteChild(const std::string &name) {
+	for (auto it = _children.begin(); it!= _children.end(); ++it) {
+		if ((*it)->getName() == name) {
+			_children.erase(it);
+			return;
+		}
+	}
+}
+
+std::shared_ptr<Widget> GUI::getChild(const std::string &name) const {
+	for (auto& widget : _children) {
+		if (widget->getName() == name) {
+			return widget;
+		}
+	}
+	return nullptr;
+}
+
+void GUI::deleteChilden() {
+	_children.clear();
 }
 
 void GUI::handleEvent(SDL_Event& evt) {
-    if (evt.type == SDL_WINDOWEVENT) {
-        if (evt.window.event == SDL_WINDOWEVENT_RESIZED) {
-            setScreenSize(evt.window.data1, evt.window.data2);
-        }
-    }
-    for (auto& widget : _widgets) {
-        widget->handleEvent(evt);
-    }
+	if (evt.type == SDL_WINDOWEVENT) {
+		if (evt.window.event == SDL_WINDOWEVENT_RESIZED) {
+			setScreenSize(evt.window.data1, evt.window.data2);
+		}
+	}
+	for (auto& widget : _children) {
+		widget->handleEvent(evt);
+	}
 }
 
 void GUI::update(float dt) {
-    for (auto& widget : _widgets) {
-        widget->update(dt);
-    }
+	for (auto& widget : _children) {
+		widget->update(dt);
+	}
 }
 
 void GUI::render() const {
-    glDisable(GL_DEPTH_TEST); // Disable depth testing for 2D rendering
+	// Sauvegarder les états OpenGL
+	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
 
-    _shader2D->use();
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(_screenWidth), static_cast<float>(_screenHeight), 0.0f, -1.0f, 1.0f);
-    _shader2D->setMat4("projection", projection);
+	glDisable(GL_DEPTH_TEST); // Disable depth testing for 2D rendering
+	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
 
-    glBindVertexArray(_vao);
-    for (const auto& widget : _widgets) {
-        widget->render();
-    }
-    glBindVertexArray(0);
+	_shader2D->use();
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(_screenWidth), static_cast<float>(_screenHeight), 0.0f, -1.0f, 1.0f);
+	_shader2D->setMat4("projection", projection);
 
-    glEnable(GL_DEPTH_TEST); // Re-enable depth testing
+	glBindVertexArray(_vao);
+	for (const auto& widget : _children) {
+		widget->render(*_shader2D.get());
+	}
+	glBindVertexArray(0);
+
+	// Restaurer les états OpenGL
+	glPopAttrib();
 }
 
 void GUI::setScreenSize(int width, int height) {
-    _screenWidth = width;
-    _screenHeight = height;
+	_screenWidth = width;
+	_screenHeight = height;
 }
 
 void GUI::initRenderData() {
-    float vertices[] = {
-        // positions   // texCoords
-        0.0f, 1.0f,    0.0f, 1.0f,
-        1.0f, 0.0f,    1.0f, 0.0f,
-        0.0f, 0.0f,    0.0f, 0.0f,
+	float vertices[] = {
+		// positions   // texCoords
+		0.0f, 1.0f,    0.0f, 1.0f,
+		1.0f, 0.0f,    1.0f, 0.0f,
+		0.0f, 0.0f,    0.0f, 0.0f,
 
-        0.0f, 1.0f,    0.0f, 1.0f,
-        1.0f, 1.0f,    1.0f, 1.0f,
-        1.0f, 0.0f,    1.0f, 0.0f
-    };
+		0.0f, 1.0f,    0.0f, 1.0f,
+		1.0f, 1.0f,    1.0f, 1.0f,
+		1.0f, 0.0f,    1.0f, 0.0f
+	};
 
-    glGenVertexArrays(1, &_vao);
-    glGenBuffers(1, &_vbo);
+	glGenVertexArrays(1, &_vao);
+	glGenBuffers(1, &_vbo);
 
-    glBindVertexArray(_vao);
+	glBindVertexArray(_vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }

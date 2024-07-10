@@ -1,123 +1,123 @@
 #include "Window.hpp"
 
 Window::Window(const std::string &title, int width, int height) 
-    : _window(nullptr), _context(nullptr), _title(title), _width(width), _height(height), 
-      _mouseFocus(false), _keyboardFocus(false), _fullScreen(false), _minimized(false) {
-    _centerX = width / 2;
-    _centerY = height / 2;
-    _ratio = static_cast<float>(width) / static_cast<float>(height);
+	: _window(nullptr), _context(nullptr), _title(title), _width(width), _height(height), 
+	  _mouseFocus(false), _keyboardFocus(false), _fullScreen(false), _minimized(false) {
+	_centerX = width / 2;
+	_centerY = height / 2;
+	_ratio = static_cast<float>(width) / static_cast<float>(height);
 }
 
 Window::~Window() {
-    free();
+	free();
 }
 
 bool Window::init() {
-    _window = SDL_CreateWindow(_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (_window == nullptr) {
-        LOG(Fatal) << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-    _mouseFocus = true;
-    _keyboardFocus = true;
-    return true;
+	_window = SDL_CreateWindow(_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	if (_window == nullptr) {
+		LOG(Fatal) << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+		return false;
+	}
+	_mouseFocus = true;
+	_keyboardFocus = true;
+	return true;
 }
 
 SDL_GLContext Window::createGLContext() {
-    _context = SDL_GL_CreateContext(_window);
-    if (_context == nullptr) {
-        LOG(Fatal) << "OpenGL context could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        return nullptr;
-    }
-    return _context;
+	_context = SDL_GL_CreateContext(_window);
+	if (_context == nullptr) {
+		LOG(Fatal) << "OpenGL context could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+		return nullptr;
+	}
+	return _context;
 }
 
 void Window::GLSwap() {
-    SDL_GL_SwapWindow(_window);
+	SDL_GL_SwapWindow(_window);
 }
 
 void Window::handleEvent(SDL_Event& evt) {
-    if (evt.type == SDL_WINDOWEVENT) {
-        switch (evt.window.event) {
-        case SDL_WINDOWEVENT_SIZE_CHANGED:
-            _width = evt.window.data1;
-            _height = evt.window.data2;
-            _centerX = _width / 2;
-            _centerY = _height / 2;
-            _ratio = static_cast<float>(_width) / static_cast<float>(_height);
-            glViewport(0, 0, _width, _height);
-            break;
-        /*case SDL_WINDOWEVENT_EXPOSED:
-            SDL_GL_SwapWindow(_window);
-            break;*/
-        case SDL_WINDOWEVENT_ENTER:
-            _mouseFocus = true;
-            break;
-        case SDL_WINDOWEVENT_LEAVE:
-            _mouseFocus = false;
-            break;
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-            _keyboardFocus = true;
-            break;
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-            _keyboardFocus = false;
-            break;
-        case SDL_WINDOWEVENT_MINIMIZED:
-            _minimized = true;
-            break;
-        case SDL_WINDOWEVENT_MAXIMIZED:
-            _minimized = false;
-            break;
-        case SDL_WINDOWEVENT_RESTORED:
-            _minimized = false;
-            break;
-        }
-    }
+	if (evt.type == SDL_WINDOWEVENT) {
+		switch (evt.window.event) {
+		case SDL_WINDOWEVENT_SIZE_CHANGED:
+			_width = evt.window.data1;
+			_height = evt.window.data2;
+			_centerX = _width / 2;
+			_centerY = _height / 2;
+			_ratio = static_cast<float>(_width) / static_cast<float>(_height);
+			glViewport(0, 0, _width, _height);
+			break;
+		/*case SDL_WINDOWEVENT_EXPOSED:
+			SDL_GL_SwapWindow(_window);
+			break;*/
+		case SDL_WINDOWEVENT_ENTER:
+			_mouseFocus = true;
+			break;
+		case SDL_WINDOWEVENT_LEAVE:
+			_mouseFocus = false;
+			break;
+		case SDL_WINDOWEVENT_FOCUS_GAINED:
+			_keyboardFocus = true;
+			break;
+		case SDL_WINDOWEVENT_FOCUS_LOST:
+			_keyboardFocus = false;
+			break;
+		case SDL_WINDOWEVENT_MINIMIZED:
+			_minimized = true;
+			break;
+		case SDL_WINDOWEVENT_MAXIMIZED:
+			_minimized = false;
+			break;
+		case SDL_WINDOWEVENT_RESTORED:
+			_minimized = false;
+			break;
+		}
+	}
 }
 
 void Window::free() {
-    if (_window != nullptr) {
-        SDL_DestroyWindow(_window);
-        _window = nullptr;
-    }
-    if (_context != nullptr) {
-        SDL_GL_DeleteContext(_context);
-        _context = nullptr;
-    }
+	if (_window != nullptr) {
+		SDL_DestroyWindow(_window);
+		_window = nullptr;
+	}
+	if (_context != nullptr) {
+		SDL_GL_DeleteContext(_context);
+		_context = nullptr;
+	}
 }
 
 int Window::getWidth() const {
-    return _width;
+	return _width;
 }
 
 int Window::getHeight() const {
-    return _height;
+	return _height;
 }
 
 int Window::getCenterX() const {
-    return _centerX;
+	return _centerX;
 }
 
 int Window::getCenterY() const {
-    return _centerY;
+	return _centerY;
 }
 
 float Window::getRatio() const {
-    return _ratio;
+	return _ratio;
 }
 
 bool Window::hasMouseFocus() const {
-    return _mouseFocus;
+	return _mouseFocus;
 }
 
 bool Window::hasKeyboardFocus() const {
-    return _keyboardFocus;
+	return _keyboardFocus;
 }
 
 bool Window::isMinimized() const {
-    return _minimized;
+	return _minimized;
 }
 
 void Window::warpMouseCenter() {
-    SDL_WarpMouseInWindow(_window, _centerX, _centerY);
+	SDL_WarpMouseInWindow(_window, _centerX, _centerY);
 }

@@ -22,38 +22,38 @@ const std::string IMAGE_PATH = "res/images/";
 
 class Game {
 public:
-    Game();
+	Game();
 
-    ~Game();
+	~Game();
 
-    void run(int argc, char *argv[]);
+	void run(int argc, char *argv[]);
 
 private:
 
-    /**
-     * @brief Initialisation du jeu
-     * @param[in] argc Nombre de paramètres
-     * @param[in] argv liste des paramètres
-     */
-    bool init(int argc, char *argv[]);
+	/**
+	 * @brief Initialisation du jeu
+	 * @param[in] argc Nombre de paramètres
+	 * @param[in] argv liste des paramètres
+	 */
+	bool init(int argc, char *argv[]);
 
-    bool load();
-    void unload();
+	bool load();
+	void unload();
 
-    bool initSDL();
-    void closeSDL();
+	bool initSDL();
+	void closeSDL();
 
-    bool initOpenGL();
+	bool initOpenGL();
 
-    bool _isLoad;
-    bool _running;
+	bool _isLoad;
+	bool _running;
 
-    Window _window;
-    GUI    _gui;
+	Window _window;
+	GUI    _gui;
 
-    std::shared_ptr<Shader> _shader;
-    std::shared_ptr<Camera> _camera;
-    std::shared_ptr<Scene> _scene;
+	std::shared_ptr<Shader> _shader;
+	std::shared_ptr<Camera> _camera;
+	std::shared_ptr<Scene>  _scene;
 };
 
 #endif // GAME_HPP

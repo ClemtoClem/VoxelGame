@@ -21,21 +21,21 @@
 
 class Text : public Widget {
 public:
-    Text(const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color);
-    ~Text();
+	Text(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color);
+	~Text();
 
-    void setText(const std::string& text);
-    std::string getText() const { return _text; }
+	void setText(const std::string& text);
+	std::string getText() const { return _text; }
 
-    virtual void handleEvent(SDL_Event& evt) override;
-    virtual void update(float dt) override;
-    virtual void render() const override;
+	virtual void handleEvent(SDL_Event& evt) override;
+	virtual void update(float dt) override;
+	virtual void render(const Shader &shader2D) const override;
 
 private:
-    std::string _text;
-    TTF_Font* _font;
-    GLuint _texture;
-    glm::ivec2 _textSize;
+	std::string _text;
+	TTF_Font* _font;
+	GLuint _texture;
+	glm::ivec2 _textSize;
 };
 
 #endif // TEXT_HPP

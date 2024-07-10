@@ -44,17 +44,17 @@ bool Scene::isEntityInFrustum(std::shared_ptr<Entity> entity, const glm::mat4& v
 	// Simplified frustum culling: checks if the entity's position is inside the frustum.
 	// This can be improved by checking bounding boxes or spheres.
 	auto corners = entity->getBoundingBoxCorners();
-    for (const auto& corner : corners) {
-        glm::vec4 transformedCorner = viewProjMatrix * glm::vec4(corner, 1.0f);
-        if (isPointInFrustum(transformedCorner)) {
-            return true;
-        }
-    }
-    return false;
+	for (const auto& corner : corners) {
+		glm::vec4 transformedCorner = viewProjMatrix * glm::vec4(corner, 1.0f);
+		if (isPointInFrustum(transformedCorner)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 bool Scene::isPointInFrustum(const glm::vec4 &point) const {
-    return point.x > -point.w && point.x < point.w &&
-           point.y > -point.w && point.y < point.w &&
-           point.z > -point.w && point.z < point.w;
+	return point.x > -point.w && point.x < point.w &&
+		   point.y > -point.w && point.y < point.w &&
+		   point.z > -point.w && point.z < point.w;
 }

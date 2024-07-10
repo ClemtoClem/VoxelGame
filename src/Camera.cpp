@@ -25,9 +25,9 @@ void Camera::processKeyboard(float deltaTime, bool forward, bool backward, bool 
 	if (right)
 		_position += _right * velocity;
 	if (up)
-        _position += _up * velocity;     // Déplacement vers le haut
-    if (down)
-        _position -= _up * velocity;     // Déplacement vers le bas
+		_position += _up * velocity;     // Déplacement vers le haut
+	if (down)
+		_position -= _up * velocity;     // Déplacement vers le bas
 }
 
 void Camera::processMouseMovement(float xoffset, float yoffset) {
@@ -60,7 +60,7 @@ void Camera::setPosition(glm::vec3 position) {
 
 glm::vec3 Camera::getPosition() const
 {
-    return _position;
+	return _position;
 }
 
 void Camera::setMovementSpeed(float movementSpeed) {
@@ -68,7 +68,7 @@ void Camera::setMovementSpeed(float movementSpeed) {
 }
 
 float Camera::getMovementSpeed() const {
-    return _movementSpeed;
+	return _movementSpeed;
 }
 
 void Camera::updateCameraVectors() {

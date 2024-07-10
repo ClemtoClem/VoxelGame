@@ -18,19 +18,19 @@ Block::~Block() {
 }
 
 std::array<glm::vec3, 8> Block::getBoundingBoxCorners() const {
-    glm::vec3 min = _position - glm::vec3(0.5f, 0.5f, 0.5f);
-    glm::vec3 max = _position + glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec3 min = _position - glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec3 max = _position + glm::vec3(0.5f, 0.5f, 0.5f);
 
-    return {
-        min,
-        glm::vec3(max.x, min.y, min.z),
-        glm::vec3(max.x, max.y, min.z),
-        glm::vec3(min.x, max.y, min.z),
-        glm::vec3(min.x, min.y, max.z),
-        glm::vec3(max.x, min.y, max.z),
-        glm::vec3(max.x, max.y, max.z),
-        glm::vec3(min.x, max.y, max.z)
-    };
+	return {
+		min,
+		glm::vec3(max.x, min.y, min.z),
+		glm::vec3(max.x, max.y, min.z),
+		glm::vec3(min.x, max.y, min.z),
+		glm::vec3(min.x, min.y, max.z),
+		glm::vec3(max.x, min.y, max.z),
+		glm::vec3(max.x, max.y, max.z),
+		glm::vec3(min.x, max.y, max.z)
+	};
 }
 
 void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
@@ -48,6 +48,10 @@ void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
 		int mode = surface->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
 
 		glTexImage2D(GL_TEXTURE_2D, 0, mode, surface->w, surface->h, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
+		
+		// Filtrage
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		SDL_FreeSurface(surface);

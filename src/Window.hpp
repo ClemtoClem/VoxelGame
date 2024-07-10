@@ -22,60 +22,60 @@
 
 class Window {
 public:
-    // Initializes internals
-    Window(const std::string &title = "OpenGL with SDL2", int width = 800, int height = 600);
+	// Initializes internals
+	Window(const std::string &title = "OpenGL with SDL2", int width = 800, int height = 600);
 
-    ~Window();
+	~Window();
 
-    SDL_Window *get() { return _window; }
+	SDL_Window *get() { return _window; }
 
-    // Creates window
-    bool init();
+	// Creates window
+	bool init();
 
-    // Deallocates internals
-    void free();
+	// Deallocates internals
+	void free();
 
-    // Creates GL context
-    SDL_GLContext createGLContext();
-    void GLSwap();
+	// Creates GL context
+	SDL_GLContext createGLContext();
+	void GLSwap();
 
-    // Handles window events
-    void handleEvent(SDL_Event& evt);
+	// Handles window events
+	void handleEvent(SDL_Event& evt);
 
-    // Window dimensions
-    int getWidth() const;
-    int getHeight() const;
-    int getCenterX() const;
-    int getCenterY() const;
-    float getRatio() const;
+	// Window dimensions
+	int getWidth() const;
+	int getHeight() const;
+	int getCenterX() const;
+	int getCenterY() const;
+	float getRatio() const;
 
-    // Window focus
-    bool hasMouseFocus() const;
-    bool hasKeyboardFocus() const;
-    bool isMinimized() const;
+	// Window focus
+	bool hasMouseFocus() const;
+	bool hasKeyboardFocus() const;
+	bool isMinimized() const;
 
-    // Mouse
-    void warpMouseCenter();
+	// Mouse
+	void warpMouseCenter();
 
 private:
 
-    // Window data
-    SDL_Window* _window;
-    SDL_GLContext _context;
+	// Window data
+	SDL_Window* _window;
+	SDL_GLContext _context;
 
-    std::string _title;
+	std::string _title;
 
-    // Window dimensions
-    int _width;
-    int _height;
-    int _centerX, _centerY;
-    float _ratio;
+	// Window dimensions
+	int _width;
+	int _height;
+	int _centerX, _centerY;
+	float _ratio;
 
-    // Window focus
-    bool _mouseFocus;
-    bool _keyboardFocus;
-    bool _fullScreen;
-    bool _minimized;
+	// Window focus
+	bool _mouseFocus;
+	bool _keyboardFocus;
+	bool _fullScreen;
+	bool _minimized;
 };
 
 #endif // WINDOW_HPP
