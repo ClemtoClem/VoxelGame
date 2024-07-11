@@ -196,6 +196,7 @@ bool Game::load() {
 		// Load gui
 
 		std::shared_ptr<Frame> mainFrame = std::make_shared<Frame>("mainFrame", glm::vec2(5.0f, 5.0f), glm::vec2(120.0f, 100.0f), Color::GRAY3, Color::DARK_GRAY2, 2.0f);
+		mainFrame->setRotation(20.0f);
 		_gui.addChild(mainFrame);
 
 		std::shared_ptr<Button> button = std::make_shared<Button>("button1", FONT_PATH + "arial.ttf", 24, "Click Me", Color::PURPLE2, Color::WHITE);

@@ -25,13 +25,7 @@ void Button::handleEvent(SDL_Event& evt) {
 	if (_visible) {
 		glm::vec2 pos = getScreenPosition();
 		if (evt.type == SDL_MOUSEMOTION) {
-			int x = evt.motion.x;
-			int y = evt.motion.y;
-			if (x > pos.x && x < pos.x + _size.x && y > pos.y && y < pos.y + _size.y) {
-				_isHovered = true;
-			} else {
-				_isHovered = false;
-			}
+			checkMouseHovered(glm::vec2(evt.motion.x, evt.motion.y));
 		}
 
 		if (evt.type == SDL_MOUSEBUTTONDOWN) {
@@ -59,33 +53,20 @@ void Button::update(float dt) {
 
 void Button::render(const Shader &shader2D) const {
 	if (_visible) {
-		glm::vec2 pos = getScreenPosition();
+		//glm::vec2 pos = getScreenPosition();
 		glm::vec4 bgColor = (_isHovered && _hoverBackgroundColorIsSet) ? _hoverBackgroundColor : _backgroundColor;
 
 		// Render the button background
 		
 		if (bgColor.a > 0.0f) {
 			shader2D.setVec4("color", bgColor); // Assurez-vous que cette ligne est correcte
-			glColor4f(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-			glBegin(GL_QUADS);
-			glVertex2f(pos.x, pos.y);
-			glVertex2f(pos.x + _size.x, pos.y);
-			glVertex2f(pos.x + _size.x, pos.y + _size.y);
-			glVertex2f(pos.x, pos.y + _size.y);
-			glEnd();
+			drawFillRectangle(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), bgColor);
 		}
 
 		// Render the border
 		if (_borderWidth > 0.0f && _borderColor.a > 0.0f) {
 			shader2D.setVec4("color", _borderColor); // Assurez-vous que cette ligne est correcte
-			glColor4f(_borderColor.r, _borderColor.g, _borderColor.b, _borderColor.a);
-			glLineWidth(_borderWidth);
-			glBegin(GL_LINE_LOOP);
-			glVertex2f(pos.x, pos.y);
-			glVertex2f(pos.x + _size.x, pos.y);
-			glVertex2f(pos.x + _size.x, pos.y + _size.y);
-			glVertex2f(pos.x, pos.y + _size.y);
-			glEnd();
+			drawRectangle(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), _borderColor, 1/_borderWidth);
 		}
 
 		// Render the text widget

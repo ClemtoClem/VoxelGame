@@ -42,6 +42,18 @@ void Shader::setFloat(const std::string &name, float value) const {
 	glUniform1f(glGetUniformLocation(_programID, name.c_str()), value);
 }
 
+void Shader::setDouble(const std::string &name, double value) const {
+	glUniform1d(glGetUniformLocation(_programID, name.c_str()), value);
+}
+
+void Shader::setVec2(const std::string &name, const glm::vec2 &value) const {
+	glUniform2fv(glGetUniformLocation(_programID, name.c_str()), 1, glm::value_ptr(value));
+}
+
+void Shader::setVec2(const std::string &name, float x, float y) const {
+	glUniform2f(glGetUniformLocation(_programID, name.c_str()), x, y);
+}
+
 void Shader::setVec3(const std::string &name, const glm::vec3 &value) const {
 	glUniform3fv(glGetUniformLocation(_programID, name.c_str()), 1, glm::value_ptr(value));
 }
@@ -58,6 +70,14 @@ void Shader::setVec4(const std::string &name, float x, float y, float z, float w
 	glUniform4f(glGetUniformLocation(_programID, name.c_str()), x, y, z, w);
 }
 
+void Shader::setMat2(const std::string &name, const glm::mat2 &value) const {
+	glUniformMatrix2fv(glGetUniformLocation(_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setMat3(const std::string &name, const glm::mat3 &value) const {
+	glUniformMatrix3fv(glGetUniformLocation(_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
 void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
 	glUniformMatrix4fv(glGetUniformLocation(_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
@@ -66,11 +86,13 @@ std::string Shader::loadShaderSource(const char* filePath) {
 	std::ifstream shaderFile;
 	std::stringstream shaderStream;
 
-	shaderFile.open(filePath);
+	// ouverture du fichier
+    shaderFile.open(filePath);
 	if (!shaderFile.is_open()) {
 		LOG(Error) << "SHADER_FILE_NOT_FOUND: " << filePath;
 	}
-	shaderStream << shaderFile.rdbuf();
+	// lecture du fichier et place le contenu dans le flux
+    shaderStream << shaderFile.rdbuf();
 	shaderFile.close();
 
 	return shaderStream.str();

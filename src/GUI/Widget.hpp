@@ -110,6 +110,22 @@ public:
 
 	void disableHoverColor();
 
+	bool isHovered() const;
+
+	/**
+	 * @brief Set the angle of the widget in degrees.
+	 */
+	void setAngle(float angle);
+
+	float getAngle() const;
+
+	/**
+	 * @brief Set the rotation animation of the widget in degrees.
+	 */
+	void setRotation(float rotation);
+
+	float getRotation() const;
+
 
 	virtual void handleEvent(SDL_Event& evt) = 0;
 
@@ -118,6 +134,14 @@ public:
 	virtual void render(const Shader &shader2D) const = 0;
 
 protected:
+	void checkMouseHovered(const glm::vec2 &mouse);
+
+	void updateTransform(float dt);
+
+	void drawRectangle(const glm::vec2 &normalise_pos, const glm::vec2 &normalise_size, const glm::vec4 &color, float borderWidth) const;
+	void drawFillRectangle(const glm::vec2 &normalise_pos, const glm::vec2 &normalise_size, const glm::vec4 &color) const;
+	void drawLine(const glm::vec2 &normalise_pos1, const glm::vec2 &normalise_pos2, const glm::vec4 &color, float width) const;
+
 	void handleEventChildren(SDL_Event& evt);
 	void updateChildren(float dt);
 	void renderChildren(const Shader &shader2D) const;
@@ -131,6 +155,9 @@ protected:
 	glm::vec4 _backgroundColor = glm::vec4(0.0f);       // Default background color: black
 	glm::vec4 _hoverBackgroundColor = glm::vec4(0.0f);  // Default hover background color: black
 	glm::vec4 _borderColor = glm::vec4(1.0f);           // Default border color: white
+	float _angle = 0.0f;                                // Default angle: 0
+	float _rotation = 0.0f, _currentAngle = 0.0f;       // Default rotation animation: 0
+	glm::mat4 _transform;								// Default transform: identity matrix
 
 	bool _hoverColorIsSet = false;
 	bool _hoverBackgroundColorIsSet = false;

@@ -17,6 +17,8 @@ public:
 	virtual void handleEvent(SDL_Event& evt) override;
 	virtual void update(float dt) override;
 	virtual void render(const Shader &shader2D) const override;
+
+private:
 };
 
 #endif // FRAME_HPP
