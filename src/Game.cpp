@@ -161,6 +161,7 @@ void Game::run(int argc, char *argv[]) {
 }
 
 bool Game::init(int argc, char *argv[]) {
+	Logger::removeFile();
 	Logger::createInstance();
 	Logger::getInstance().enableWriteInTerminal();
 
@@ -177,10 +178,13 @@ bool Game::init(int argc, char *argv[]) {
 		LOG(Fatal) << "Failed to initialize GUI" << std::endl;
 		return false;
 	}
-
-	_shader = std::make_shared<Shader>("./shaders/vertex_shader.glsl", "./shaders/fragment_shader.glsl");
+	
 	_camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
-	_scene = std::make_shared<Scene>(_camera, _shader);
+	_scene = std::make_shared<Scene>(_camera);
+	if (!_scene->init()) {
+		LOG(Fatal) << "Failed to initialize scene" << std::endl;
+		return false;
+	}
 
 	LOG(Debug) << "Init game success!";
 
@@ -195,7 +199,7 @@ bool Game::load() {
 
 		// Load gui
 
-		std::shared_ptr<Frame> mainFrame = std::make_shared<Frame>("mainFrame", glm::vec2(5.0f, 5.0f), glm::vec2(120.0f, 100.0f), Color::GRAY3, Color::DARK_GRAY2, 2.0f);
+		/*std::shared_ptr<Frame> mainFrame = std::make_shared<Frame>("mainFrame", glm::vec2(5.0f, 5.0f), glm::vec2(120.0f, 100.0f), Color::GRAY3, Color::DARK_GRAY2, 2.0f);
 		mainFrame->setRotation(20.0f);
 		_gui.addChild(mainFrame);
 
@@ -207,7 +211,7 @@ bool Game::load() {
 			std::cout << "Button clicked!" << std::endl;
 		});
 
-		mainFrame->addChild(button);
+		mainFrame->addChild(button);*/
 
 		// Load game resources
 
@@ -221,6 +225,13 @@ bool Game::load() {
 		};
 		_camera->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
+		// Créer une source de lumière directionnelle (similaire au soleil)
+		std::shared_ptr<Light> directionalLight = std::make_shared<Light>();
+		glm::vec3 lightDirection = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));  // Direction de la lumière (vers le haut à gauche)
+		glm::vec3 lightColor = glm::vec3(1.0f, 0.8f, 0.6f);  // Couleur jaune orangée
+		directionalLight->SetDirectionalLight(lightDirection, lightColor);
+		_scene->addLight(directionalLight);
+
 		// générer un plateau de blocks
 		int plateauWidth = 10;
 		int plateauHeight = 10;
@@ -232,9 +243,10 @@ bool Game::load() {
 			}
 		}
 
+		// Créez des blocks
 		std::shared_ptr<Entity> block1 = std::make_shared<Block>(glm::vec3(1, 1, 1), textureFiles);
 		std::shared_ptr<Entity> block2 = std::make_shared<Block>(glm::vec3(2, 2, 2), textureFiles);
-
+		
 		_scene->addEntity(block1);
 		_scene->addEntity(block2);
 

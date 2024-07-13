@@ -16,6 +16,12 @@ Logger::~Logger() {
 	}
 }
 
+void Logger::removeFile() {
+	if (std::remove(LOG_FILE)) {
+		LOG(Warning) << "Unable to remove log file";
+	}
+}
+
 void Logger::createInstance() {
 	if (instance!= nullptr) {
 		throw std::runtime_error("Logger already initialized");

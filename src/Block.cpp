@@ -1,11 +1,8 @@
 #include "Block.hpp"
 #include "Logger.hpp"
-#include <iostream>
-#include <SDL2/SDL_image.h>
-#include <glm/glm.hpp>
 
 Block::Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles)
-	: _position(position) {
+	: _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f) {
 	loadTextures(textureFiles);
 	setupMesh();
 }
@@ -134,17 +131,60 @@ glm::vec3 &Block::position() {
 	return _position;
 }
 
+const glm::vec3 &Block::position() const {
+	return _position;
+}
+
 void Block::position(const glm::vec3 &point) {
 	_position = point;
 }
 
-void Block::update(float dt) {
-	// Update logic for Block
+void Block::rotate(float angle, const glm::vec3 &axis) {
+	_angle = angle;
+	_rotateAxis = glm::normalize(axis);
 }
 
-void Block::render(const Shader &shader) const {
-	glBindVertexArray(_vao);
+float &Block::angle() {
+    return _angle;
+}
 
+const float &Block::angle() const {
+    return _angle;
+}
+
+void Block::angle(float angle) {
+	_angle = angle;
+}
+
+glm::vec3 &Block::rotateAxis() {
+	return _rotateAxis;
+}
+
+const glm::vec3 &Block::rotateAxis() const  {
+	return _rotateAxis;
+}
+
+void Block::rotateAxis(const glm::vec3 &axis) {
+	_rotateAxis = glm::normalize(axis);
+}
+
+const glm::mat4 &Block::modelMatrix() const {
+	return _modelMatrix;
+}
+
+void Block::update(float dt) {
+	// Update logic for Block
+	updateModelMatrix();
+}
+
+void Block::updateModelMatrix() {
+	_modelMatrix = glm::translate(glm::mat4(1.0f), _position);
+	_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_angle), _rotateAxis);
+}
+
+void Block::render() const {
+	glBindVertexArray(_vao);
+	
 	for (int i = 0; i < 6; ++i) {
 		glBindTexture(GL_TEXTURE_2D, _textures[i]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(i * 6 * sizeof(unsigned int)));

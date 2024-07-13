@@ -8,6 +8,7 @@
  * @file Window.hpp
  * @author @ClemtoClem
  * @date 09/07/2024
+ * @brief Window class
  */
 
 #ifndef WINDOW_HPP

@@ -1,3 +1,16 @@
+/**
+ *    ___                     
+ *   / _ \__ _ _ __ ___   ___ 
+ *  / /_\/ _` | '_ ` _ \ / _ \
+ * / /_\\ (_| | | | | | |  __/
+ * \____/\__,_|_| |_| |_|\___|
+ *
+ * @file Game.hpp
+ * @author @ClemtoClem
+ * @date 13/07/2024
+ * @brief Game class
+ */
+
 #ifndef GAME_HPP
 #define GAME_HPP
 
@@ -9,7 +22,6 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-#include "Shader.hpp"
 #include "Window.hpp"
 #include "Scene.hpp"
 #include "GUI/GUI.hpp"
@@ -51,7 +63,6 @@ private:
 	Window _window;
 	GUI    _gui;
 
-	std::shared_ptr<Shader> _shader;
 	std::shared_ptr<Camera> _camera;
 	std::shared_ptr<Scene>  _scene;
 };

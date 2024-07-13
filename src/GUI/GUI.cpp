@@ -12,9 +12,14 @@ GUI::~GUI() {
 	glDeleteBuffers(1, &_vbo);
 }
 
-bool GUI::init() {
-	LOG(Debug) << "GUI::init()";
+bool GUI::init() {	
 	_shader2D = std::make_shared<Shader>("./shaders/vertex_shader_2d.glsl", "./shaders/fragment_shader_2d.glsl");
+	const std::string &err = _shader2D->getError();
+	if (!err.empty()) {
+		LOG(Error) << err;
+		return false;
+	}
+
 	initRenderData();
 
 	return true;
@@ -92,29 +97,30 @@ void GUI::setScreenSize(int width, int height) {
 
 void GUI::initRenderData() {
 	float vertices[] = {
-		// positions   // texCoords
-		0.0f, 1.0f,    0.0f, 1.0f,
-		1.0f, 0.0f,    1.0f, 0.0f,
-		0.0f, 0.0f,    0.0f, 0.0f,
-
-		0.0f, 1.0f,    0.0f, 1.0f,
-		1.0f, 1.0f,    1.0f, 1.0f,
-		1.0f, 0.0f,    1.0f, 0.0f
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
 	};
+	unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
 
 	glGenVertexArrays(1, &_vao);
 	glGenBuffers(1, &_vbo);
+    glGenBuffers(1, &_ebo);
 
 	glBindVertexArray(_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }

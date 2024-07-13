@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Logger.hpp"
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+Shader::Shader(const char* vertexPath, const char* fragmentPath) : _error("") {
 	std::string vertexCode = loadShaderSource(vertexPath);
 	std::string fragmentCode = loadShaderSource(fragmentPath);
 
@@ -24,6 +24,10 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 
 Shader::~Shader() {
 	glDeleteProgram(_programID);
+}
+
+const std::string &Shader::getError() const {
+    return _error;
 }
 
 void Shader::use() const {
@@ -113,13 +117,18 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			LOG(Error) << "SHADER_COMPILATION_ERROR of type: " << type << "\n\t\t" << infoLog;
+			std::stringstream ss;
+			ss << "SHADER_COMPILATION_ERROR of type: " << type << "\n\t\t" << infoLog;
+			_error = ss.str();
+			
 		}
 	} else {
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			LOG(Error) << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n\t\t" << infoLog;
+			std::stringstream ss;
+			ss << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n\t\t" << infoLog;
+			_error = ss.str();
 		}
 	}
 }

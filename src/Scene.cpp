@@ -1,14 +1,38 @@
 #include "Scene.hpp"
 #include <algorithm> // pour std::remove
 #include <glm/gtc/matrix_transform.hpp>
+#include "Logger.hpp"
 
-Scene::Scene(std::shared_ptr<Camera> camera, std::shared_ptr<Shader> shader) : _camera(camera), _shader(shader) {}
+Scene::Scene(std::shared_ptr<Camera> camera) : _camera(camera) {}
+
+bool Scene::init() {
+	_shader3D = std::make_shared<Shader>("./shaders/vertex_shader_3d.glsl", "./shaders/fragment_shader_3d.glsl");
+	const std::string &err1 = _shader3D->getError();
+	if (!err1.empty()) {
+		LOG(Error) << err1;
+		return false;
+	}
+
+	_shader3DLight = std::make_shared<Shader>("./shaders/vertex_shader_3d_light.glsl", "./shaders/fragment_shader_3d_light.glsl");
+	const std::string &err2 = _shader3DLight->getError();
+	if (!err2.empty()) {
+		LOG(Error) << err2;
+		return false;
+	}
+	return true;
+}
 
 void Scene::reset() {
-
+	clearEntities();
+	clearLights();
 }
 
 void Scene::addEntity(std::shared_ptr<Entity> entity) {
+	// on véririfie que l'entité n'est pas déjà dans la scène
+	if (std::find(_entities.begin(), _entities.end(), entity)!= _entities.end()) {
+		LOG(Error) << "Entity already in scene";
+		return;
+	}
 	_entities.push_back(entity);
 }
 
@@ -16,28 +40,76 @@ void Scene::removeEntity(std::shared_ptr<Entity> entity) {
 	_entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
 }
 
+void Scene::clearEntities() {
+	_entities.clear();
+}
+
+void Scene::addLight(std::shared_ptr<Light> light) {
+	// on véririfie que l'entité n'est pas déjà dans la scène
+	if (std::find(_lights.begin(), _lights.end(), light)!= _lights.end()) {
+		LOG(Error) << "Light already in scene";
+		return;
+	}
+	_lights.push_back(light);
+}
+
+void Scene::removeLight(std::shared_ptr<Light> light) {
+	_lights.erase(std::remove(_lights.begin(), _lights.end(), light), _lights.end());
+}
+
+void Scene::clearLights() {
+	_lights.clear();
+}
+
 void Scene::update(float dt) {
-	for (auto &entity : _entities) {
+    for (auto &entity : _entities) {
+		//entity->angle(entity->angle() + dt * 20.0f);
 		entity->update(dt);
 	}
 }
 
 void Scene::render(float aspectRatio) const {
-	glm::mat4 viewMatrix = _camera->getViewMatrix();
-	glm::mat4 projectionMatrix = _camera->getProjectionMatrix(aspectRatio);
-	glm::mat4 viewProjMatrix = projectionMatrix * viewMatrix;
+    // Matrices de vue et de projection
+    glm::mat4 viewMatrix = _camera->getViewMatrix();
+    glm::mat4 projectionMatrix = _camera->getProjectionMatrix(aspectRatio);
+    glm::mat4 viewProjMatrix = projectionMatrix * viewMatrix;
 
-	_shader->use();
-	_shader->setMat4("view", viewMatrix);
-	_shader->setMat4("projection", projectionMatrix);
+    // Utilisation du shader de lumière 3D
+    _shader3DLight->use();
+    _shader3DLight->setMat4("view", viewMatrix);
+    _shader3DLight->setMat4("projection", projectionMatrix);
+    _shader3DLight->setVec3("viewPos", _camera->getPosition());
 
-	for (const auto &entity : _entities) {
-		if (isEntityInFrustum(entity, viewProjMatrix)) {
-			glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), entity->position());
-			_shader->setMat4("model", modelMatrix);
-			entity->render(*_shader);
-		}
-	}
+    int pointLightIndex = 0;
+    int spotLightIndex = 0;
+
+    // Configuration des uniformes pour chaque type de lumière
+    for (const auto &light : _lights) {
+        if (light->getType() == Light::POINT) {
+            light->setUniforms(*_shader3DLight, pointLightIndex++);
+        } else if (light->getType() == Light::SPOT) {
+            light->setUniforms(*_shader3DLight, spotLightIndex++);
+        } else { // Lumière directionnelle
+            light->setUniforms(*_shader3DLight, 0); // Une seule lumière directionnelle, donc index 0
+        }
+    }
+
+    // Définir le nombre de lumières ponctuelles et spot dans le shader
+    _shader3DLight->setInt("numPointLights", pointLightIndex);
+    _shader3DLight->setInt("numSpotLights", spotLightIndex);
+
+	// Utilisation du shader 3D standard pour rendre les entités
+    _shader3D->use();
+    _shader3D->setMat4("view", viewMatrix);
+    _shader3D->setMat4("projection", projectionMatrix);
+
+    // Rendu des entités visibles
+    for (const auto &entity : _entities) {
+        if (isEntityInFrustum(entity, viewProjMatrix)) {
+            _shader3D->setMat4("model", entity->modelMatrix());
+            entity->render();
+        }
+    }
 }
 
 bool Scene::isEntityInFrustum(std::shared_ptr<Entity> entity, const glm::mat4& viewProjMatrix) const {

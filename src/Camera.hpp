@@ -8,6 +8,7 @@
  * @file Camera.hpp
  * @author @ClemtoClem
  * @date 09/07/2024
+ * @brief Camera class
  */
 
 #ifndef CAMERA_HPP

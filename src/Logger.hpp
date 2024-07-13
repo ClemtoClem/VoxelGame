@@ -9,6 +9,7 @@
  * @file Logger.hpp
  * @author @ClemtoClem
  * @date 06/07/2024
+ * @brief Logger class
 */
 
 #ifndef LOGGER_HPP
@@ -44,6 +45,8 @@ public:
 
 	virtual ~Logger();
 
+	static void removeFile();
+	
 	static void createInstance();
 	static Logger &getInstance();
 	static Logger &setInstance(Logger *logger);

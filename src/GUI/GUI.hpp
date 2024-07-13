@@ -33,7 +33,7 @@ private:
 	void initRenderData();
 	
 	std::shared_ptr<Shader> _shader2D;
-	GLuint _vao, _vbo;
+	GLuint _vao, _vbo, _ebo;
 
 	std::vector<std::shared_ptr<Widget>> _children;
 	int _screenWidth;

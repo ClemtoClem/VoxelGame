@@ -8,6 +8,7 @@
  * @file Shader.hpp
  * @author @ClemtoClem
  * @date 09/07/2024
+ * @brief Shader class
  */
 
 #ifndef SHADER_HPP
@@ -23,6 +24,8 @@ public:
     Shader(const char* vertexPath, const char* fragmentPath);
 	
 	~Shader();
+
+	const std::string &getError() const;
 
 	// Activation du shader
     void use() const;
@@ -47,6 +50,8 @@ private:
 	std::string loadShaderSource(const char* filePath);
 	GLuint compileShader(const char* source, GLenum shaderType);
 	void checkCompileErrors(GLuint shader, std::string type);
+
+	std::string _error;
 };
 
 #endif // SHADER_HPP
