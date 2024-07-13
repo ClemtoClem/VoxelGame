@@ -19,6 +19,13 @@
 #include <glm/glm.hpp>
 #include "Shader.hpp"
 
+struct Material {
+	int diffuse;
+	int specular;
+	int emission;
+	float shininess;
+};
+
 class Entity {
 public:
 	virtual ~Entity() = default;
@@ -48,7 +55,7 @@ public:
 	virtual const glm::mat4 &modelMatrix() const = 0;
 
 	virtual void update(float dt) = 0;
-	virtual void render() const = 0;
+	virtual void render(const Shader &shader) const = 0;
 };
 
 #endif // ENTITY_HPP

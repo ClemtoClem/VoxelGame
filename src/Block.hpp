@@ -45,10 +45,13 @@ public:
 	const glm::vec3 &rotateAxis() const override;
 	void rotateAxis(const glm::vec3 &axis) override;
 
+	void setLightMaterialProperties(const Material &material);
+	void setLightMaterialProperties(int diffuse, int specular, int emission, float shininess);
+
 	const glm::mat4 &modelMatrix() const override;
 
 	virtual void update(float dt) override;
-	virtual void render() const override;
+	virtual void render(const Shader &shader) const override;
 
 private:
 	void setupMesh();
@@ -61,6 +64,8 @@ private:
 	glm::mat4 _modelMatrix;
 	GLuint _textures[6];
 	GLuint _vao, _vbo, _ebo;
+
+	Material _material;
 };
 
 #endif // BLOCK_HPP

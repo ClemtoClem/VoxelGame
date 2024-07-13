@@ -2,7 +2,13 @@
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	: _position(position), _worldUp(up), _yaw(yaw), _pitch(pitch), 
-	  _movementSpeed(2.5f), _mouseSensitivity(0.1f), _zoom(45.0f) {
+	  _movementSpeed(MOUSE_SPEED), _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
+	updateCameraVectors();
+}
+
+Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+	: _position(posX, posY, posZ), _worldUp(upX, upY, upZ), _yaw(yaw), _pitch(pitch),
+	_movementSpeed(MOUSE_SPEED), _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
 	updateCameraVectors();
 }
 
@@ -14,19 +20,19 @@ glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
 	return glm::perspective(glm::radians(_zoom), aspectRatio, 0.1f, 100.0f);
 }
 
-void Camera::processKeyboard(float deltaTime, bool forward, bool backward, bool left, bool right,  bool down, bool up) {
+void Camera::processKeyboard(float deltaTime, unsigned int movementFlags) {
 	float velocity = _movementSpeed * deltaTime;
-	if (forward)
+	if (movementFlags & FORWARD)
 		_position += _front * velocity;
-	if (backward)
+	if (movementFlags & BACKWARD)
 		_position -= _front * velocity;
-	if (left)
+	if (movementFlags & LEFT)
 		_position -= _right * velocity;
-	if (right)
+	if (movementFlags & RIGHT)
 		_position += _right * velocity;
-	if (up)
+	if (movementFlags & UP)
 		_position += _up * velocity;     // Déplacement vers le haut
-	if (down)
+	if (movementFlags & DOWN)
 		_position -= _up * velocity;     // Déplacement vers le bas
 }
 
@@ -58,9 +64,24 @@ void Camera::setPosition(glm::vec3 position) {
 	_position = position;
 }
 
-glm::vec3 Camera::getPosition() const
-{
+const glm::vec3 &Camera::getPosition() const {
 	return _position;
+}
+
+const glm::vec3 &Camera::getFront() const {
+    return _front;
+}
+
+const glm::vec3 &Camera::getUp() const {
+    return _up;
+}
+
+const glm::vec3 &Camera::getRight() const {
+    return _right;
+}
+
+const glm::vec3 &Camera::getWorldUp() const {
+    return _worldUp;
 }
 
 void Camera::setMovementSpeed(float movementSpeed) {

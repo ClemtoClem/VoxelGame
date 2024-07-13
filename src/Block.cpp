@@ -2,7 +2,8 @@
 #include "Logger.hpp"
 
 Block::Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles)
-	: _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f) {
+	: _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f),
+	_material({ 0, 1, 0, 0.05 }) {
 	loadTextures(textureFiles);
 	setupMesh();
 }
@@ -168,6 +169,17 @@ void Block::rotateAxis(const glm::vec3 &axis) {
 	_rotateAxis = glm::normalize(axis);
 }
 
+void Block::setLightMaterialProperties(const Material &material) {
+	_material = material;
+}
+
+void Block::setLightMaterialProperties(int diffuse, int specular, int emission, float shininess) {
+	_material.diffuse = diffuse;
+	_material.specular = specular;
+	_material.emission = emission;
+	_material.shininess = shininess;
+}
+
 const glm::mat4 &Block::modelMatrix() const {
 	return _modelMatrix;
 }
@@ -182,8 +194,14 @@ void Block::updateModelMatrix() {
 	_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_angle), _rotateAxis);
 }
 
-void Block::render() const {
+void Block::render(const Shader &shader) const {
 	glBindVertexArray(_vao);
+	
+	shader.setInt("material.diffuse", _material.diffuse);
+	shader.setInt("material.specular", _material.specular);
+	shader.setInt("material.emission", _material.emission);
+	shader.setFloat("material.shininess", _material.shininess);
+	shader.setMat4("model", _modelMatrix);
 	
 	for (int i = 0; i < 6; ++i) {
 		glBindTexture(GL_TEXTURE_2D, _textures[i]);

@@ -22,6 +22,9 @@
 #include "Entity.hpp"
 #include "Light.hpp"
 
+#define MAX_POINT_LIGHTS 10
+#define MAX_SPOT_LIGHTS 10
+
 class Scene {
 public:
 	Scene(std::shared_ptr<Camera> camera);
@@ -46,7 +49,6 @@ private:
 	bool isPointInFrustum(const glm::vec4& point) const;
 
 	std::shared_ptr<Camera> _camera;
-	std::shared_ptr<Shader> _shader3D;
 	std::shared_ptr<Shader> _shader3DLight;
 	std::vector<std::shared_ptr<Entity>> _entities;
 	std::vector<std::shared_ptr<Light>> _lights;

@@ -6,13 +6,6 @@
 Scene::Scene(std::shared_ptr<Camera> camera) : _camera(camera) {}
 
 bool Scene::init() {
-	_shader3D = std::make_shared<Shader>("./shaders/vertex_shader_3d.glsl", "./shaders/fragment_shader_3d.glsl");
-	const std::string &err1 = _shader3D->getError();
-	if (!err1.empty()) {
-		LOG(Error) << err1;
-		return false;
-	}
-
 	_shader3DLight = std::make_shared<Shader>("./shaders/vertex_shader_3d_light.glsl", "./shaders/fragment_shader_3d_light.glsl");
 	const std::string &err2 = _shader3DLight->getError();
 	if (!err2.empty()) {
@@ -63,7 +56,6 @@ void Scene::clearLights() {
 
 void Scene::update(float dt) {
     for (auto &entity : _entities) {
-		//entity->angle(entity->angle() + dt * 20.0f);
 		entity->update(dt);
 	}
 }
@@ -85,6 +77,9 @@ void Scene::render(float aspectRatio) const {
 
     // Configuration des uniformes pour chaque type de lumière
     for (const auto &light : _lights) {
+		light->setPosition(_camera->getPosition());
+		light->setDirection(_camera->getFront());
+
         if (light->getType() == Light::POINT) {
             light->setUniforms(*_shader3DLight, pointLightIndex++);
         } else if (light->getType() == Light::SPOT) {
@@ -98,16 +93,10 @@ void Scene::render(float aspectRatio) const {
     _shader3DLight->setInt("numPointLights", pointLightIndex);
     _shader3DLight->setInt("numSpotLights", spotLightIndex);
 
-	// Utilisation du shader 3D standard pour rendre les entités
-    _shader3D->use();
-    _shader3D->setMat4("view", viewMatrix);
-    _shader3D->setMat4("projection", projectionMatrix);
-
     // Rendu des entités visibles
     for (const auto &entity : _entities) {
         if (isEntityInFrustum(entity, viewProjMatrix)) {
-            _shader3D->setMat4("model", entity->modelMatrix());
-            entity->render();
+            entity->render(*_shader3DLight);
         }
     }
 }

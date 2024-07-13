@@ -30,12 +30,7 @@ void Game::run(int argc, char *argv[]) {
 	SDL_Event event;
 	float deltaTime = 0.0f;
 
-	bool moveForward = false;
-	bool moveBackward = false;
-	bool moveLeft = false;
-	bool moveRight = false;
-	bool moveDown = false;
-	bool moveUp = false;
+	Movement cameraMovement = static_cast<Movement>(0);
 
 	bool mouseCaptured = true;
 	bool firstMouse = true;
@@ -82,24 +77,23 @@ void Game::run(int argc, char *argv[]) {
 						_running = false;
 						break;
 					case SDLK_z:
-						moveForward = true;
+						cameraMovement = static_cast<Movement>(cameraMovement | FORWARD);
 						break;
 					case SDLK_s:
-						moveBackward = true;
+						cameraMovement = static_cast<Movement>(cameraMovement | BACKWARD);
 						break;
 					case SDLK_q:
-						moveLeft = true;
+						cameraMovement = static_cast<Movement>(cameraMovement | LEFT);
 						break;
 					case SDLK_d:
-						moveRight = true;
+						cameraMovement = static_cast<Movement>(cameraMovement | RIGHT);
 						break;
 					case SDLK_LSHIFT:
-						moveDown = true;
+						cameraMovement = static_cast<Movement>(cameraMovement | DOWN);
 						break;
 					case SDLK_SPACE:
-						moveUp = true;
+						cameraMovement = static_cast<Movement>(cameraMovement | UP);
 						break;
-					
 					case SDLK_e:
 						mouseCaptured = !mouseCaptured;
 						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
@@ -108,26 +102,26 @@ void Game::run(int argc, char *argv[]) {
 							firstMouse = true;
 						}
 						break;
-				}
+            	}
 			} else if (event.type == SDL_KEYUP) {
 				switch (event.key.keysym.sym) {
 					case SDLK_z:
-						moveForward = false;
+						cameraMovement = static_cast<Movement>(cameraMovement & ~FORWARD);
 						break;
 					case SDLK_s:
-						moveBackward = false;
+						cameraMovement = static_cast<Movement>(cameraMovement & ~BACKWARD);
 						break;
 					case SDLK_q:
-						moveLeft = false;
+						cameraMovement = static_cast<Movement>(cameraMovement & ~LEFT);
 						break;
 					case SDLK_d:
-						moveRight = false;
+						cameraMovement = static_cast<Movement>(cameraMovement & ~RIGHT);
 						break;
 					case SDLK_LSHIFT:
-						moveDown = false;
+						cameraMovement = static_cast<Movement>(cameraMovement & ~DOWN);
 						break;
 					case SDLK_SPACE:
-						moveUp = false;
+						cameraMovement = static_cast<Movement>(cameraMovement & ~UP);
 						break;
 				}
 			}
@@ -136,7 +130,7 @@ void Game::run(int argc, char *argv[]) {
 		}
 
 		// Mettre à jour la caméra, la scène et les widgets
-		_camera->processKeyboard(deltaTime, moveForward, moveBackward, moveLeft, moveRight, moveDown, moveUp);
+		_camera->processKeyboard(deltaTime, cameraMovement);
 		_scene->update(deltaTime);
 		_gui.update(deltaTime);
 
