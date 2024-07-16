@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "Utils.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	: _position(position), _worldUp(up), _yaw(yaw), _pitch(pitch), 
@@ -22,9 +23,9 @@ glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
 
 void Camera::processKeyboard(float deltaTime, unsigned int movementFlags) {
 	float velocity = _movementSpeed * deltaTime;
-	if (movementFlags & FORWARD)
+	if (movementFlags & FRONT)
 		_position += _front * velocity;
-	if (movementFlags & BACKWARD)
+	if (movementFlags & BACK)
 		_position -= _front * velocity;
 	if (movementFlags & LEFT)
 		_position -= _right * velocity;

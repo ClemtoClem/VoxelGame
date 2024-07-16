@@ -19,15 +19,15 @@
 #include <glm/glm.hpp>
 #include "Shader.hpp"
 
-struct Material {
-	int diffuse;
-	int specular;
-	int emission;
-	float shininess;
-};
-
 class Entity {
 public:
+    enum Category {
+        NONE,
+        BLOCK,
+        LIGHT,
+        SKYBOX
+    };
+	
 	virtual ~Entity() = default;
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const = 0;
@@ -56,6 +56,9 @@ public:
 
 	virtual void update(float dt) = 0;
 	virtual void render(const Shader &shader) const = 0;
+
+protected:
+	Category _category;
 };
 
 #endif // ENTITY_HPP

@@ -30,7 +30,7 @@ void Game::run(int argc, char *argv[]) {
 	SDL_Event event;
 	float deltaTime = 0.0f;
 
-	Movement cameraMovement = static_cast<Movement>(0);
+	Face cameraMovement = static_cast<Face>(0);
 
 	bool mouseCaptured = true;
 	bool firstMouse = true;
@@ -77,22 +77,22 @@ void Game::run(int argc, char *argv[]) {
 						_running = false;
 						break;
 					case SDLK_z:
-						cameraMovement = static_cast<Movement>(cameraMovement | FORWARD);
+						cameraMovement = static_cast<Face>(cameraMovement | FRONT);
 						break;
 					case SDLK_s:
-						cameraMovement = static_cast<Movement>(cameraMovement | BACKWARD);
+						cameraMovement = static_cast<Face>(cameraMovement | BACK);
 						break;
 					case SDLK_q:
-						cameraMovement = static_cast<Movement>(cameraMovement | LEFT);
+						cameraMovement = static_cast<Face>(cameraMovement | LEFT);
 						break;
 					case SDLK_d:
-						cameraMovement = static_cast<Movement>(cameraMovement | RIGHT);
+						cameraMovement = static_cast<Face>(cameraMovement | RIGHT);
 						break;
 					case SDLK_LSHIFT:
-						cameraMovement = static_cast<Movement>(cameraMovement | DOWN);
+						cameraMovement = static_cast<Face>(cameraMovement | DOWN);
 						break;
 					case SDLK_SPACE:
-						cameraMovement = static_cast<Movement>(cameraMovement | UP);
+						cameraMovement = static_cast<Face>(cameraMovement | UP);
 						break;
 					case SDLK_e:
 						mouseCaptured = !mouseCaptured;
@@ -106,22 +106,22 @@ void Game::run(int argc, char *argv[]) {
 			} else if (event.type == SDL_KEYUP) {
 				switch (event.key.keysym.sym) {
 					case SDLK_z:
-						cameraMovement = static_cast<Movement>(cameraMovement & ~FORWARD);
+						cameraMovement = static_cast<Face>(cameraMovement & ~FRONT);
 						break;
 					case SDLK_s:
-						cameraMovement = static_cast<Movement>(cameraMovement & ~BACKWARD);
+						cameraMovement = static_cast<Face>(cameraMovement & ~BACK);
 						break;
 					case SDLK_q:
-						cameraMovement = static_cast<Movement>(cameraMovement & ~LEFT);
+						cameraMovement = static_cast<Face>(cameraMovement & ~LEFT);
 						break;
 					case SDLK_d:
-						cameraMovement = static_cast<Movement>(cameraMovement & ~RIGHT);
+						cameraMovement = static_cast<Face>(cameraMovement & ~RIGHT);
 						break;
 					case SDLK_LSHIFT:
-						cameraMovement = static_cast<Movement>(cameraMovement & ~DOWN);
+						cameraMovement = static_cast<Face>(cameraMovement & ~DOWN);
 						break;
 					case SDLK_SPACE:
-						cameraMovement = static_cast<Movement>(cameraMovement & ~UP);
+						cameraMovement = static_cast<Face>(cameraMovement & ~UP);
 						break;
 				}
 			}

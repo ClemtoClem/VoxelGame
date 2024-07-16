@@ -21,7 +21,7 @@
 class Shader {
 public:
 	// le constructeur lit et construit le shader
-    Shader(const char* vertexPath, const char* fragmentPath);
+    Shader(const std::string &vertexPath, const std::string &fragmentPath);
 	
 	~Shader();
 
@@ -47,8 +47,8 @@ public:
 
 private:
 	GLuint _programID;
-	std::string loadShaderSource(const char* filePath);
-	GLuint compileShader(const char* source, GLenum shaderType);
+	std::string loadShaderSource(const std::string &filePath);
+	GLuint compileShader(const std::string &source, GLenum shaderType);
 	void checkCompileErrors(GLuint shader, std::string type);
 
 	std::string _error;

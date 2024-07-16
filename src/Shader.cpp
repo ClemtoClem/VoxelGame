@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Logger.hpp"
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) : _error("") {
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) : _error("") {
 	std::string vertexCode = loadShaderSource(vertexPath);
 	std::string fragmentCode = loadShaderSource(fragmentPath);
 
@@ -86,7 +86,7 @@ void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
 	glUniformMatrix4fv(glGetUniformLocation(_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-std::string Shader::loadShaderSource(const char* filePath) {
+std::string Shader::loadShaderSource(const std::string &filePath) {
 	std::ifstream shaderFile;
 	std::stringstream shaderStream;
 
@@ -102,7 +102,7 @@ std::string Shader::loadShaderSource(const char* filePath) {
 	return shaderStream.str();
 }
 
-GLuint Shader::compileShader(const char* source, GLenum shaderType) {
+GLuint Shader::compileShader(const std::string &source, GLenum shaderType) {
 	GLuint shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &source, NULL);
 	glCompileShader(shader);

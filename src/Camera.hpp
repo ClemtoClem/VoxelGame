@@ -24,14 +24,6 @@ const float MOUSE_SPEED			=  2.5f;
 const float MOUSE_SENSITIVITY	=  0.1f;
 const float ZOOM				=  45.0f;
 
-enum Movement {
-	FORWARD = 1U,
-	BACKWARD = 2U,
-	LEFT = 4U,
-	RIGHT = 8U,
-	UP = 16U,
-	DOWN = 32U
-};
 
 class Camera {
 public:

@@ -24,6 +24,7 @@
 
 #include "Window.hpp"
 #include "Scene.hpp"
+#include "Utils.hpp"
 #include "GUI/GUI.hpp"
 
 #include <memory>
