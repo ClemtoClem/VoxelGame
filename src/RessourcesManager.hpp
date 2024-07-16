@@ -5,16 +5,38 @@
 #include <vector>
 #include <array>
 #include <memory>
-#include <unordered_map>
-#include <filesystem>
+#include "Utils.hpp"
 #include "Texture.hpp"
 #include "Font.hpp"
 #include "Shader.hpp"
 #include "Logger.hpp"
 
-const std::string IMAGES_PATH_DEFAULT = "./ressources/images/";
-const std::string SHADERS_PATH_DEFAULT = "./ressources/shaders/";
-const std::string FONTS_PATH_DEFAULT = "./ressources/fonts/";
+const std::string IMAGES_PATH_DEFAULT = "./resources/images/";
+const std::string SHADERS_PATH_DEFAULT = "./resources/shaders/";
+const std::string FONTS_PATH_DEFAULT = "./resources/fonts/";
+
+enum Face {
+    FRONT = 1U,
+    BACK = 2U,
+    LEFT = 4U,
+    RIGHT = 8U,
+    UP = 16U,
+    DOWN = 32U,
+};
+
+enum class ResourceType {
+    TEXTURE,
+    SHADER,
+    TILES_TEXTURE,
+    FONT
+};
+
+struct Resource {
+    ResourceType type;
+    std::string name;
+    std::string path;
+    void *data;
+};
 
 class ResourcesManager {
 public:
@@ -22,14 +44,12 @@ public:
 
     static ResourcesManager &getInstance();
 
-    void setPath(const std::string &images_path, const std::string &shaders_path, const std::string &fonts_path);
+    void setPaths(const std::string &images_path, const std::string &shaders_path, const std::string &fonts_path);
 
     void loadTexture(const std::string &name, const std::string &path);
     void loadTilesTexture(const std::string &name, const std::string &path);
     void loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath);
-    void loadFont(const std::string &name, const std::string &path, int fontSize);
-
-    void loadAllTexturesInDirectory();
+    void loadFont(const std::string &name, const std::string &path);
 
     std::shared_ptr<Texture> getTexture(const std::string &name);
     std::shared_ptr<Texture> getTileTexture(const std::string &name, Face face);
@@ -38,12 +58,15 @@ public:
     std::shared_ptr<Font> getFont(const std::string &name);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<Texture>> _textures;
-    std::unordered_map<std::string, std::array<std::shared_ptr<Texture>, 6>> _tilesTextures;
-    std::unordered_map<std::string, std::shared_ptr<Shader>> _shaders;
-    std::unordered_map<std::string, std::shared_ptr<Font>> _fonts;
+    std::vector<Resource> _resources;
+    std::string _imagesPath, _shadersPath, _fontsPath;
 
-    std::string images_path, shaders_path, fonts_path;
+    std::shared_ptr<Texture> createDefaultTexture();
+
+    // Méthode pour logguer les erreurs
+    void logError(const std::string &message) {
+        LOG(Error) << message;
+    }
 };
 
 #endif // RESOURCESMANAGER_HPP
