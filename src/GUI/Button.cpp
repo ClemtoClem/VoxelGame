@@ -1,6 +1,6 @@
 #include "Button.hpp"
 #include "Text.hpp"
-#include "Color.hpp"
+#include "../Core/Color.hpp"
 #include <iostream>
 
 Button::Button(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& backgroundColor, const glm::vec4& textColor)

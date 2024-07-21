@@ -1,6 +1,6 @@
 #include "Widget.hpp"
-#include "Color.hpp"
-#include "../Logger.hpp"
+#include "../Core/Color.hpp"
+#include "../Core/Logger.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 Widget::Widget(const std::string &name)

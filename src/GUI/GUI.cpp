@@ -1,5 +1,5 @@
 #include "GUI.hpp"
-#include "../Logger.hpp"
+#include "../Core/Logger.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>

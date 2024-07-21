@@ -19,7 +19,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "../Shader.hpp"
+#include "../Core/Shader.hpp"
 
 class Widget {
 public:

@@ -2,7 +2,7 @@
 #define FRAME_HPP
 
 #include "Widget.hpp"
-#include "Color.hpp"
+#include "../Core/Color.hpp"
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>

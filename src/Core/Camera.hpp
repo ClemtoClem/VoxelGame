@@ -27,6 +27,15 @@ const float ZOOM				=  45.0f;
 
 class Camera {
 public:
+	enum Movement {
+		FORWARD		= 1U,
+		BACKWARD	= 2U,
+		LEFT		= 4U,
+		RIGHT		= 8U,
+		UP			= 16U,
+		DOWN		= 32U
+	};
+
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 	Camera(float posX, float posY, float posZ, float upX = 0.0f, float upY = 1.0f, float upZ = 0.0f, float yaw = YAW, float pitch = PITCH);
 

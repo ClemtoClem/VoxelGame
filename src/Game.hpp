@@ -22,9 +22,9 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-#include "Window.hpp"
-#include "Scene.hpp"
-#include "Utils.hpp"
+#include "Core/Window.hpp"
+#include "Core/Scene.hpp"
+#include "Core/Utils.hpp"
 #include "GUI/GUI.hpp"
 
 #include <memory>
@@ -39,6 +39,11 @@ public:
 
 	~Game();
 
+	/**
+	 * @brief Executer le jeu
+	 * @param[in] argc Nombre de paramètres
+	 * @param[in] argv Liste des paramètres
+	 */
 	void run(int argc, char *argv[]);
 
 private:
@@ -46,17 +51,16 @@ private:
 	/**
 	 * @brief Initialisation du jeu
 	 * @param[in] argc Nombre de paramètres
-	 * @param[in] argv liste des paramètres
+	 * @param[in] argv Liste des paramètres
 	 */
 	bool init(int argc, char *argv[]);
 
-	bool load();
-	void unload();
-
 	bool initSDL();
+	bool initOpenGL();
 	void closeSDL();
 
-	bool initOpenGL();
+	bool load();
+	void unload();
 
 	bool _isLoad;
 	bool _running;

@@ -1,10 +1,10 @@
 #include "Game.hpp"
 #include <stdexcept>
 
-#include "Logger.hpp"
-#include "Block.hpp"
+#include "Core/Logger.hpp"
+#include "Core/Block.hpp"
+#include "Core/Color.hpp"
 
-#include "GUI/Color.hpp"
 #include "GUI/Frame.hpp"
 #include "GUI/Button.hpp"
 #include "GUI/Text.hpp"
@@ -18,141 +18,7 @@ Game::~Game() {
 	Logger::destroyInstance();
 }
 
-void Game::run(int argc, char *argv[]) {
-	if (!init(argc, argv)) {
-		return;
-	}
-
-	if (!load()) {
-		return;
-	}
-
-	SDL_Event event;
-	float deltaTime = 0.0f;
-
-	Face cameraMovement = static_cast<Face>(0);
-
-	bool mouseCaptured = true;
-	bool firstMouse = true;
-
-	if (mouseCaptured) {
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-		_window.warpMouseCenter();
-		firstMouse = true;
-	}
-	_gui.setScreenSize(_window.getWidth(), _window.getHeight());
-
-	_running = true;
-
-	while (_running) {
-		auto startTime = std::chrono::high_resolution_clock::now();
-		while (SDL_PollEvent(&event) != 0) {
-			if (event.type == SDL_QUIT) {
-				_running = false;
-			} else if (event.type == SDL_WINDOWEVENT) {
-				_window.handleEvent(event);
-			} else if (event.type == SDL_MOUSEMOTION) {
-				if (mouseCaptured) {
-					float xpos = event.motion.x;
-					float ypos = event.motion.y;
-
-					float xoffset = 0.0f, yoffset = 0.0f;
-					if (!firstMouse) {
-						xoffset = xpos - _window.getCenterX();
-						yoffset = _window.getCenterY() - ypos; // Reversed since y-coordinates go from bottom to top
-					} else {
-						firstMouse = false;
-					}
-
-					if (xoffset != 0.0f || yoffset != 0.0f) {
-						_camera->processMouseMovement(xoffset, yoffset);
-						_window.warpMouseCenter();
-					}
-				}
-			} else if (event.type == SDL_MOUSEWHEEL) {
-				_camera->processMouseScroll(event.wheel.y);
-			} else if (event.type == SDL_KEYDOWN) {
-				switch (event.key.keysym.sym) {
-					case SDLK_ESCAPE:
-						_running = false;
-						break;
-					case SDLK_z:
-						cameraMovement = static_cast<Face>(cameraMovement | FRONT);
-						break;
-					case SDLK_s:
-						cameraMovement = static_cast<Face>(cameraMovement | BACK);
-						break;
-					case SDLK_q:
-						cameraMovement = static_cast<Face>(cameraMovement | LEFT);
-						break;
-					case SDLK_d:
-						cameraMovement = static_cast<Face>(cameraMovement | RIGHT);
-						break;
-					case SDLK_LSHIFT:
-						cameraMovement = static_cast<Face>(cameraMovement | DOWN);
-						break;
-					case SDLK_SPACE:
-						cameraMovement = static_cast<Face>(cameraMovement | UP);
-						break;
-					case SDLK_e:
-						mouseCaptured = !mouseCaptured;
-						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
-						if (mouseCaptured) {
-							_window.warpMouseCenter();
-							firstMouse = true;
-						}
-						break;
-            	}
-			} else if (event.type == SDL_KEYUP) {
-				switch (event.key.keysym.sym) {
-					case SDLK_z:
-						cameraMovement = static_cast<Face>(cameraMovement & ~FRONT);
-						break;
-					case SDLK_s:
-						cameraMovement = static_cast<Face>(cameraMovement & ~BACK);
-						break;
-					case SDLK_q:
-						cameraMovement = static_cast<Face>(cameraMovement & ~LEFT);
-						break;
-					case SDLK_d:
-						cameraMovement = static_cast<Face>(cameraMovement & ~RIGHT);
-						break;
-					case SDLK_LSHIFT:
-						cameraMovement = static_cast<Face>(cameraMovement & ~DOWN);
-						break;
-					case SDLK_SPACE:
-						cameraMovement = static_cast<Face>(cameraMovement & ~UP);
-						break;
-				}
-			}
-
-			_gui.handleEvent(event);
-		}
-
-		// Mettre à jour la caméra, la scène et les widgets
-		_camera->processKeyboard(deltaTime, cameraMovement);
-		_scene->update(deltaTime);
-		_gui.update(deltaTime);
-
-		// Effacer le tampon de couleur et le tampon de profondeur
-		glClearColor(Color::SKY_BLUE.r, Color::SKY_BLUE.g, Color::SKY_BLUE.b, Color::SKY_BLUE.a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Rendre la scène 3D
-		_scene->render(_window.getRatio());
-
-		// Rendre l'interface utilisateur
-		_gui.render();
-
-		_window.GLSwap();
-
-		SDL_Delay(4);
-
-		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - startTime).count();
-	}
-
-	unload();
-}
+/* - - - - - - - - - - - - - - - - - - - - */
 
 bool Game::init(int argc, char *argv[]) {
 	Logger::removeFile();
@@ -184,6 +50,56 @@ bool Game::init(int argc, char *argv[]) {
 
 	return true;
 }
+
+bool Game::initSDL() {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		LOG(Fatal) << "Failed to initialize SDL: " << SDL_GetError();
+		return false;
+	}
+
+	if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) & (IMG_INIT_JPG | IMG_INIT_PNG))) {
+		LOG(Fatal) << "Failed to initialize SDL_image: " << IMG_GetError();
+		return false;
+	}
+
+	if (TTF_Init() == -1) {
+		LOG(Fatal) << "Failed to initialize SDL_ttf: " << TTF_GetError();
+		return false;
+	}
+
+	if (!_window.init() || !_window.createGLContext()) {
+		LOG(Fatal) << "Failed to initialize window" << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+bool Game::initOpenGL() {
+	glewExperimental = GL_TRUE;
+	GLenum glewError = glewInit();
+	if (glewError != GLEW_OK) {
+		LOG(Fatal) << "Failed to initialize GLEW: " << glewGetErrorString(glewError) << std::endl;
+		return false;
+	}
+
+	// Activer le test de profondeur
+	glEnable(GL_DEPTH_TEST);
+	// Configurer le test de profondeur pour utiliser le tampon de profondeur
+	glDepthFunc(GL_LESS);
+	glEnable(GL_BLEND);
+
+	return true;
+}
+
+void Game::closeSDL() {
+	_window.free();
+	TTF_Quit();
+	IMG_Quit();
+	SDL_Quit();
+}
+
+/* - - - - - - - - - - - - - - - - - - - - */
 
 bool Game::load() {
 	try {
@@ -262,50 +178,140 @@ void Game::unload() {
 	}
 }
 
-bool Game::initSDL() {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		LOG(Fatal) << "Failed to initialize SDL: " << SDL_GetError();
-		return false;
+/* - - - - - - - - - - - - - - - - - - - - */
+
+void Game::run(int argc, char *argv[]) {
+	if (!init(argc, argv)) {
+		return;
 	}
 
-	if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) & (IMG_INIT_JPG | IMG_INIT_PNG))) {
-		LOG(Fatal) << "Failed to initialize SDL_image: " << IMG_GetError();
-		return false;
+	if (!load()) {
+		return;
 	}
 
-	if (TTF_Init() == -1) {
-		LOG(Fatal) << "Failed to initialize SDL_ttf: " << TTF_GetError();
-		return false;
+	SDL_Event event;
+	float deltaTime = 0.0f;
+
+	Camera::Movement cameraMovement = static_cast<Camera::Movement>(0);
+
+	bool mouseCaptured = true;
+	bool firstMouse = true;
+
+	if (mouseCaptured) {
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+		_window.warpMouseCenter();
+		firstMouse = true;
+	}
+	_gui.setScreenSize(_window.getWidth(), _window.getHeight());
+
+	_running = true;
+
+	while (_running) {
+		auto startTime = std::chrono::high_resolution_clock::now();
+		while (SDL_PollEvent(&event) != 0) {
+			if (event.type == SDL_QUIT) {
+				_running = false;
+			} else if (event.type == SDL_WINDOWEVENT) {
+				_window.handleEvent(event);
+			} else if (event.type == SDL_MOUSEMOTION) {
+				if (mouseCaptured) {
+					float xpos = event.motion.x;
+					float ypos = event.motion.y;
+
+					float xoffset = 0.0f, yoffset = 0.0f;
+					if (!firstMouse) {
+						xoffset = xpos - _window.getCenterX();
+						yoffset = _window.getCenterY() - ypos; // Reversed since y-coordinates go from bottom to top
+					} else {
+						firstMouse = false;
+					}
+
+					if (xoffset != 0.0f || yoffset != 0.0f) {
+						_camera->processMouseMovement(xoffset, yoffset);
+						_window.warpMouseCenter();
+					}
+				}
+			} else if (event.type == SDL_MOUSEWHEEL) {
+				_camera->processMouseScroll(event.wheel.y);
+			} else if (event.type == SDL_KEYDOWN) {
+				switch (event.key.keysym.sym) {
+					case SDLK_ESCAPE:
+						_running = false;
+						break;
+					case SDLK_z:
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::FORWARD);
+						break;
+					case SDLK_s:
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::BACKWARD);
+						break;
+					case SDLK_q:
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::LEFT);
+						break;
+					case SDLK_d:
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::RIGHT);
+						break;
+					case SDLK_LSHIFT:
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::DOWN);
+						break;
+					case SDLK_SPACE:
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::UP);
+						break;
+					case SDLK_e:
+						mouseCaptured = !mouseCaptured;
+						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
+						if (mouseCaptured) {
+							_window.warpMouseCenter();
+							firstMouse = true;
+						}
+						break;
+            	}
+			} else if (event.type == SDL_KEYUP) {
+				switch (event.key.keysym.sym) {
+					case SDLK_z:
+						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::FORWARD);
+						break;
+					case SDLK_s:
+						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::BACKWARD);
+						break;
+					case SDLK_q:
+						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::LEFT);
+						break;
+					case SDLK_d:
+						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::RIGHT);
+						break;
+					case SDLK_LSHIFT:
+						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::DOWN);
+						break;
+					case SDLK_SPACE:
+						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::UP);
+						break;
+				}
+			}
+
+			_gui.handleEvent(event);
+		}
+
+		// Mettre à jour la caméra, la scène et les widgets
+		_camera->processKeyboard(deltaTime, cameraMovement);
+		_scene->update(deltaTime);
+		_gui.update(deltaTime);
+
+		// Effacer le tampon de couleur et le tampon de profondeur
+		glClearColor(Color::SKY_BLUE.r, Color::SKY_BLUE.g, Color::SKY_BLUE.b, Color::SKY_BLUE.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Rendre la scène 3D
+		_scene->render(_window.getRatio());
+
+		// Rendre l'interface utilisateur
+		_gui.render();
+
+		_window.GLSwap();
+
+		SDL_Delay(4);
+
+		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - startTime).count();
 	}
 
-	if (!_window.init() || !_window.createGLContext()) {
-		LOG(Fatal) << "Failed to initialize window" << std::endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool Game::initOpenGL() {
-	glewExperimental = GL_TRUE;
-	GLenum glewError = glewInit();
-	if (glewError != GLEW_OK) {
-		LOG(Fatal) << "Failed to initialize GLEW: " << glewGetErrorString(glewError) << std::endl;
-		return false;
-	}
-
-	// Activer le test de profondeur
-	glEnable(GL_DEPTH_TEST);
-	// Configurer le test de profondeur pour utiliser le tampon de profondeur
-	glDepthFunc(GL_LESS);
-	glEnable(GL_BLEND);
-
-	return true;
-}
-
-void Game::closeSDL() {
-	_window.free();
-	TTF_Quit();
-	IMG_Quit();
-	SDL_Quit();
+	unload();
 }

@@ -1,5 +1,5 @@
 #include "Text.hpp"
-#include "Color.hpp"
+#include "../Core/Color.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <GL/glew.h>

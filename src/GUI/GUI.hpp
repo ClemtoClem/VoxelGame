@@ -2,7 +2,7 @@
 #define GUI_HPP
 
 #include "Widget.hpp"
-#include "../Shader.hpp"
+#include "../Core/Shader.hpp"
 #include <vector>
 #include <memory>
 
