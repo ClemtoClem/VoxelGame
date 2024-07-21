@@ -36,9 +36,9 @@ public:
 
     void setPaths(const std::string &images_path, const std::string &shaders_path, const std::string &fonts_path);
 
-    void loadTexture(const std::string &name, const std::string &path);
-    void loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath);
-    void loadFont(const std::string &name, const std::string &path);
+    bool loadTexture(const std::string &name, const std::string &path);
+    bool loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath);
+    bool loadFont(const std::string &name, const std::string &path);
 
     std::shared_ptr<Texture> getTexture(const std::string &name);
     std::shared_ptr<Shader> getShader(const std::string &name);
@@ -47,13 +47,6 @@ public:
 private:
     std::vector<Resource> _resources;
     std::string _imagesPath, _shadersPath, _fontsPath;
-
-    std::shared_ptr<Texture> createDefaultTexture();
-
-    // Méthode pour logguer les erreurs
-    void logError(const std::string &message) {
-        LOG(Error) << message;
-    }
 };
 
 #endif // RESOURCES_MANAGER_HPP

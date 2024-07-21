@@ -1,9 +1,9 @@
 #include "Block.hpp"
 #include "Logger.hpp"
 
-Block::Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles)
-	: _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f) {
-	loadTextures(textureFiles);
+Block::Block(const glm::vec3 &position, const std::array<GLuint, 6> textures)
+	: _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f), _textures(textures) {
+	//loadTextures(textureFiles);
 	setupMesh();
 }
 
@@ -11,7 +11,7 @@ Block::~Block() {
 	glDeleteVertexArrays(1, &_vao);
 	glDeleteBuffers(1, &_vbo);
 	glDeleteBuffers(1, &_ebo);
-	glDeleteTextures(6, _textures);
+	//glDeleteTextures(6, _textures);
 }
 
 std::array<glm::vec3, 8> Block::getBoundingBoxCorners() const {
@@ -30,7 +30,7 @@ std::array<glm::vec3, 8> Block::getBoundingBoxCorners() const {
 	};
 }
 
-void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
+/*void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
 	glGenTextures(6, _textures);
 
 	for (int i = 0; i < 6; ++i) {
@@ -53,7 +53,7 @@ void Block::loadTextures(const std::array<std::string, 6> &textureFiles) {
 
 		SDL_FreeSurface(surface);
 	}
-}
+}*/
 
 void Block::setupMesh() {
 	float vertices[] = {

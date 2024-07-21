@@ -26,7 +26,7 @@
 
 class Block : public Entity {
 public:
-	Block(const glm::vec3 &position, const std::array<std::string, 6> &textureFiles);
+	Block(const glm::vec3 &position, const std::array<GLuint, 6> textures);
 	virtual ~Block();
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const override;
@@ -52,14 +52,14 @@ public:
 
 private:
 	void setupMesh();
-	void loadTextures(const std::array<std::string, 6> &textureFiles);
+	//void loadTextures(const std::array<std::string, 6> &textureFiles);
 	void updateModelMatrix();
 
 	glm::vec3 _position;
 	float _angle;
 	glm::vec3 _rotateAxis;
 	glm::mat4 _modelMatrix;
-	GLuint _textures[6];
+	std::array<GLuint, 6> _textures;
 	GLuint _vao, _vbo, _ebo;
 };
 

@@ -22,6 +22,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
+#include "Core/ResourcesManager.hpp"
 #include "Core/Window.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Utils.hpp"
@@ -30,7 +31,7 @@
 #include <memory>
 #include <string>
 
-const std::string FONT_PATH = "./resources/fonts/";
+const std::string FONT_PATH  = "./resources/fonts/";
 const std::string IMAGE_PATH = "./resources/images/";
 
 class Game {
@@ -67,6 +68,7 @@ private:
 
 	Window _window;
 	GUI    _gui;
+	ResourcesManager _resourcesManager;
 
 	std::shared_ptr<Camera> _camera;
 	std::shared_ptr<Scene>  _scene;

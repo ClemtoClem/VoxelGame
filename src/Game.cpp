@@ -46,6 +46,22 @@ bool Game::init(int argc, char *argv[]) {
 		return false;
 	}
 
+	/* Import resources */
+	bool result = true;
+	result &= _resourcesManager.loadTexture("concrete_front",  IMAGE_PATH + "concrete_front.png");
+	result &= _resourcesManager.loadTexture("concrete_back",   IMAGE_PATH + "concrete_back.png");
+	result &= _resourcesManager.loadTexture("concrete_left",   IMAGE_PATH + "concrete_left.png");
+	result &= _resourcesManager.loadTexture("concrete_right",  IMAGE_PATH + "concrete_right.png");
+	result &= _resourcesManager.loadTexture("concrete_top",    IMAGE_PATH + "concrete_top.png");
+	result &= _resourcesManager.loadTexture("concrete_bottom", IMAGE_PATH + "concrete_bottom.png");
+	result &= _resourcesManager.loadTexture("bricks_wall",     IMAGE_PATH + "bricks_wall.jpg");
+	result &= _resourcesManager.loadTexture("wood_planks",     IMAGE_PATH + "wood_planks.jpg");
+
+	if (!result) {
+		LOG(Fatal) << "Failed to load resources" << std::endl;
+		return false;
+	}
+
 	LOG(Debug) << "Init game success!";
 
 	return true;
@@ -125,14 +141,24 @@ bool Game::load() {
 
 		// Load game resources
 
-		std::array<std::string, 6> textureFiles = {
-			IMAGE_PATH + "concrete_front.png",
-			IMAGE_PATH + "concrete_back.png",
-			IMAGE_PATH + "concrete_left.png",
-			IMAGE_PATH + "concrete_right.png",
-			IMAGE_PATH + "concrete_top.png",
-			IMAGE_PATH + "concrete_bottom.png"
+		std::array<GLuint, 6> textureFiles1 = {
+			_resourcesManager.getTexture("concrete_front")->getTexureID(),
+			_resourcesManager.getTexture("concrete_back")->getTexureID(),
+			_resourcesManager.getTexture("concrete_left")->getTexureID(),
+			_resourcesManager.getTexture("concrete_right")->getTexureID(),
+			_resourcesManager.getTexture("concrete_top")->getTexureID(),
+			_resourcesManager.getTexture("concrete_bottom")->getTexureID()
 		};
+
+		std::array<GLuint, 6> textureFiles2 = {
+			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
+			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
+			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
+			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
+			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
+			_resourcesManager.getTexture("bricks_wall")->getTexureID()
+		};
+
 		_camera->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 		// Créer une source de lumière directionnelle (similaire au soleil)
@@ -143,22 +169,29 @@ bool Game::load() {
 		_scene->addLight(directionalLight);
 
 		// générer un plateau de blocks
-		int plateauWidth = 10;
-		int plateauHeight = 10;
+		int plateauWidth = 40;
+		int plateauHeight = 40;
 		
 		for (int x = -plateauWidth/2; x < plateauWidth/2; x++) {
 			for (int z = -plateauHeight/2; z < plateauHeight/2; z++) {
-				std::shared_ptr<Entity> block = std::make_shared<Block>(glm::vec3(x, 0, z), textureFiles);
+				std::shared_ptr<Entity> block = std::make_shared<Block>(glm::vec3(x, 0, z), textureFiles1);
 				_scene->addEntity(block);
 			}
 		}
 
 		// Créez des blocks
-		std::shared_ptr<Entity> block1 = std::make_shared<Block>(glm::vec3(1, 1, 1), textureFiles);
-		std::shared_ptr<Entity> block2 = std::make_shared<Block>(glm::vec3(2, 2, 2), textureFiles);
-		
-		_scene->addEntity(block1);
-		_scene->addEntity(block2);
+		for (int x = -5; x < 5; x++) {
+			std::shared_ptr<Entity> block1 = std::make_shared<Block>(glm::vec3(x, 1, -6), textureFiles2);
+			_scene->addEntity(block1);
+			std::shared_ptr<Entity> block2 = std::make_shared<Block>(glm::vec3(x, 1, 6), textureFiles2);
+			_scene->addEntity(block2);
+		}
+		for (int y = -6; y < 6; y++) {
+			std::shared_ptr<Entity> block1 = std::make_shared<Block>(glm::vec3(-5, 1, y), textureFiles2);
+			_scene->addEntity(block1);
+			std::shared_ptr<Entity> block2 = std::make_shared<Block>(glm::vec3(5, 1, y), textureFiles2);
+			_scene->addEntity(block2);
+		}
 
 		_isLoad = true;
 
@@ -268,22 +301,22 @@ void Game::run(int argc, char *argv[]) {
 			} else if (event.type == SDL_KEYUP) {
 				switch (event.key.keysym.sym) {
 					case SDLK_z:
-						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::FORWARD);
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::FORWARD);
 						break;
 					case SDLK_s:
-						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::BACKWARD);
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::BACKWARD);
 						break;
 					case SDLK_q:
-						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::LEFT);
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::LEFT);
 						break;
 					case SDLK_d:
-						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::RIGHT);
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::RIGHT);
 						break;
 					case SDLK_LSHIFT:
-						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::DOWN);
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::DOWN);
 						break;
 					case SDLK_SPACE:
-						cameraMovement = static_cast<Face>(cameraMovement & ~Camera::UP);
+						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::UP);
 						break;
 				}
 			}

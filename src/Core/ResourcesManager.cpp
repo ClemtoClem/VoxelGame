@@ -16,32 +16,36 @@ void ResourcesManager::setPaths(const std::string &images_path, const std::strin
     _fontsPath   = fonts_path;
 }
 
-void ResourcesManager::loadTexture(const std::string &name, const std::string &path) {
+bool ResourcesManager::loadTexture(const std::string &name, const std::string &path) {
     std::shared_ptr<Texture> texture = std::make_shared<Texture>();
     if (!texture->loadFromFile(path)) {
-        texture = createDefaultTexture();
-        logError(texture->getError());
-        logError("Failed to load texture: " + name + " from path: " + path);
+        LOG(Error) << "Failed to load texture: " << name << " from path: " << path;
+        return false;
     }
     _resources.push_back({ResourceType::TEXTURE, name, path, texture.get()});
+    return true;
 }
 
-void ResourcesManager::loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath) {
+bool ResourcesManager::loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath) {
     std::shared_ptr<Shader> shader = std::make_shared<Shader>(vertexPath, fragmentPath);
     if (shader->hasError()) {
-        logError(shader->getError());
-        logError("Failed to load shader: " + name + " from vertex path: " + vertexPath + " and fragment path: " + fragmentPath);
+        LOG(Error) << shader->getError();
+        LOG(Error) << "Failed to load shader: " << name << " from vertex path: " << vertexPath << " and fragment path: " << fragmentPath;
+        return false;
     }
     _resources.push_back({ResourceType::SHADER, name, vertexPath + " " + fragmentPath, shader.get()});
+    return true;
 }
 
-void ResourcesManager::loadFont(const std::string &name, const std::string &path) {
+bool ResourcesManager::loadFont(const std::string &name, const std::string &path) {
     std::shared_ptr<Font> font = std::make_shared<Font>();
     if (!font->loadFromFile(path, 24)) {
-        logError(font->getError());
-        logError("Failed to load font: " + name + " from path: " + path);
+        LOG(Error) << font->getError();
+        LOG(Error) << "Failed to load font: " << name << " from path: " << path;
+        return false;
     }
     _resources.push_back({ResourceType::FONT, name, path, font.get()});
+    return true;
 }
 
 std::shared_ptr<Texture> ResourcesManager::getTexture(const std::string &name) {
@@ -50,8 +54,8 @@ std::shared_ptr<Texture> ResourcesManager::getTexture(const std::string &name) {
             return std::shared_ptr<Texture>(static_cast<Texture*>(resource.data));
         }
     }
-    logError("Texture not found: " + name);
-    return createDefaultTexture();
+    LOG(Error) << "Texture not found: " << name;
+    return nullptr;
 }
 
 std::shared_ptr<Shader> ResourcesManager::getShader(const std::string &name) {
@@ -60,7 +64,7 @@ std::shared_ptr<Shader> ResourcesManager::getShader(const std::string &name) {
             return std::shared_ptr<Shader>(static_cast<Shader*>(resource.data));
         }
     }
-    logError("Shader not found: " + name);
+    LOG(Error) << "Shader not found: " << name;
     return nullptr;
 }
 
@@ -70,13 +74,6 @@ std::shared_ptr<Font> ResourcesManager::getFont(const std::string &name) {
             return std::shared_ptr<Font>(static_cast<Font*>(resource.data));
         }
     }
-    logError("Font not found: " + name);
+    LOG(Error) << "Font not found: " << name;
     return nullptr;
-}
-
-std::shared_ptr<Texture> ResourcesManager::createDefaultTexture() {
-    std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-    texture->createEmpty(16, 16);
-    _resources.push_back({ResourceType::TEXTURE, "DefaultTexture", "Default", texture.get()});
-    return texture;
 }
