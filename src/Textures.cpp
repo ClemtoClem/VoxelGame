@@ -1,5 +1,6 @@
 #include "Texture.hpp"
 #include "Logger.hpp"
+#include <sstream>
 
 Texture::Texture()
     : _textureID(0), _isLoaded(false), _width(0), _height(0), _pixels(nullptr) {}
@@ -13,7 +14,10 @@ bool Texture::loadFromFile(const std::string &path) {
 
     SDL_Surface* surface = IMG_Load(path.c_str());
     if (!surface) {
-        LOG(Error) << "Failed to load image: " << path << " - " << IMG_GetError();
+        std::stringstream iss;
+        iss << "Failed to load image: " << path << " - " << IMG_GetError();
+        _error = iss.str();
+
         createDefaultCheckerboardTexture(); // Créer une texture damée par défaut
         updateTexture();
         return false;

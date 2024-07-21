@@ -26,8 +26,14 @@ Shader::~Shader() {
 	glDeleteProgram(_programID);
 }
 
-const std::string &Shader::getError() const {
-    return _error;
+std::string Shader::getError() {
+    std::string str = _error;
+    _error.clear();
+    return str;
+}
+
+bool Shader::hasError() const {
+    return !_error.empty();
 }
 
 void Shader::use() const {
@@ -103,11 +109,12 @@ std::string Shader::loadShaderSource(const std::string &filePath) {
 }
 
 GLuint Shader::compileShader(const std::string &source, GLenum shaderType) {
-	GLuint shader = glCreateShader(shaderType);
-	glShaderSource(shader, 1, &source, NULL);
-	glCompileShader(shader);
-	checkCompileErrors(shader, shaderType == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT");
-	return shader;
+    GLuint shader = glCreateShader(shaderType);
+    const GLchar* shaderCode = source.c_str();
+    glShaderSource(shader, 1, &shaderCode, NULL);
+    glCompileShader(shader);
+    checkCompileErrors(shader, shaderType == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT");
+    return shader;
 }
 
 void Shader::checkCompileErrors(GLuint shader, std::string type) {

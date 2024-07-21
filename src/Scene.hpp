@@ -25,6 +25,8 @@
 #define MAX_POINT_LIGHTS 10
 #define MAX_SPOT_LIGHTS 10
 
+const std::string PATH_SHADERS_3D = "./resources/shaders/";
+
 class Scene {
 public:
 	Scene(std::shared_ptr<Camera> camera);

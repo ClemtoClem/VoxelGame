@@ -1,12 +1,12 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-#include <string>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
 #include <array>
+#include <string>
 #include <memory>
 
 class Texture {
@@ -32,17 +32,25 @@ public:
     int getWidth() const { return _width; }
     int getHeight() const { return _height; }
 
+    std::string getError() {
+        std::string str = _error;
+        _error.clear();
+        return str;
+    }
+
+    bool hasError() const {
+        return !_error.empty();
+    }
+
 private:
     GLuint _textureID;
     bool _isLoaded;
     int _width, _height;
     std::unique_ptr<glm::vec4[]> _pixels; // Utilisation de std::unique_ptr pour gérer dynamiquement les pixels
+    std::string _error;
 
     // Méthode pour libérer la texture
     void free();
-
-    // Méthode pour créer une texture damée rouge et noire
-    void createCheckerboardTexture(int width, int height);
 };
 
 #endif // TEXTURE_HPP

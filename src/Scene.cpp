@@ -6,7 +6,7 @@
 Scene::Scene(std::shared_ptr<Camera> camera) : _camera(camera) {}
 
 bool Scene::init() {
-	_shader3DLight = std::make_shared<Shader>("./shaders/vertex_shader_3d.glsl", "./shaders/fragment_shader_3d.glsl");
+	_shader3DLight = std::make_shared<Shader>(PATH_SHADERS_3D + "vertex_shader_3d.glsl", PATH_SHADERS_3D + "fragment_shader_3d.glsl");
 	const std::string &err2 = _shader3DLight->getError();
 	if (!err2.empty()) {
 		LOG(Error) << err2;
@@ -115,7 +115,7 @@ bool Scene::isEntityInFrustum(std::shared_ptr<Entity> entity, const glm::mat4& v
 }
 
 bool Scene::isPointInFrustum(const glm::vec4 &point) const {
-	return point.x > -point.w && point.x < point.w &&
-		   point.y > -point.w && point.y < point.w &&
-		   point.z > -point.w && point.z < point.w;
+	return point.x > -point.w*1.5 && point.x < point.w*1.5 &&
+		   point.y > -point.w*1.5 && point.y < point.w*1.5 &&
+		   point.z > -point.w*1.5 && point.z < point.w*1.5;
 }

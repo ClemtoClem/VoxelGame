@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 
+const std::string PATH_SHADERS_2D = "./resources/shaders/";
+
 class GUI {
 public:
 	GUI();

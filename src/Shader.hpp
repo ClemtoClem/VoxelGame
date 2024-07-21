@@ -25,7 +25,8 @@ public:
 	
 	~Shader();
 
-	const std::string &getError() const;
+	std::string getError();
+	bool hasError() const;
 
 	// Activation du shader
     void use() const;

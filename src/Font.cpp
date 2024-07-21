@@ -1,15 +1,12 @@
 #include "Font.hpp"
 #include <iostream>
+#include <sstream>
 
 Font::Font() : _font(nullptr) {
-    if (TTF_Init() == -1) {
-        std::cerr << "Failed to initialize SDL_ttf: " << TTF_GetError() << std::endl;
-    }
 }
 
 Font::~Font() {
     free();
-    TTF_Quit();
 }
 
 void Font::free() {
@@ -23,7 +20,9 @@ bool Font::loadFromFile(const std::string &path, int fontSize) {
     free();
     _font = TTF_OpenFont(path.c_str(), fontSize);
     if (!_font) {
-        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+        std::stringstream iss;
+        iss << "Failed to load font: " << TTF_GetError();
+        _error = iss.str();
         return false;
     }
     return true;
@@ -31,7 +30,7 @@ bool Font::loadFromFile(const std::string &path, int fontSize) {
 
 GLuint Font::createText(const std::string &text, const glm::vec4 &color, int &width, int &height) {
     if (!_font) {
-        std::cerr << "Font not loaded!" << std::endl;
+        _error = "Font not loaded!";
         return 0;
     }
 
@@ -43,7 +42,9 @@ GLuint Font::createText(const std::string &text, const glm::vec4 &color, int &wi
     };
     SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), sdlColor);
     if (!surface) {
-        std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
+        std::stringstream iss;
+        iss << "Failed to render text: " << TTF_GetError();
+        _error = iss.str();
         return 0;
     }
 
@@ -62,6 +63,15 @@ GLuint Font::createText(const std::string &text, const glm::vec4 &color, int &wi
 
     glBindTexture(GL_TEXTURE_2D, 0);
     SDL_FreeSurface(surface);
+    return _textureID;
+}
 
-    return textureID;
+std::string Font::getError() {
+    std::string str = _error;
+    _error.clear();
+    return str;
+}
+
+bool Font::hasError() const {
+    return !_error.empty();
 }

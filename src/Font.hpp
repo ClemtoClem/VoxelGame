@@ -15,9 +15,13 @@ public:
     bool loadFromFile(const std::string &path, int fontSize);
     GLuint createText(const std::string &text, const glm::vec4 &color, int &width, int &height);
 
+    std::string getError();
+    bool hasError() const;
+
 private:
     TTF_Font* _font;
     GLuint _textureID;
+    std::string _error;
 
     void free();
 };

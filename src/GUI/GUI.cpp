@@ -13,7 +13,7 @@ GUI::~GUI() {
 }
 
 bool GUI::init() {	
-	_shader2D = std::make_shared<Shader>("./shaders/vertex_shader_2d.glsl", "./shaders/fragment_shader_2d.glsl");
+	_shader2D = std::make_shared<Shader>(PATH_SHADERS_2D + "vertex_shader_2d.glsl", PATH_SHADERS_2D + "fragment_shader_2d.glsl");
 	const std::string &err = _shader2D->getError();
 	if (!err.empty()) {
 		LOG(Error) << err;

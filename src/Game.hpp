@@ -30,8 +30,8 @@
 #include <memory>
 #include <string>
 
-const std::string FONT_PATH = "res/fonts/";
-const std::string IMAGE_PATH = "res/images/";
+const std::string FONT_PATH = "./resources/fonts/";
+const std::string IMAGE_PATH = "./resources/images/";
 
 class Game {
 public:
