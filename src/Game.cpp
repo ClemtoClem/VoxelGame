@@ -6,6 +6,7 @@
 #include "Core/Entities/Block.hpp"
 #include "Core/Entities/Cube.hpp"
 #include "Core/Entities/Stair.hpp"
+#include "Core/Entities/InnerStair.hpp"
 
 #include "GUI/Frame.hpp"
 #include "GUI/Button.hpp"
@@ -28,23 +29,38 @@ bool Game::init(int argc, char *argv[]) {
 	Logger::createInstance().enableWriteInTerminal();
 
 	if (!initSDL()) {
-		LOG(Fatal) << "Failed to initialize SDL" << std::endl;
+		LOG(Fatal) << "Failed to initialize SDL";
 		return false;
 	}
 	if (!initOpenGL()) {
-		LOG(Fatal) << "Failed to initialize OpenGL" << std::endl;
+		LOG(Fatal) << "Failed to initialize OpenGL";
 		return false;
 	}
 
+	// Taille maximale d'un tampon
+	GLint maxBufferSize;
+	glGetIntegerv(GL_MAX_ELEMENT_INDEX, &maxBufferSize);
+	LOG(Info) << "Max element index: " << maxBufferSize;
+
+	// Taille maximale d'un vertex attrib array
+	GLint maxVertexAttribs;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs);
+	LOG(Info) << "Max vertex attribs: " << maxVertexAttribs;
+
+	// Taille maximale d'un vertex attrib stride
+	GLint maxVertexAttribStride;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIB_STRIDE, &maxVertexAttribStride);
+	LOG(Info) << "Max vertex attrib stride: " << maxVertexAttribStride;
+
 	if (!_gui.init()) {
-		LOG(Fatal) << "Failed to initialize GUI" << std::endl;
+		LOG(Fatal) << "Failed to initialize GUI";
 		return false;
 	}
 	
 	_camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 	_scene = std::make_shared<Scene>(_camera);
 	if (!_scene->init()) {
-		LOG(Fatal) << "Failed to initialize scene" << std::endl;
+		LOG(Fatal) << "Failed to initialize scene";
 		return false;
 	}
 
@@ -60,7 +76,7 @@ bool Game::init(int argc, char *argv[]) {
 	result &= _resourcesManager.loadTexture("wood_planks",     IMAGE_PATH + "wood_planks.jpg");
 
 	if (!result) {
-		LOG(Fatal) << "Failed to load resources" << std::endl;
+		LOG(Fatal) << "Failed to load resources";
 		return false;
 	}
 
@@ -86,7 +102,7 @@ bool Game::initSDL() {
 	}
 
 	if (!_window.init() || !_window.createGLContext()) {
-		LOG(Fatal) << "Failed to initialize window" << std::endl;
+		LOG(Fatal) << "Failed to initialize window";
 		return false;
 	}
 
@@ -97,7 +113,7 @@ bool Game::initOpenGL() {
 	glewExperimental = GL_TRUE;
 	GLenum glewError = glewInit();
 	if (glewError != GLEW_OK) {
-		LOG(Fatal) << "Failed to initialize GLEW: " << glewGetErrorString(glewError) << std::endl;
+		LOG(Fatal) << "Failed to initialize GLEW: " << glewGetErrorString(glewError);
 		return false;
 	}
 
@@ -237,11 +253,29 @@ bool Game::load() {
 		for (int i = 0; i<wallWidth; i++) {
 			x = wallX + i;
 			std::shared_ptr<Entity> stair_block1 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY+wallHeight), textures_block3);
-				_scene->addEntity(stair_block1);
+			_scene->addEntity(stair_block1);
 			std::shared_ptr<Entity> stair_block2 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY-1), textures_block3);
-				_scene->addEntity(stair_block2);
+			stair_block2->rotate(180.0f, AxisY); // rotation autour de l'axe y
+			_scene->addEntity(stair_block2);
 
 		}
+
+
+		std::shared_ptr<Entity> inner_stair_block1 = std::make_shared<InnerStair>(glm::vec3(-18,1,-18), textures_block3);
+		inner_stair_block1->rotate(0.0f, AxisY); // rotation autour de l'axe y
+		_scene->addEntity(inner_stair_block1);
+		std::shared_ptr<Entity> inner_stair_block2 = std::make_shared<InnerStair>(glm::vec3(-18,1,-17), textures_block3);
+		inner_stair_block2->rotate(90.0f, AxisY); // rotation autour de l'axe y
+		_scene->addEntity(inner_stair_block2);
+		std::shared_ptr<Entity> inner_stair_block3 = std::make_shared<InnerStair>(glm::vec3(-17,1,-18), textures_block3);
+		inner_stair_block3->rotate(180.0f, AxisY); // rotation autour de l'axe y
+		_scene->addEntity(inner_stair_block3);
+		std::shared_ptr<Entity> inner_stair_block4 = std::make_shared<InnerStair>(glm::vec3(-17,1,-17), textures_block3);
+		inner_stair_block4->rotate(270.0f, AxisY); // rotation autour de l'axe y
+		_scene->addEntity(inner_stair_block4);
+
+
+		_camera->setPosition(glm::vec3(0.0f, 3.0f, 3.0f));
 
 		_isLoad = true;
 
@@ -327,6 +361,14 @@ void Game::run(int argc, char *argv[]) {
 					case SDLK_ESCAPE:
 						_running = false;
 						break;
+					case SDLK_F1:
+						mouseCaptured = !mouseCaptured;
+						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
+						if (mouseCaptured) {
+							_window.warpMouseCenter();
+							firstMouse = true;
+						}
+						break;
 					case SDLK_z:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::FORWARD);
 						break;
@@ -346,12 +388,7 @@ void Game::run(int argc, char *argv[]) {
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::UP);
 						break;
 					case SDLK_e:
-						mouseCaptured = !mouseCaptured;
-						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
-						if (mouseCaptured) {
-							_window.warpMouseCenter();
-							firstMouse = true;
-						}
+						_camera->movementSpeedUp();
 						break;
             	}
 			} else if (event.type == SDL_KEYUP) {
@@ -373,6 +410,9 @@ void Game::run(int argc, char *argv[]) {
 						break;
 					case SDLK_SPACE:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::UP);
+						break;
+					case SDLK_e:
+						_camera->movementSpeedDown();
 						break;
 				}
 			}

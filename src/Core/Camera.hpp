@@ -20,7 +20,8 @@
 // Default camera values
 const float YAW					= -90.0f;
 const float PITCH       		=  0.0f;
-const float MOUSE_SPEED			=  2.5f;
+const float MOVEMENT_LOW_SPEED	=  2.5f;
+const float MOVEMENT_HIGH_SPEED	=  10.0f;
 const float MOUSE_SENSITIVITY	=  0.1f;
 const float ZOOM				=  45.0f;
 
@@ -56,6 +57,15 @@ public:
 	void setMovementSpeed(float movementSpeed);
 	float getMovementSpeed() const;
 
+	void setMovementLowSpeed(float movementLowSpeed);
+	float getMovementLowSpeed() const;
+
+	void setMovementHighSpeed(float movementHighSpeed);
+	float getMovementHighSpeed() const;
+
+	void movementSpeedUp();
+	void movementSpeedDown();
+
 private:
 	void updateCameraVectors();
 
@@ -67,7 +77,7 @@ private:
 
 	float _yaw;
 	float _pitch;
-	float _movementSpeed;
+	float _movementSpeed, _movementLowSpeed, _movementHighSpeed;
 	float _mouseSensitivity;
 	float _zoom;
 };

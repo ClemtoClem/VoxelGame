@@ -65,6 +65,10 @@ inline const std::vector<unsigned int> CUBE_INDICES = {
 	20, 21, 22, 22, 23, 20,
 };
 
+inline const std::vector<unsigned int> CUBE_NUMBER_OF_INDICES_PER_FACE = {
+	6, 6, 6, 6, 6, 6
+};
+
 class Cube : public Block {
 public:
 	Cube(const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> textures);

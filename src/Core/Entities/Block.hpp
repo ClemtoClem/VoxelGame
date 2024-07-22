@@ -33,12 +33,12 @@ public:
 		Object // Fichier .obj
 	};
 
-	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::vector<float> &vertices, const std::vector<unsigned int> &indices);
+	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::vector<float> &vertices, const std::vector<unsigned int> &indice, const std::vector<unsigned int> &numberOfIndicesPerFace);
 	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::string &filename, FormatFile format);
 
 	virtual ~Block();
 
-	bool loadMeshFromObj(const std::string &filename);
+	/*bool loadMeshFromObj(const std::string &filename);*/
 	bool loadMeshFromFile(const std::string &meshFile);
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const override;
@@ -65,7 +65,7 @@ public:
 protected:
 	void free();
 
-	void setupMesh(std::vector<float> vertices, std::vector<unsigned int> indices);
+	void setupMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<unsigned int> numberOfIndicesPerFace);
 
 private:
 	void updateModelMatrix();
@@ -82,6 +82,7 @@ private:
 	glm::mat4 _modelMatrix;
 	std::array<std::shared_ptr<Texture>, 6> _textures;
 	GLuint _vao, _vbo, _ebo;
+	std::vector<unsigned int> _numberOfIndicesPerFace;
 	bool _isMeshSetup;
 };
 

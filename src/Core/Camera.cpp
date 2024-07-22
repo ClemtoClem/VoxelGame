@@ -3,13 +3,15 @@
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	: _position(position), _worldUp(up), _yaw(yaw), _pitch(pitch), 
-	  _movementSpeed(MOUSE_SPEED), _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
+	  _movementSpeed(MOVEMENT_LOW_SPEED), _movementLowSpeed(MOVEMENT_LOW_SPEED), _movementHighSpeed(MOVEMENT_HIGH_SPEED),
+	  _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
 	updateCameraVectors();
 }
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
 	: _position(posX, posY, posZ), _worldUp(upX, upY, upZ), _yaw(yaw), _pitch(pitch),
-	_movementSpeed(MOUSE_SPEED), _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
+	_movementSpeed(MOVEMENT_LOW_SPEED), _movementLowSpeed(MOVEMENT_LOW_SPEED), _movementHighSpeed(MOVEMENT_HIGH_SPEED),
+	_mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
 	updateCameraVectors();
 }
 
@@ -91,6 +93,30 @@ void Camera::setMovementSpeed(float movementSpeed) {
 
 float Camera::getMovementSpeed() const {
 	return _movementSpeed;
+}
+
+void Camera::setMovementLowSpeed(float movementLowSpeed) {
+	_movementLowSpeed = movementLowSpeed;
+}
+
+float Camera::getMovementLowSpeed() const {
+	return _movementLowSpeed;
+}
+
+void Camera::setMovementHighSpeed(float movementHighSpeed) {
+	_movementHighSpeed = movementHighSpeed;
+}
+
+float Camera::getMovementHighSpeed() const {
+	return _movementHighSpeed;
+}
+
+void Camera::movementSpeedUp() {
+	_movementSpeed = _movementHighSpeed;
+}
+
+void Camera::movementSpeedDown() {
+	_movementSpeed = _movementLowSpeed;
 }
 
 void Camera::updateCameraVectors() {

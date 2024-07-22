@@ -7,18 +7,13 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-struct Face {
-	glm::vec3 vertices[4];
-	float texCoords[8];
-	unsigned int indices[6];
-};
-
-struct Material {
-	int diffuse;
-	int specular;
-	int emission;
-	float shininess;
-};
+#define AxisX		glm::vec3(1.0f, 0.0f, 0.0f)
+#define AxisY		glm::vec3(0.0f, 1.0f, 0.0f)
+#define AxisZ		glm::vec3(0.0f, 0.0f, 1.0f)
+#define AxisXY		glm::vec3(1.0f, 1.0f, 0.0f)
+#define AxisXZ		glm::vec3(1.0f, 0.0f, 1.0f)
+#define AxisYZ		glm::vec3(0.0f, 1.0f, 1.0f)
+#define AxisXYZ		glm::vec3(1.0f, 1.0f, 1.0f)
 
 template<typename T>
 T clamp(T value, T min, T max) {
