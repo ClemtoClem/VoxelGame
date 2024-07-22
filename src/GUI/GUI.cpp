@@ -5,6 +5,8 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
+namespace GUI{
+
 GUI::GUI() {}
 
 GUI::~GUI() {
@@ -123,4 +125,6 @@ void GUI::initRenderData() {
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);
+}
+
 }

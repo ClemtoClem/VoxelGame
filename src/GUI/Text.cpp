@@ -5,6 +5,8 @@
 #include <GL/glew.h>
 #include <iostream>
 
+namespace GUI {
+
 Text::Text(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color)
 	: Widget(name), _text(text) {
 	_color = color;
@@ -111,4 +113,6 @@ void Text::render(const Shader &shader2D) const {
 
 		renderChildren(shader2D);
 	}
+}
+
 }

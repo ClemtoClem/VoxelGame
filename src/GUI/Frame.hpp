@@ -7,6 +7,8 @@
 #include <vector>
 #include <memory>
 
+namespace GUI {
+
 class Frame : public Widget {
 public:
 	Frame(const std::string &name);
@@ -20,5 +22,7 @@ public:
 
 private:
 };
+
+}
 
 #endif // FRAME_HPP

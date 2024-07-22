@@ -2,8 +2,10 @@
 #include <stdexcept>
 
 #include "Core/Logger.hpp"
-#include "Core/Block.hpp"
 #include "Core/Color.hpp"
+#include "Core/Entities/Block.hpp"
+#include "Core/Entities/Cube.hpp"
+#include "Core/Entities/Stair.hpp"
 
 #include "GUI/Frame.hpp"
 #include "GUI/Button.hpp"
@@ -22,8 +24,7 @@ Game::~Game() {
 
 bool Game::init(int argc, char *argv[]) {
 	Logger::removeFile();
-	Logger::createInstance();
-	Logger::getInstance().enableWriteInTerminal();
+	Logger::createInstance().enableWriteInTerminal();
 
 	if (!initSDL()) {
 		LOG(Fatal) << "Failed to initialize SDL" << std::endl;
@@ -141,23 +142,43 @@ bool Game::load() {
 
 		// Load game resources
 
-		std::array<GLuint, 6> textureFiles1 = {
-			_resourcesManager.getTexture("concrete_front")->getTexureID(),
-			_resourcesManager.getTexture("concrete_back")->getTexureID(),
-			_resourcesManager.getTexture("concrete_left")->getTexureID(),
-			_resourcesManager.getTexture("concrete_right")->getTexureID(),
-			_resourcesManager.getTexture("concrete_top")->getTexureID(),
-			_resourcesManager.getTexture("concrete_bottom")->getTexureID()
-		};
+		//LOG(Debug) << "Loading game resources...";
 
-		std::array<GLuint, 6> textureFiles2 = {
-			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
-			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
-			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
-			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
-			_resourcesManager.getTexture("bricks_wall")->getTexureID(),
-			_resourcesManager.getTexture("bricks_wall")->getTexureID()
+		std::array<std::shared_ptr<Texture>, 6> textures_block1 = {
+			_resourcesManager.getTexture("concrete_front"),
+			_resourcesManager.getTexture("concrete_back"),
+			_resourcesManager.getTexture("concrete_left"),
+			_resourcesManager.getTexture("concrete_right"),
+			_resourcesManager.getTexture("concrete_top"),
+			_resourcesManager.getTexture("concrete_bottom")
 		};
+		for (auto texture : textures_block1) {
+			throwIfNullptr<std::shared_ptr<Texture>>(texture, "resources is null");
+		}
+
+		std::array<std::shared_ptr<Texture>, 6> textures_block2 = {
+			_resourcesManager.getTexture("bricks_wall"),
+			_resourcesManager.getTexture("bricks_wall"),
+			_resourcesManager.getTexture("bricks_wall"),
+			_resourcesManager.getTexture("bricks_wall"),
+			_resourcesManager.getTexture("bricks_wall"),
+			_resourcesManager.getTexture("bricks_wall")
+		};
+		for (auto texture : textures_block2) {
+			throwIfNullptr<std::shared_ptr<Texture>>(texture, "resources is null");
+		}
+
+		std::array<std::shared_ptr<Texture>, 6> textures_block3 = {
+			_resourcesManager.getTexture("wood_planks"),
+			_resourcesManager.getTexture("wood_planks"),
+			_resourcesManager.getTexture("wood_planks"),
+			_resourcesManager.getTexture("wood_planks"),
+			_resourcesManager.getTexture("wood_planks"),
+			_resourcesManager.getTexture("wood_planks")
+		};
+		for (auto texture : textures_block3) {
+			throwIfNullptr<std::shared_ptr<Texture>>(texture, "resources is null");
+		}
 
 		_camera->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -174,23 +195,51 @@ bool Game::load() {
 		
 		for (int x = -plateauWidth/2; x < plateauWidth/2; x++) {
 			for (int z = -plateauHeight/2; z < plateauHeight/2; z++) {
-				std::shared_ptr<Entity> block = std::make_shared<Block>(glm::vec3(x, 0, z), textureFiles1);
+				std::shared_ptr<Entity> block = std::make_shared<Cube>(glm::vec3(x, 0, z), textures_block1);
 				_scene->addEntity(block);
 			}
 		}
 
-		// Créez des blocks
-		for (int x = -5; x < 5; x++) {
-			std::shared_ptr<Entity> block1 = std::make_shared<Block>(glm::vec3(x, 1, -6), textureFiles2);
-			_scene->addEntity(block1);
-			std::shared_ptr<Entity> block2 = std::make_shared<Block>(glm::vec3(x, 1, 6), textureFiles2);
-			_scene->addEntity(block2);
+		// Créez des murs en briques
+		int wallX = -5;
+		int wallY = -6;
+		int wallZ = 1;
+		int wallWidth = 8;
+		int wallHeight = 8;
+		int wallDepth = 3;
+		int x, y, z;
+		for (int k = 0; k < wallDepth; k++) {
+			z = wallZ + k;
+			for (int i = 1; i<wallWidth-1; i++) {
+				x = wallX + i;
+				std::shared_ptr<Entity> wall_block1 = std::make_shared<Cube>(glm::vec3(x, z, wallY), textures_block2);
+				_scene->addEntity(wall_block1);
+				std::shared_ptr<Entity> wall_block2 = std::make_shared<Cube>(glm::vec3(x, z, wallY+wallHeight-1), textures_block2);
+				_scene->addEntity(wall_block2);
+			}
+			for (int j = 0; j<wallHeight; j++) {
+				y = wallY + j;
+				std::shared_ptr<Entity> wall_block1 = std::make_shared<Cube>(glm::vec3(wallX, z, y), textures_block2);
+				_scene->addEntity(wall_block1);
+				std::shared_ptr<Entity> wall_block2 = std::make_shared<Cube>(glm::vec3(wallX+wallWidth-1, z, y), textures_block2);
+				_scene->addEntity(wall_block2);
+			}
 		}
-		for (int y = -6; y < 6; y++) {
-			std::shared_ptr<Entity> block1 = std::make_shared<Block>(glm::vec3(-5, 1, y), textureFiles2);
-			_scene->addEntity(block1);
-			std::shared_ptr<Entity> block2 = std::make_shared<Block>(glm::vec3(5, 1, y), textureFiles2);
-			_scene->addEntity(block2);
+		for (int i = 1; i<wallWidth-1; i++) {
+			x = wallX + i;
+			for (int j = 0; j<wallHeight; j++) {
+				y = wallY + j;
+				std::shared_ptr<Entity> floor_block = std::make_shared<Cube>(glm::vec3(x, wallZ, y), textures_block3);
+				_scene->addEntity(floor_block);
+			}
+		}
+		for (int i = 0; i<wallWidth; i++) {
+			x = wallX + i;
+			std::shared_ptr<Entity> stair_block1 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY+wallHeight), textures_block3);
+				_scene->addEntity(stair_block1);
+			std::shared_ptr<Entity> stair_block2 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY-1), textures_block3);
+				_scene->addEntity(stair_block2);
+
 		}
 
 		_isLoad = true;

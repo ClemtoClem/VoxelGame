@@ -22,12 +22,17 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Entity.hpp"
-#include "Shader.hpp"
+#include "../Shader.hpp"
+#include "../Texture.hpp"
 
 class Block : public Entity {
 public:
-	Block(const glm::vec3 &position, const std::array<GLuint, 6> textures);
+	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::vector<float> &vertices, const std::vector<unsigned int> &indices);
+	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::string &meshFilename);
+
 	virtual ~Block();
+
+	bool loadMeshFromFile(const std::string &meshFile);
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const override;
 
@@ -50,17 +55,27 @@ public:
 	virtual void update(float dt) override;
 	virtual void render(const Shader &shader) const override;
 
+protected:
+	void free();
+
+	void setupMesh(std::vector<float> vertices, std::vector<unsigned int> indices);
+
 private:
-	void setupMesh();
-	//void loadTextures(const std::array<std::string, 6> &textureFiles);
 	void updateModelMatrix();
+
+	// créer des vertices et indices à partir d'une liste de cuboid
+	/*void createVerticesAndIndicesFromCuboid(const std::vector<std::pair<glm::vec3, glm::vec3>>& cuboids,
+                                    std::vector<float>& vertices,
+                                    std::vector<unsigned int>& indices);
+	*/
 
 	glm::vec3 _position;
 	float _angle;
 	glm::vec3 _rotateAxis;
 	glm::mat4 _modelMatrix;
-	std::array<GLuint, 6> _textures;
+	std::array<std::shared_ptr<Texture>, 6> _textures;
 	GLuint _vao, _vbo, _ebo;
+	bool _isMeshSetup;
 };
 
 #endif // BLOCK_HPP

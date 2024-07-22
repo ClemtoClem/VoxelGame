@@ -1,6 +1,8 @@
 #include "Frame.hpp"
 #include <GL/glew.h>
 
+namespace GUI {
+
 Frame::Frame(const std::string &name) : Widget(name) {}
 
 Frame::Frame(const std::string &name, const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &backgroundColor, const glm::vec4 &borderColor, float borderWidth)
@@ -56,3 +58,4 @@ void Frame::render(const Shader &shader2D) const {
 	}
 }
 
+}

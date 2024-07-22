@@ -3,6 +3,8 @@
 #include "../Core/Color.hpp"
 #include <iostream>
 
+namespace GUI {
+
 Button::Button(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& backgroundColor, const glm::vec4& textColor)
 	: Widget(name), _callback(nullptr) {
 	setBackgroundColor(backgroundColor);
@@ -74,4 +76,6 @@ void Button::render(const Shader &shader2D) const {
 
 		renderChildren(shader2D);
 	}
+}
+
 }

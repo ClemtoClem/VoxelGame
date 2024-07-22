@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 
+namespace GUI {
+
 const std::string PATH_SHADERS_2D = "./resources/shaders/";
 
 class GUI {
@@ -42,5 +44,7 @@ private:
 	int _screenHeight;
 
 };
+
+}
 
 #endif // GUI_HPP

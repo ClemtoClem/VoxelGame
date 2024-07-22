@@ -1,5 +1,5 @@
 /**
- *   __      _   _ _         
+ *    __      _   _ _         
  *   /__\ __ | |_(_) |_ _   _ 
  *  /_\| '_ \| __| | __| | | |
  * //__| | | | |_| | |_| |_| |
@@ -17,18 +17,15 @@
 
 #include <array>
 #include <glm/glm.hpp>
-#include "Shader.hpp"
+#include "../Shader.hpp"
 
 class Entity {
 public:
-    enum Category {
-        NONE,
-        BLOCK,
-        LIGHT,
-        SKYBOX
-    };
-	
+	Entity(const std::string &typeName) : _typeName(typeName) {}
+
 	virtual ~Entity() = default;
+
+	const std::string &getTypeName() const { return _typeName; }
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const = 0;
 
@@ -58,7 +55,8 @@ public:
 	virtual void render(const Shader &shader) const = 0;
 
 protected:
-	Category _category;
+
+	std::string _typeName;
 };
 
 #endif // ENTITY_HPP

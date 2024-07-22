@@ -1,3 +1,16 @@
+/**
+ *    ___           _   
+ *   / __\__  _ __ | |_ 
+ *  / _\/ _ \| '_ \| __|
+ * / / | (_) | | | | |_ 
+ * \/   \___/|_| |_|\__|
+ *
+ * @file Font.hpp
+ * @author @ClemtoClem
+ * @date 09/07/2024
+ * @brief Font class
+ */
+
 #ifndef FONT_HPP
 #define FONT_HPP
 

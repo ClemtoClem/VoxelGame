@@ -1,13 +1,16 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-enum Face {
-    FRONT = 1U,
-    BACK = 2U,
-    LEFT = 4U,
-    RIGHT = 8U,
-    UP = 16U,
-    DOWN = 32U,
+#include <algorithm>
+#include <stdexcept>
+#include <string>
+#include <memory>
+#include <glm/glm.hpp>
+
+struct Face {
+	glm::vec3 vertices[4];
+	float texCoords[8];
+	unsigned int indices[6];
 };
 
 struct Material {
@@ -16,5 +19,28 @@ struct Material {
 	int emission;
 	float shininess;
 };
+
+template<typename T>
+T clamp(T value, T min, T max) {
+	return std::min(std::max(value, min), max);
+}
+
+template<typename T>
+T lerp(T a, T b, float t) {
+	return a + (b - a) * t;
+}
+
+template<typename T>
+T lerp(T a, T b, T c, float t) {
+	return lerp(a, b, t) + lerp(b, c, t) * (1.0f - t);
+}
+
+template<typename T>
+T throwIfNullptr(T value, const std::string &msg) {
+	if (value == nullptr) {
+		throw std::runtime_error(msg);
+	}
+	return value;
+}
 
 #endif // UTILS_HPP

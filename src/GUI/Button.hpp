@@ -6,6 +6,8 @@
 #include <string>
 #include <memory>
 
+namespace GUI {
+
 class Button : public Widget {
 public:
 	Button(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& backgroundColor, const glm::vec4& textColor);
@@ -22,6 +24,9 @@ private:
 	std::function<void()> _callback;
 	std::shared_ptr<Widget> _textWidget;
 };
+
+
+}
 
 #endif // BUTTON_HPP
 

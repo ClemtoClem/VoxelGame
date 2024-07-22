@@ -3,6 +3,8 @@
 #include "../Core/Logger.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
+namespace GUI {
+
 Widget::Widget(const std::string &name)
  : _name(name), _position(0.0f, 0.0f), _size(0.0f, 0.0f),
    _color(Color::WHITE), _hoverColor(Color::WHITE), _backgroundColor(Color::BLACK),
@@ -266,4 +268,6 @@ void Widget::renderChildren(const Shader &shader2D) const {
 	for (auto& widget : _children) {
 		widget->render(shader2D);
 	}
+}
+
 }

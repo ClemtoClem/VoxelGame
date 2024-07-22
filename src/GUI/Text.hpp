@@ -19,6 +19,8 @@
 #include <string>
 #include <memory>
 
+namespace GUI {
+
 class Text : public Widget {
 public:
 	Text(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color);
@@ -37,5 +39,7 @@ private:
 	GLuint _texture;
 	glm::ivec2 _textSize;
 };
+
+}
 
 #endif // TEXT_HPP

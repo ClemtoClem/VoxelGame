@@ -21,6 +21,8 @@
 #include <memory>
 #include "../Core/Shader.hpp"
 
+namespace GUI {
+
 class Widget {
 public:
 	Widget(const std::string &name);
@@ -169,5 +171,7 @@ protected:
 	Widget *_parent = nullptr;
 	std::vector<std::shared_ptr<Widget>> _children;
 };
+
+}
 
 #endif // WIDGET_HPP

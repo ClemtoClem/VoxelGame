@@ -23,17 +23,17 @@ glm::mat4 Camera::getProjectionMatrix(float aspectRatio) const {
 
 void Camera::processKeyboard(float deltaTime, unsigned int movementFlags) {
 	float velocity = _movementSpeed * deltaTime;
-	if (movementFlags & FRONT)
+	if (movementFlags & Movement::FORWARD)
 		_position += _front * velocity;
-	if (movementFlags & BACK)
+	if (movementFlags & Movement::BACKWARD)
 		_position -= _front * velocity;
-	if (movementFlags & LEFT)
+	if (movementFlags & Movement::LEFT)
 		_position -= _right * velocity;
-	if (movementFlags & RIGHT)
+	if (movementFlags & Movement::RIGHT)
 		_position += _right * velocity;
-	if (movementFlags & UP)
+	if (movementFlags & Movement::UP)
 		_position += _up * velocity;     // Déplacement vers le haut
-	if (movementFlags & DOWN)
+	if (movementFlags & Movement::DOWN)
 		_position -= _up * velocity;     // Déplacement vers le bas
 }
 

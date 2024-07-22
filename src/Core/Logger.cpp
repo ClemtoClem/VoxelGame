@@ -17,29 +17,33 @@ Logger::~Logger() {
 }
 
 void Logger::removeFile() {
-	if (std::remove(LOG_FILE)) {
-		LOG(Warning) << "Unable to remove log file";
+	if (std::remove(LOG_FILE) < 0) {
+		if (instance != nullptr) {
+			LOG(Warning) << "Unable to remove log file";
+		} else {
+			std::cerr << "Unable to remove log file" << std::endl;
+		}
 	}
 }
 
-void Logger::createInstance() {
+Logger &Logger::createInstance() {
 	if (instance!= nullptr) {
-		throw std::runtime_error("Logger already initialized");
+		throw std::runtime_error("(1) Logger already initialized");
 	}
 	instance = new Logger();
+	return *instance;
 }
 
-Logger &Logger::getInstance()
-{
+Logger &Logger::getInstance() {
 	if (instance == nullptr) {
-		throw std::runtime_error("Logger not initialized");
+		throw std::runtime_error("(2) Logger not initialized");
 	}
 	return *instance;
 }
 
 Logger &Logger::setInstance(Logger *logger) {
 	if (instance!= nullptr) {
-		throw std::runtime_error("Logger already initialized");
+		throw std::runtime_error("(3) Logger already initialized");
 	}
 	instance = logger;
 	return *instance;

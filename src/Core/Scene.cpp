@@ -55,9 +55,11 @@ void Scene::clearLights() {
 }
 
 void Scene::update(float dt) {
+	//LOG(Debug) << "Update entities...";
     for (auto &entity : _entities) {
 		entity->update(dt);
 	}
+	//LOG(Debug) << "Entities are updated";
 }
 
 void Scene::render(float aspectRatio) const {
@@ -94,11 +96,14 @@ void Scene::render(float aspectRatio) const {
     _shader3DLight->setInt("numSpotLights", spotLightIndex);*/
 
     // Rendu des entités visibles
+	//LOG(Debug) << "Render entities...";
     for (const auto &entity : _entities) {
         if (isEntityInFrustum(entity, viewProjMatrix)) {
+			//LOG(Debug) << "Entitie is in frustrum";
             entity->render(*_shader3DLight);
         }
     }
+	//LOG(Debug) << "Entities are rendered";
 }
 
 bool Scene::isEntityInFrustum(std::shared_ptr<Entity> entity, const glm::mat4& viewProjMatrix) const {

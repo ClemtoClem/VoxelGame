@@ -47,7 +47,7 @@ public:
 
 	static void removeFile();
 	
-	static void createInstance();
+	static Logger &createInstance();
 	static Logger &getInstance();
 	static Logger &setInstance(Logger *logger);
 	static void destroyInstance();

@@ -1,3 +1,16 @@
+/**
+ *    ___      _            
+ *   / __\___ | | ___  _ __ 
+ *  / /  / _ \| |/ _ \| '__|
+ * / /__| (_) | | (_) | |   
+ * \____/\___/|_|\___/|_|   
+ *
+ * @file Color.hpp
+ * @author @ClemtoClem
+ * @date 09/07/2024
+ * @brief Color class
+ */
+
 #ifndef __COLOR_HPP
 #define __COLOR_HPP
 

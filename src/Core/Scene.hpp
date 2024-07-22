@@ -19,7 +19,7 @@
 #include <glm/glm.hpp>
 #include "Camera.hpp"
 #include "Shader.hpp"
-#include "Entity.hpp"
+#include "Entities/Entity.hpp"
 #include "Light.hpp"
 
 #define MAX_POINT_LIGHTS 10

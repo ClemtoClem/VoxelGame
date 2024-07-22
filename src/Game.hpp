@@ -67,7 +67,7 @@ private:
 	bool _running;
 
 	Window _window;
-	GUI    _gui;
+	GUI::GUI    _gui;
 	ResourcesManager _resourcesManager;
 
 	std::shared_ptr<Camera> _camera;
