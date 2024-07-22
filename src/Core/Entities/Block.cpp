@@ -7,13 +7,76 @@ Block::Block(const std::string &typeName, const glm::vec3 &position, const std::
 		setupMesh(vertices, indices);
 }
 
-Block::Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::string &meshFilename)
+Block::Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::string &filename, FormatFile format)
 	: Entity(typeName), _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f), _textures(textures), _isMeshSetup(false) {
-		loadMeshFromFile(meshFilename);
+		
+        bool result = false;
+        switch (format) {
+			case FormatFile::Object:
+				result = loadMeshFromObj(filename);
+				break;
+			case FormatFile::Data:
+				result = loadMeshFromFile(filename);
+				break;
+		}
+        if (!result) {
+            throw std::runtime_error("Failed to load mesh from file: " + filename);
+        }
 }
 
 Block::~Block() {
 	free();
+}
+
+bool Block::loadMeshFromObj(const std::string &filename) {
+	std::vector<float> vertices;
+	std::vector<unsigned int> indices;
+
+	tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn;
+    std::string err;
+
+    // Charger le fichier .obj
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename.c_str(), NULL, true);
+    
+    if (!warn.empty()) {
+        LOG(Warning) << warn << std::endl;
+    }
+
+    if (!err.empty()) {
+        LOG(Error) << err << std::endl;
+    }
+
+    if (!ret) {
+        LOG(Error) << "Failed to load/parse .obj file: " << filename << std::endl;
+        return false;
+    }
+
+    // Parcourir les formes (shapes)
+    for (const auto& shape : shapes) {
+        // Parcourir les indices
+        for (const auto& index : shape.mesh.indices) {
+            // Extraire les vertices
+            vertices.push_back(attrib.vertices[3 * index.vertex_index + 0]);
+            vertices.push_back(attrib.vertices[3 * index.vertex_index + 1]);
+            vertices.push_back(attrib.vertices[3 * index.vertex_index + 2]);
+
+            // Extraire les coordonnées de texture (si elles existent)
+            if (!attrib.texcoords.empty()) {
+                vertices.push_back(attrib.texcoords[2 * index.texcoord_index + 0]);
+                vertices.push_back(attrib.texcoords[2 * index.texcoord_index + 1]);
+            }
+
+            // Ajouter l'indice
+            indices.push_back(indices.size());
+        }
+    }
+
+	setupMesh(vertices, indices);
+
+    return true;
 }
 
 bool Block::loadMeshFromFile(const std::string &filename) {

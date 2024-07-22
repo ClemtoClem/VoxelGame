@@ -11,8 +11,9 @@
 #include "GUI/Button.hpp"
 #include "GUI/Text.hpp"
 
-Game::Game()
- : _isLoad(false), _running(false), _window("OpenGL with SDL2", 800, 600), _gui() {}
+Game::Game() : _isLoad(false), _running(false), _window("OpenGL with SDL2", 800, 600), _gui() {
+	setPerformanceFrequency(60.0f);
+}
 
 Game::~Game() {
 	closeSDL();
@@ -260,6 +261,11 @@ void Game::unload() {
 	}
 }
 
+void Game::setPerformanceFrequency(float frequency) {
+	_performanceFrequency = frequency;
+	_performancePeriod = 1.0f / frequency;
+}
+
 /* - - - - - - - - - - - - - - - - - - - - */
 
 void Game::run(int argc, char *argv[]) {
@@ -289,7 +295,8 @@ void Game::run(int argc, char *argv[]) {
 	_running = true;
 
 	while (_running) {
-		auto startTime = std::chrono::high_resolution_clock::now();
+		Uint64 startTime = SDL_GetTicks64();
+
 		while (SDL_PollEvent(&event) != 0) {
 			if (event.type == SDL_QUIT) {
 				_running = false;
@@ -390,9 +397,10 @@ void Game::run(int argc, char *argv[]) {
 
 		_window.GLSwap();
 
-		SDL_Delay(4);
+		SDL_Delay((deltaTime < _performancePeriod) ? (_performancePeriod - deltaTime) : 0);
 
-		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - startTime).count();
+		Uint64 endTime = SDL_GetTicks64();
+		deltaTime = (endTime - startTime) / 1000.0f;
 	}
 
 	unload();

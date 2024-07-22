@@ -63,11 +63,14 @@ private:
 	bool load();
 	void unload();
 
+	void setPerformanceFrequency(float frequency);
+
+	float _performanceFrequency, _performancePeriod;
 	bool _isLoad;
 	bool _running;
 
-	Window _window;
-	GUI::GUI    _gui;
+	Window   _window;
+	GUI::GUI _gui;
 	ResourcesManager _resourcesManager;
 
 	std::shared_ptr<Camera> _camera;

@@ -24,14 +24,21 @@
 #include "Entity.hpp"
 #include "../Shader.hpp"
 #include "../Texture.hpp"
+#include "../tiny_obj_loader.hpp"
 
 class Block : public Entity {
 public:
+	enum class FormatFile {
+		Data, // Fichier avec les vertices et les indices
+		Object // Fichier .obj
+	};
+
 	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::vector<float> &vertices, const std::vector<unsigned int> &indices);
-	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::string &meshFilename);
+	Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::string &filename, FormatFile format);
 
 	virtual ~Block();
 
+	bool loadMeshFromObj(const std::string &filename);
 	bool loadMeshFromFile(const std::string &meshFile);
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const override;
