@@ -6,7 +6,10 @@ Texture::Texture() : _textureID(0), _isLoaded(false), _width(0), _height(0) {}
 Texture::Texture(int width, int height, const std::vector<glm::vec4> &pixels)
     : _textureID(0), _isLoaded(false), _width(width), _height(height), _pixels(pixels) {
     updateTexture();
-    _isLoaded = true;
+}
+
+Texture::Texture(SDL_Surface *surface) : _textureID(0), _isLoaded(false), _width(0), _height(0) {
+    createFromSurface(surface);
 }
 
 Texture::~Texture() {
@@ -52,6 +55,47 @@ bool Texture::loadFromFile(const std::string &path) {
     SDL_FreeSurface(surface);
 
     LOG(Debug) << "Load texture success";
+    _isLoaded = true;
+    return true;
+}
+
+bool Texture::createFromSurface(SDL_Surface *surface) {
+    if (!surface) {
+        LOG(Error) << "Failed to create texture from surface: " << IMG_GetError();
+        return false;
+    }
+
+    free();
+
+    glGenTextures(1, &_textureID);
+
+	glBindTexture(GL_TEXTURE_2D, _textureID);
+
+    int mode = surface->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, mode, surface->w, surface->h, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
+
+    _pixels.resize(surface->w * surface->h);
+    float alpha = 1.0f;
+    for (int i = 0; i < _width * _height; i++) {
+        if (mode == GL_RGBA) {
+            alpha = static_cast<float>(_pixels[i].a) / 255.0f;
+        }
+        _pixels[i] = glm::vec4(
+            static_cast<float>(_pixels[i].r) / 255.0f,
+            static_cast<float>(_pixels[i].g) / 255.0f,
+            static_cast<float>(_pixels[i].b) / 255.0f,
+            alpha
+        );
+    }
+    
+    // Filtrage
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    LOG(Debug) << "Load texture success";
+    _isLoaded = true;
     return true;
 }
 

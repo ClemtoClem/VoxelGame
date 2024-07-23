@@ -7,7 +7,7 @@
  *             |___/ |___/           
  *
  * @file Logger.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 06/07/2024
  * @brief Logger class
 */

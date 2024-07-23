@@ -7,7 +7,7 @@
  *                      |___/ 
  * 
  * @file Entity.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Entity class
  */
@@ -17,7 +17,9 @@
 
 #include <array>
 #include <glm/glm.hpp>
-#include "../Shader.hpp"
+#include "../Core/Shader.hpp"
+
+namespace Render3D {
 
 class Entity {
 public:
@@ -58,5 +60,7 @@ protected:
 
 	std::string _typeName;
 };
+
+}
 
 #endif // ENTITY_HPP

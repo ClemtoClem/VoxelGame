@@ -1,22 +1,24 @@
 /**
- *   _____                       __ _        _      
- *   \_   \_ __  _ __   ___ _ __/ _\ |_ __ _(_)_ __ 
- *    / /\/ '_ \| '_ \ / _ \ '__\ \| __/ _` | | '__|
- * /\/ /_ | | | | | | |  __/ |  _\ \ || (_| | | |   
- * \____/ |_| |_|_| |_|\___|_|  \__/\__\__,_|_|_|   
+ *  __ _        _      
+ * / _\ |_ __ _(_)_ __ 
+ * \ \| __/ _` | | '__|
+ * _\ \ || (_| | | |   
+ * \__/\__\__,_|_|_|   
  * 
  * @file Stair.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 23/07/2024
  * @brief Stair class
  */
 
-#ifndef INNER_STAIR_HPP
-#define INNER_STAIR_HPP
+#ifndef STAIR_HPP
+#define STAIR_HPP
 
 #include "Block.hpp"
 
-inline const std::vector<float> INNER_STAIR_VERTICES = {
+namespace Render3D {
+
+inline const std::vector<float> STAIR_VERTICES = {
 	// Points (x,y,z)		Texture coords (x,y)
 
 	// Front face
@@ -26,42 +28,26 @@ inline const std::vector<float> INNER_STAIR_VERTICES = {
 	 0.5f,  -0.25f,  0.5f,	1.0f,  0.25f,
 	-0.5f,  -0.25f,  0.5f,	0.0f,  0.25f,
 	//    Step 2
-	-0.25f, -0.25f,  0.25f,	0.25f, 0.25f,
+	-0.5f,  -0.25f,  0.25f,	0.0f,  0.25f,
 	 0.5f,  -0.25f,  0.25f,	1.0f,  0.25f,
 	 0.5f,   0.0f,   0.25f,	1.0f,  0.5f,
-	-0.25f,  0.0f,   0.25f,	0.25f, 0.5f,
+	-0.5f,   0.0f,   0.25f,	0.0f,  0.5f,
 	//    Step 3
-	 0.0f,   0.0f,   0.0f,	0.5f,  0.5f,
+	-0.5f,   0.0f,   0.0f,	0.0f,  0.5f,
 	 0.5f,   0.0f,   0.0f,	1.0f,  0.5f,
 	 0.5f,   0.25f,  0.0f,	1.0f,  0.75f,
-	 0.0f,   0.25f,  0.0f,	0.5f,  0.75f,
+	-0.5f,   0.25f,  0.0f,	0.0f,  0.75f,
 	//    Step 4
-	 0.25f,  0.25f, -0.25f,	0.75f, 0.75f,
+	-0.5f,   0.25f, -0.25f,	0.0f,  0.75f,
 	 0.5f,   0.25f, -0.25f,	1.0f,  0.75f,
 	 0.5f,   0.5f,  -0.25f,	1.0f,  1.0f,
-	 0.25f,  0.5f,  -0.25f,	0.75f, 1.0f,
+	-0.5f,   0.5f,  -0.25f,	0.0f,  1.0f,
 
 	// Back face
-	//    Step 1
 	-0.5f,  -0.5f,  -0.5f,	0.0f,  0.0f,
 	 0.5f,  -0.5f,  -0.5f,	1.0f,  0.0f,
-	 0.5f,  -0.25f, -0.5f,	1.0f,  0.25f,
-	-0.5f,  -0.25f, -0.5f,	0.0f,  0.25f,
-	//    Step 2
-	-0.25f, -0.25f, -0.5f,	0.25f, 0.25f,
-	 0.5f,  -0.25f, -0.5f,	1.0f,  0.25f,
-	 0.5f,   0.0f,  -0.5f,	1.0f,  0.5f,
-	-0.25f,  0.0f,  -0.5f,	0.25f, 0.5f,
-	//    Step 3
-	 0.0f,   0.0f,  -0.5f,	0.5f,  0.5f,
-	 0.5f,   0.0f,  -0.5f,	1.0f,  0.5f,
-	 0.5f,   0.25f, -0.5f,	1.0f,  0.75f,
-	 0.0f,   0.25f, -0.5f,	0.5f,  0.75f,
-	//    Step 4
-	 0.25f,  0.25f, -0.5f,	0.75f, 0.75f,
-	 0.5f,   0.25f, -0.5f,	1.0f,  0.75f,
 	 0.5f,   0.5f,  -0.5f,	1.0f,  1.0f,
-	 0.25f,  0.5f,  -0.5f,	0.75f, 1.0f,
+	-0.5f,   0.5f,  -0.5f,	0.0f,  1.0f,
 
 	// Left face
 	//    Step 1
@@ -116,19 +102,20 @@ inline const std::vector<float> INNER_STAIR_VERTICES = {
 	-0.5f,   0.5f,  -0.25f,	0.0f,  0.25f,
 	//    Step 2
 	-0.5f,   0.25f, -0.25f,	0.0f,  0.25f,
-	 0.25f,  0.25f, -0.25f,	0.75f, 0.25f,
-	 0.25f,  0.25f,  0.0f,	0.75f, 0.5f,
+	 0.5f,   0.25f, -0.25f,	1.0f,  0.25f,
+	 0.5f,   0.25f,  0.0f,	1.0f,  0.5f,
 	-0.5f,   0.25f,  0.0f,	0.0f,  0.5f,
 	//    Step 3
 	-0.5f,   0.0f,   0.0f,	0.0f,  0.5f,
-	 0.0f,   0.0f,   0.0f,	0.5f,  0.5f,
-	 0.0f,   0.0f,   0.25f,	0.5f,  0.75f,
+	 0.5f,   0.0f,   0.0f,	1.0f,  0.5f,
+	 0.5f,   0.0f,   0.25f,	1.0f,  0.75f,
 	-0.5f,   0.0f,   0.25f,	0.0f,  0.75f,
 	//    Step 4
 	-0.5f,  -0.25f,  0.25f,	0.0f,  0.75f,
-	-0.25f, -0.25f,  0.25f,	0.25f, 0.75f,
-	-0.25f, -0.25f,  0.5f,	0.25f, 1.0f,
+	 0.5f,  -0.25f,  0.25f,	1.0f,  0.75f,
+	 0.5f,  -0.25f,  0.5f,	1.0f,  1.0f,
 	-0.5f,  -0.25f,  0.5f,	0.0f,  1.0f,
+
 
 	// Bottom face
 	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,
@@ -137,7 +124,7 @@ inline const std::vector<float> INNER_STAIR_VERTICES = {
 	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,
 };
 
-inline const std::vector<unsigned int> INNER_STAIR_INDICES = {
+inline const std::vector<unsigned int> STAIR_INDICES = {
 	// Front face
 	//    Step 1
 	0, 1, 2, 2, 3, 0,
@@ -149,56 +136,51 @@ inline const std::vector<unsigned int> INNER_STAIR_INDICES = {
 	12, 13, 14, 14, 15, 12,
 
 	// Back face
-    //    Step 1
 	16, 17, 18, 18, 19, 16,
-    //    Step 2
-    21, 22, 22, 23, 20,
-    // Step 3
-    24, 25, 26, 26, 27, 24,
-    // Step 4
-    28, 29, 30, 30, 31, 28,
 
 	// Left face
 	//    Step 1
-    32, 33, 34, 34, 35, 32,
+	20, 21, 22, 22, 23, 20,
 	//    Step 2
-    36, 37, 38, 38, 39, 36,
+	24, 25, 26, 26, 27, 24,
 	//    Step 3
-    40, 41, 42, 42, 43, 40,
+	28, 29, 30, 30, 31, 28,
 	//    Step 4
-    44, 45, 46, 46, 47, 44,
+	32, 33, 34, 34, 35, 32,
 
 	// Right face
 	//    Step 1
-    48, 49, 50, 50, 51, 48,
+	36, 37, 38, 38, 39, 36,
 	//    Step 2
-    52, 53, 54, 54, 55, 52,
+	40, 41, 42, 42, 43, 40,
 	//    Step 3
-    56, 57, 58, 58, 59, 56,
+	44, 45, 46, 46, 47, 44,
 	//    Step 4
-    60, 61, 62, 62, 63, 60,
+	48, 49, 50, 50, 51, 48,
 
 	// Top face
 	//    Step 1
-    64, 65, 66, 66, 67, 64,
+	52, 53, 54, 54, 55, 52,
 	//    Step 2
-    68, 69, 70, 70, 71, 68,
+	56, 57, 58, 58, 59, 56,
 	//    Step 3
-    72, 73, 74, 74, 75, 72,
+	60, 61, 62, 62, 63, 60,
 	//    Step 4
-    76, 77, 78, 78, 79, 76,
+	64, 65, 66, 66, 67, 64,
 
 	// Bottom face
-    80, 81, 82, 82, 83, 80
+	68, 69, 70, 70, 71, 68
 };
 
-inline const std::vector<unsigned int> INNER_STAIR_NUMBER_OF_INDICES_PER_FACE = {
-	24, 24, 24, 24, 24, 6
+inline const std::vector<unsigned int> STAIR_NUMBER_OF_INDICES_PER_FACE = {
+	24, 6, 24, 24, 24, 6
 };
 
-class InnerStair : public Block {
+class Stair : public Block {
 public:
-	InnerStair(const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> textures);
+	Stair(const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> textures);
 };
 
-#endif // INNER_STAIR_HPP
+}
+
+#endif // STAIR_HPP

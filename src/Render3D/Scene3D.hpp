@@ -1,12 +1,12 @@
 /**
- *  __                     
- * / _\ ___ ___ _ __   ___ 
- * \ \ / __/ _ \ '_ \ / _ \
- * _\ \ (_|  __/ | | |  __/
- * \__/\___\___|_| |_|\___|
+ *  __                     _____   ___ 
+ * / _\ ___ ___ _ __   ___|___ /  /   \
+ * \ \ / __/ _ \ '_ \ / _ \ |_ \ / /\ /
+ * _\ \ (_|  __/ | | |  __/___) / /_// 
+ * \__/\___\___|_| |_|\___|____/___,'  
  * 
  * @file Scene.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Scene class
  */
@@ -17,23 +17,35 @@
 #include <vector>
 #include <memory>
 #include <glm/glm.hpp>
-#include "Camera.hpp"
-#include "Shader.hpp"
+#include "../Core/Shader.hpp"
 #include "Entities/Entity.hpp"
+#include "Camera.hpp"
 #include "Light.hpp"
+
+namespace Render3D {
 
 #define MAX_POINT_LIGHTS 10
 #define MAX_SPOT_LIGHTS 10
 
 const std::string PATH_SHADERS_3D = "./resources/shaders/";
 
-class Scene {
+class Scene3D {
 public:
-	Scene(std::shared_ptr<Camera> camera);
+	Scene3D(std::shared_ptr<Camera> camera);
 
 	bool init();
 
 	void reset();
+
+	/// @brief Désactiver la scène
+	void disable();
+
+	/// @brief Activer la scène
+	void enable();
+
+	/// @brief Savoir si la scène est activée
+	/// @return True si la scène est activée, false sinon
+	bool isEnabled() const;
 
 	void addEntity(std::shared_ptr<Entity> entity);
 	void removeEntity(std::shared_ptr<Entity> entity);
@@ -43,6 +55,7 @@ public:
 	void removeLight(std::shared_ptr<Light> light);
 	void clearLights();
 
+	void handleEvent(const SDL_Event& event);
 	void update(float dt);
 	void render(float aspectRatio) const;
 
@@ -54,6 +67,10 @@ private:
 	std::shared_ptr<Shader> _shader3DLight;
 	std::vector<std::shared_ptr<Entity>> _entities;
 	std::vector<std::shared_ptr<Light>> _lights;
+
+	bool _enabled;
 };
+
+}
 
 #endif // SCENE_HPP

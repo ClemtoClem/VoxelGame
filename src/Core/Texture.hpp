@@ -6,7 +6,7 @@
  *  \/   \___/_/\_\\__|\__,_|_|  \___|
  *
  * @file Texture.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Texture class
  */
@@ -27,9 +27,11 @@ class Texture {
 public:
     Texture();
     Texture(int width, int height, const std::vector<glm::vec4> &pixels);
+    Texture(SDL_Surface *surface);
     ~Texture();
 
     bool loadFromFile(const std::string &path);
+    bool createFromSurface(SDL_Surface *surface);
 
     // Méthodes pour créer et modifier une texture arbitraire
     void setPixel(int x, int y, const glm::vec4 &color);
@@ -39,7 +41,7 @@ public:
     void use() const;
 
     // Méthodes d'accès aux propriétés de la texture
-    void create(int width, int height, const glm::vec4 &color = Color::WHITE);
+    void create(int width, int height, const glm::vec4 &color = glm::vec4::WHITE);
     int getWidth() const { return _width; }
     int getHeight() const { return _height; }
     GLuint getTextureID() const { return _textureID; }

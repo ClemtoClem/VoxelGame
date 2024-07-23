@@ -6,7 +6,7 @@
  * \/ \_/\___||___/___/\___/ \__,_|_|  \___\___||___/ \/    \/\__,_|_| |_|\__,_|\__, |\___|_|   
  *                                                                              |___/
  * @file ResourcesManager.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 06/07/2024
  * @brief ResourcesManager class
  */

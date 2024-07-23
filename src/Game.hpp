@@ -6,7 +6,7 @@
  * \____/\__,_|_| |_| |_|\___|
  *
  * @file Game.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 13/07/2024
  * @brief Game class
  */
@@ -26,7 +26,8 @@
 #include "Core/Window.hpp"
 #include "Core/Scene.hpp"
 #include "Core/Utils.hpp"
-#include "GUI/GUI.hpp"
+#include "Render2D/Scene2D.hpp"
+#include "Render3D/Scene3D.hpp"
 
 #include <memory>
 #include <string>
@@ -69,12 +70,12 @@ private:
 	bool _isLoad;
 	bool _running;
 
-	Window   _window;
-	GUI::GUI _gui;
+	Window           _window;
 	ResourcesManager _resourcesManager;
 
 	std::shared_ptr<Camera> _camera;
-	std::shared_ptr<Scene>  _scene;
+	std::shared_ptr<Render3D::Scene3D> _scene3D;
+	std::shared_ptr<Render2D::Scene2D> _scene2D;
 };
 
 #endif // GAME_HPP

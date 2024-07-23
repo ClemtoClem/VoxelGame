@@ -6,7 +6,7 @@
  *   \/  \/ |_|_| |_|\__,_|\___/ \_/\_/   \__/___,'\____/_____/_/\___/ | .__/ \___|_| |_\____/\____/ 
  *                                                                     |_|                           
  * @file Window.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Window class
  */

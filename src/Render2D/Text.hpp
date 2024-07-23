@@ -6,24 +6,25 @@
  *  \/   \___/_/\_\\__|
  *
  * @file Text.cpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  */
 
 #ifndef TEXT_HPP
 #define TEXT_HPP
 
-#include "Widget.hpp"
 #include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <memory>
+#include "../Core/Color.hpp"
+#include "Widget.hpp"
 
-namespace GUI {
+namespace Render2D {
 
 class Text : public Widget {
 public:
-	Text(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color);
+	Text(const std::string &name, std::shared_ptr<Font> font, const std::string& text, const glm::vec4& color = Color::WHITE);
 	~Text();
 
 	void setText(const std::string& text);
@@ -34,10 +35,10 @@ public:
 	virtual void render(const Shader &shader2D) const override;
 
 private:
-	std::string _text;
-	TTF_Font* _font;
-	GLuint _texture;
-	glm::ivec2 _textSize;
+    std::string _text;
+    glm::vec4 _backgroundColor;
+    glm::vec4 _foregroundColor;
+	std::shared_ptr<Font> _font;
 };
 
 }

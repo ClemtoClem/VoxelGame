@@ -6,7 +6,7 @@
  * \____/\__,_|_.__/ \___|
  *
  * @file Cube.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 23/07/2024
  * @brief Cube class
  */
@@ -15,6 +15,8 @@
 #define CUBE_HPP
 
 #include "Block.hpp"
+
+namespace Render3D {
 
 inline const std::vector<float> CUBE_VERTICES = {
 	// Points				Texture coords
@@ -73,5 +75,7 @@ class Cube : public Block {
 public:
 	Cube(const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> textures);
 };
+
+}
 
 #endif // CUBE_HPP

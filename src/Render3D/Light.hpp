@@ -7,7 +7,7 @@
  *         |___/           
  * 
  * @file Light.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 13/07/2024
  * @brief Light class
  */
@@ -18,7 +18,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
-#include "Shader.hpp"
+#include "../Core/Shader.hpp"
+
+namespace Render3D {
 
 class Light {
 public:
@@ -73,5 +75,7 @@ private:
     float _cutOff;
     float _outerCutOff;
 };
+
+}
 
 #endif // LIGHT_HPP

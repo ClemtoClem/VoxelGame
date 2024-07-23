@@ -6,6 +6,11 @@
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
+#include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #define AxisX		glm::vec3(1.0f, 0.0f, 0.0f)
 #define AxisY		glm::vec3(0.0f, 1.0f, 0.0f)
@@ -37,5 +42,8 @@ T throwIfNullptr(T value, const std::string &msg) {
 	}
 	return value;
 }
+
+float modulo2Pi(float value);
+float modulo360(float value);
 
 #endif // UTILS_HPP

@@ -6,7 +6,7 @@
  * \____/\___/|_|\___/|_|   
  *
  * @file Color.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Color class
  */

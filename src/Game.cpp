@@ -3,14 +3,18 @@
 
 #include "Core/Logger.hpp"
 #include "Core/Color.hpp"
-#include "Core/Entities/Block.hpp"
-#include "Core/Entities/Cube.hpp"
-#include "Core/Entities/Stair.hpp"
-#include "Core/Entities/InnerStair.hpp"
 
-#include "GUI/Frame.hpp"
-#include "GUI/Button.hpp"
-#include "GUI/Text.hpp"
+#include "Render3D/Entities/Block.hpp"
+#include "Render3D/Entities/Cube.hpp"
+#include "Render3D/Entities/Stair.hpp"
+#include "Render3D/Entities/InnerStair.hpp"
+
+#include "Render2D/Frame.hpp"
+#include "Render2D/Button.hpp"
+#include "Render2D/Text.hpp"
+
+using namespace Render2D;
+using namespace Render3D;
 
 Game::Game() : _isLoad(false), _running(false), _window("OpenGL with SDL2", 800, 600), _gui() {
 	setPerformanceFrequency(60.0f);
@@ -52,15 +56,15 @@ bool Game::init(int argc, char *argv[]) {
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIB_STRIDE, &maxVertexAttribStride);
 	LOG(Info) << "Max vertex attrib stride: " << maxVertexAttribStride;
 
-	if (!_gui.init()) {
-		LOG(Fatal) << "Failed to initialize GUI";
+	if (!_scene2D->init()) {
+		LOG(Fatal) << "Failed to initialize 2D scene";
 		return false;
 	}
 	
 	_camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
-	_scene = std::make_shared<Scene>(_camera);
-	if (!_scene->init()) {
-		LOG(Fatal) << "Failed to initialize scene";
+	_scene3D = std::make_shared<Scene3D>(_camera);
+	if (!_scene3D->init()) {
+		LOG(Fatal) << "Failed to initialize 3D scene";
 		return false;
 	}
 
@@ -145,7 +149,7 @@ bool Game::load() {
 
 		/*std::shared_ptr<Frame> mainFrame = std::make_shared<Frame>("mainFrame", glm::vec2(5.0f, 5.0f), glm::vec2(120.0f, 100.0f), Color::GRAY3, Color::DARK_GRAY2, 2.0f);
 		mainFrame->setRotation(20.0f);
-		_gui.addChild(mainFrame);
+		_scene2D->addChild(mainFrame);
 
 		std::shared_ptr<Button> button = std::make_shared<Button>("button1", FONT_PATH + "arial.ttf", 24, "Click Me", Color::PURPLE2, Color::WHITE);
 		button->setHoverBackgroundColor(Color::PURPLE1);
@@ -204,7 +208,7 @@ bool Game::load() {
 		glm::vec3 lightDirection = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));  // Direction de la lumière (vers le haut à gauche)
 		glm::vec3 lightColor = glm::vec3(1.0f, 0.8f, 0.6f);  // Couleur jaune orangée
 		directionalLight->SetDirectionalLight(lightDirection, lightColor);
-		_scene->addLight(directionalLight);
+		_scene3D->addLight(directionalLight);
 
 		// générer un plateau de blocks
 		int plateauWidth = 40;
@@ -213,7 +217,7 @@ bool Game::load() {
 		for (int x = -plateauWidth/2; x < plateauWidth/2; x++) {
 			for (int z = -plateauHeight/2; z < plateauHeight/2; z++) {
 				std::shared_ptr<Entity> block = std::make_shared<Cube>(glm::vec3(x, 0, z), textures_block1);
-				_scene->addEntity(block);
+				_scene3D->addEntity(block);
 			}
 		}
 
@@ -230,16 +234,16 @@ bool Game::load() {
 			for (int i = 1; i<wallWidth-1; i++) {
 				x = wallX + i;
 				std::shared_ptr<Entity> wall_block1 = std::make_shared<Cube>(glm::vec3(x, z, wallY), textures_block2);
-				_scene->addEntity(wall_block1);
+				_scene3D->addEntity(wall_block1);
 				std::shared_ptr<Entity> wall_block2 = std::make_shared<Cube>(glm::vec3(x, z, wallY+wallHeight-1), textures_block2);
-				_scene->addEntity(wall_block2);
+				_scene3D->addEntity(wall_block2);
 			}
 			for (int j = 0; j<wallHeight; j++) {
 				y = wallY + j;
 				std::shared_ptr<Entity> wall_block1 = std::make_shared<Cube>(glm::vec3(wallX, z, y), textures_block2);
-				_scene->addEntity(wall_block1);
+				_scene3D->addEntity(wall_block1);
 				std::shared_ptr<Entity> wall_block2 = std::make_shared<Cube>(glm::vec3(wallX+wallWidth-1, z, y), textures_block2);
-				_scene->addEntity(wall_block2);
+				_scene3D->addEntity(wall_block2);
 			}
 		}
 		for (int i = 1; i<wallWidth-1; i++) {
@@ -247,32 +251,32 @@ bool Game::load() {
 			for (int j = 0; j<wallHeight; j++) {
 				y = wallY + j;
 				std::shared_ptr<Entity> floor_block = std::make_shared<Cube>(glm::vec3(x, wallZ, y), textures_block3);
-				_scene->addEntity(floor_block);
+				_scene3D->addEntity(floor_block);
 			}
 		}
 		for (int i = 0; i<wallWidth; i++) {
 			x = wallX + i;
 			std::shared_ptr<Entity> stair_block1 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY+wallHeight), textures_block3);
-			_scene->addEntity(stair_block1);
+			_scene3D->addEntity(stair_block1);
 			std::shared_ptr<Entity> stair_block2 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY-1), textures_block3);
 			stair_block2->rotate(180.0f, AxisY); // rotation autour de l'axe y
-			_scene->addEntity(stair_block2);
+			_scene3D->addEntity(stair_block2);
 
 		}
 
 
 		std::shared_ptr<Entity> inner_stair_block1 = std::make_shared<InnerStair>(glm::vec3(-18,1,-18), textures_block3);
 		inner_stair_block1->rotate(0.0f, AxisY); // rotation autour de l'axe y
-		_scene->addEntity(inner_stair_block1);
+		_scene3D->addEntity(inner_stair_block1);
 		std::shared_ptr<Entity> inner_stair_block2 = std::make_shared<InnerStair>(glm::vec3(-18,1,-17), textures_block3);
 		inner_stair_block2->rotate(90.0f, AxisY); // rotation autour de l'axe y
-		_scene->addEntity(inner_stair_block2);
+		_scene3D->addEntity(inner_stair_block2);
 		std::shared_ptr<Entity> inner_stair_block3 = std::make_shared<InnerStair>(glm::vec3(-17,1,-18), textures_block3);
 		inner_stair_block3->rotate(180.0f, AxisY); // rotation autour de l'axe y
-		_scene->addEntity(inner_stair_block3);
+		_scene3D->addEntity(inner_stair_block3);
 		std::shared_ptr<Entity> inner_stair_block4 = std::make_shared<InnerStair>(glm::vec3(-17,1,-17), textures_block3);
 		inner_stair_block4->rotate(270.0f, AxisY); // rotation autour de l'axe y
-		_scene->addEntity(inner_stair_block4);
+		_scene3D->addEntity(inner_stair_block4);
 
 
 		_camera->setPosition(glm::vec3(0.0f, 3.0f, 3.0f));
@@ -289,8 +293,8 @@ bool Game::load() {
 
 void Game::unload() {
 	if (_isLoad) {
-		_gui.deleteChilden();
-		_scene->reset();
+		_scene2D->reset();
+		_scene3D->reset();
 		_isLoad = false;
 	}
 }
@@ -324,7 +328,7 @@ void Game::run(int argc, char *argv[]) {
 		_window.warpMouseCenter();
 		firstMouse = true;
 	}
-	_gui.setScreenSize(_window.getWidth(), _window.getHeight());
+	_scene2D->setScreenSize(_window.getWidth(), _window.getHeight());
 
 	_running = true;
 
@@ -417,24 +421,29 @@ void Game::run(int argc, char *argv[]) {
 				}
 			}
 
-			_gui.handleEvent(event);
+			_scene2D->handleEvent(event);
+			_scene3D->handleEvent(event);
 		}
 
-		// Mettre à jour la caméra, la scène et les widgets
+		// Mettre à jour la scène 2D
+		_scene2D->update(deltaTime);
+
+		// Mettre à jour la position de la caméra
 		_camera->processKeyboard(deltaTime, cameraMovement);
-		_scene->update(deltaTime);
-		_gui.update(deltaTime);
+		// Mettre à jour la scène 3D
+		_scene3D->update(deltaTime);
 
 		// Effacer le tampon de couleur et le tampon de profondeur
 		glClearColor(Color::SKY_BLUE.r, Color::SKY_BLUE.g, Color::SKY_BLUE.b, Color::SKY_BLUE.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Rendre la scène 3D
-		_scene->render(_window.getRatio());
+		// Rendu de la scène 3D
+		_scene3D->render(_window.getRatio());
 
-		// Rendre l'interface utilisateur
-		_gui.render();
+		// Rendu de la scène 2D
+		_scene2D->render();
 
+		// Échange des buffers et mise à jour de l'écran
 		_window.GLSwap();
 
 		SDL_Delay((deltaTime < _performancePeriod) ? (_performancePeriod - deltaTime) : 0);

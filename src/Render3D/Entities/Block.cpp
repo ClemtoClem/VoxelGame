@@ -1,6 +1,8 @@
 #include "Block.hpp"
-#include "../Logger.hpp"
-#include "../Utils.hpp"
+#include "../CoreLogger.hpp"
+#include "../Core/Utils.hpp"
+
+namespace Render3D {
 
 Block::Block(const std::string &typeName, const glm::vec3 &position, const std::array<std::shared_ptr<Texture>, 6> &textures, const std::vector<float> &vertices, const std::vector<unsigned int> &indices, const std::vector<unsigned int> &numberOfIndicesPerFace)
 	: Entity(typeName), _position(position), _angle(0.0f), _rotateAxis(glm::vec3(0.0f, 1.0f, 0.0f)), _modelMatrix(1.0f), _textures(textures), _isMeshSetup(false) {
@@ -213,7 +215,7 @@ void Block::position(const glm::vec3 &point) {
 }
 
 void Block::rotate(float angle, const glm::vec3 &axis) {
-	_angle = angle;
+	_angle = modulo360(angle);
 	_rotateAxis = glm::normalize(axis);
 }
 
@@ -226,7 +228,7 @@ const float &Block::angle() const {
 }
 
 void Block::angle(float angle) {
-	_angle = angle;
+	_angle = modulo360(angle);
 }
 
 glm::vec3 &Block::rotateAxis() {
@@ -330,4 +332,6 @@ void Block::render(const Shader &shader) const {
 
 		glBindVertexArray(0);
 	}
+}
+
 }

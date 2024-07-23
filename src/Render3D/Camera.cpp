@@ -1,6 +1,8 @@
 #include "Camera.hpp"
 #include "Utils.hpp"
 
+namespace Render3D {
+
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	: _position(position), _worldUp(up), _yaw(yaw), _pitch(pitch), 
 	  _movementSpeed(MOVEMENT_LOW_SPEED), _movementLowSpeed(MOVEMENT_LOW_SPEED), _movementHighSpeed(MOVEMENT_HIGH_SPEED),
@@ -127,4 +129,6 @@ void Camera::updateCameraVectors() {
 	_front = glm::normalize(front);
 	_right = glm::normalize(glm::cross(_front, _worldUp));
 	_up    = glm::normalize(glm::cross(_right, _front));
+}
+
 }

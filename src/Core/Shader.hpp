@@ -6,7 +6,7 @@
  * \__/_| |_|\__,_|\__,_|\___|_|   
  * 
  * @file Shader.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Shader class
  */

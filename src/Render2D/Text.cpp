@@ -5,18 +5,10 @@
 #include <GL/glew.h>
 #include <iostream>
 
-namespace GUI {
+namespace Render2D {
 
-Text::Text(const std::string &name, const std::string& fontPath, int fontSize, const std::string& text, const glm::vec4& color)
-	: Widget(name), _text(text) {
-	_color = color;
-	_backgroundColor = Color::TRANSPARENT;
-	_font = TTF_OpenFont(fontPath.c_str(), fontSize);
-	if (!_font) {
-		std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
-		exit(1);
-	}
-	setText(text);
+Text::Text(const std::string &name, std::shared_ptr<Font> font, const std::string& text, const glm::vec4& color)
+	: Widget(name), _text(text), _backgroundColor(glm::vec4::TRANSPARENT), _foregroundColor(color), _font(font) {
 }
 
 Text::~Text() {
@@ -26,6 +18,13 @@ Text::~Text() {
 	if (_texture) {
 		glDeleteTextures(1, &_texture);
 	}
+}
+
+void Text::initDefaultProperties() {
+	Widget::initDefaultProperties();
+	_properties["text"] = Property(_text);
+	_properties["backgroundColor"] = Property(_backgroundColor);
+	_properties["foregroundColor"] = Property(_foregroundColor);
 }
 
 void Text::setText(const std::string& text) {
@@ -75,44 +74,41 @@ void Text::handleEvent(SDL_Event& evt) {
 }
 
 void Text::update(float dt) {
-	if (_visible) {
-		updateChildren(dt);
-	}
+    if (!_enable) return;
+	updateChildren(dt);
 }
 
 void Text::render(const Shader &shader2D) const {
-	if (_visible) {
-		glm::vec2 pos = getScreenPosition();
-			
-		// Render background
-		// Render the frame (e.g., as a colored rectangle)
-		glm::vec4 bgColor = (_isHovered && _hoverBackgroundColorIsSet) ? _hoverBackgroundColor : _backgroundColor;
-		if (bgColor.a > 0.0f) {
-			shader2D.setVec4("color", bgColor); // Assurez-vous que cette ligne est correcte
-			drawFillRectangle(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), bgColor);
-		}
-
-		// Render border
-		if (_borderWidth > 0.0f && _borderColor.a > 0.0f) {
-			shader2D.setVec4("color", _borderColor); // Assurez-vous que cette ligne est correcte
-			drawRectangle(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), _borderColor, 1/_borderWidth);
-		}
-
-		// Render text
-		glm::vec4 color = (_isHovered && _hoverColorIsSet) ? _hoverColor : _color;
-		if (color.a > 0.0f) {
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, _texture);
-
-			shader2D.setVec4("color", color);
-			shader2D.setInt("textTexture", 0);
-			glColor4f(color.r, color.g, color.b, color.a);
-
-			glDisable(GL_TEXTURE_2D);
-		}
-
-		renderChildren(shader2D);
+    if (!_enable) return;
+		
+	// Render background
+	// Render the frame (e.g., as a colored rectangle)
+	glm::vec4 bgColor = (_isHovered && _hoverBackgroundColorIsSet) ? _hoverBackgroundColor : _backgroundColor;
+	if (bgColor.a > 0.0f) {
+		shader2D.setVec4("color", bgColor); // Assurez-vous que cette ligne est correcte
+		drawFillRectangle(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), bgColor);
 	}
+
+	// Render border
+	if (_borderWidth > 0.0f && _borderColor.a > 0.0f) {
+		shader2D.setVec4("color", _borderColor); // Assurez-vous que cette ligne est correcte
+		drawRectangle(glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), _borderColor, 1/_borderWidth);
+	}
+
+	// Render text
+	glm::vec4 color = (_isHovered && _hoverColorIsSet) ? _hoverColor : _color;
+	if (color.a > 0.0f) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, _texture);
+
+		shader2D.setVec4("color", color);
+		shader2D.setInt("textTexture", 0);
+		glColor4f(color.r, color.g, color.b, color.a);
+
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	renderChildren(shader2D);
 }
 
 }

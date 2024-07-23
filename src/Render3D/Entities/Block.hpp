@@ -6,7 +6,7 @@
  * \_____/_|\___/ \___|_|\_\
  *
  * @file Block.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 23/07/2024
  * @brief Block class
 */
@@ -22,9 +22,10 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Entity.hpp"
-#include "../Shader.hpp"
-#include "../Texture.hpp"
-#include "../tiny_obj_loader.hpp"
+#include "../CoreShader.hpp"
+#include "../Core/Texture.hpp"
+
+namespace Render3D {
 
 class Block : public Entity {
 public:
@@ -85,5 +86,7 @@ private:
 	std::vector<unsigned int> _numberOfIndicesPerFace;
 	bool _isMeshSetup;
 };
+
+}
 
 #endif // BLOCK_HPP

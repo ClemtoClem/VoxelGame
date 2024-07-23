@@ -6,7 +6,7 @@
  * \/   \___/|_| |_|\__|
  *
  * @file Font.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Font class
  */
@@ -15,10 +15,13 @@
 #define FONT_HPP
 
 #include <string>
+#include <memory>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <glm/glm.hpp>
+#include "Texture.hpp"
+#include "Color.hpp"
 
 class Font {
 public:
@@ -28,14 +31,20 @@ public:
     bool hasError() const;
     const std::string &getError() const;
 
-    bool loadFromFile(const std::string &path, int fontSize);
-    GLuint createText(const std::string &text, const glm::vec4 &color, int &width, int &height);
+    bool loadFromFile(const std::string &path);
+    std::shared_ptr<Texture> update(); // créer ou met à jour la texture
+    std::shared_ptr<Texture> getTexture();
 
-    void setSize(int size);
+    void text(const std::string &str);
+    const std::string &text() const;
+
+    void fontSize(int size);
+    int fontSize() const;
+
 private:
     TTF_Font* _font;
-    GLuint _textureID;
-
+    std::shared_ptr<Texture> _texture;
+    int _fontSize;
     std::string _error;
 
     void free();

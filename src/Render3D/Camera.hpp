@@ -6,7 +6,7 @@
  * \____/\__,_|_| |_| |_|\___|_|  \__,_|
  * 
  * @file Camera.hpp
- * @author @ClemtoClem
+ * @author @ClemtoClem (https://github.com/ClemtoClem)
  * @date 09/07/2024
  * @brief Camera class
  */
@@ -16,6 +16,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+namespace Render3D {
 
 // Default camera values
 const float YAW					= -90.0f;
@@ -81,5 +83,7 @@ private:
 	float _mouseSensitivity;
 	float _zoom;
 };
+
+}
 
 #endif // CAMERA_HPP
