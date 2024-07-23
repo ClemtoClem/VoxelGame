@@ -7,7 +7,14 @@
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) : _error("") {
 	std::string vertexCode = loadShaderSource(vertexPath);
+	if (vertexCode.empty()) {
+		return;
+	}
+	
 	std::string fragmentCode = loadShaderSource(fragmentPath);
+	if (fragmentCode.empty()) {
+		return;
+	}
 
 	GLuint vertexShader = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
 	GLuint fragmentShader = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
@@ -99,7 +106,10 @@ std::string Shader::loadShaderSource(const std::string &filePath) {
 	// ouverture du fichier
     shaderFile.open(filePath);
 	if (!shaderFile.is_open()) {
-		LOG(Error) << "SHADER_FILE_NOT_FOUND: " << filePath;
+		std::stringstream ss;
+		ss << "SHADER_FILE_NOT_FOUND: " << filePath;
+		_error = ss.str();
+		return "";
 	}
 	// lecture du fichier et place le contenu dans le flux
     shaderStream << shaderFile.rdbuf();

@@ -7,7 +7,7 @@
  *
  * @file Block.hpp
  * @author @ClemtoClem
- * @date 09/07/2024
+ * @date 23/07/2024
  * @brief Block class
 */
 

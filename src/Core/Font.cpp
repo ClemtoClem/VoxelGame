@@ -9,6 +9,17 @@ Font::~Font() {
     free();
 }
 
+bool Font::hasError() const {
+    return !_error.empty();
+}
+
+const std::string &Font::getError() const
+{
+    std::string err = _error;
+    _error.clear();
+    return err;
+}
+
 void Font::free() {
     if (_font) {
         TTF_CloseFont(_font);
@@ -20,9 +31,9 @@ bool Font::loadFromFile(const std::string &path, int fontSize) {
     free();
     _font = TTF_OpenFont(path.c_str(), fontSize);
     if (!_font) {
-        std::stringstream iss;
-        iss << "Failed to load font: " << TTF_GetError();
-        _error = iss.str();
+        std::stringstream ss;
+        ss << "Failed to load font: " << TTF_GetError();
+        _error = ss.str();
         return false;
     }
     return true;
@@ -30,7 +41,9 @@ bool Font::loadFromFile(const std::string &path, int fontSize) {
 
 GLuint Font::createText(const std::string &text, const glm::vec4 &color, int &width, int &height) {
     if (!_font) {
-        _error = "Font not loaded!";
+        std::stringstream ss;
+        ss << "Font not loaded!";
+        _error = ss.str();
         return 0;
     }
 
@@ -66,12 +79,10 @@ GLuint Font::createText(const std::string &text, const glm::vec4 &color, int &wi
     return _textureID;
 }
 
-std::string Font::getError() {
-    std::string str = _error;
-    _error.clear();
-    return str;
-}
-
-bool Font::hasError() const {
-    return !_error.empty();
+void Font::setSize(int size) {
+    if (!_font) {
+        LOG(Error) << "Font not loaded!";
+        return;
+    }
+    TTF_SetFontSize(_font, size);
 }

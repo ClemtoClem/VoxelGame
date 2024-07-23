@@ -361,14 +361,6 @@ void Game::run(int argc, char *argv[]) {
 					case SDLK_ESCAPE:
 						_running = false;
 						break;
-					case SDLK_F1:
-						mouseCaptured = !mouseCaptured;
-						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
-						if (mouseCaptured) {
-							_window.warpMouseCenter();
-							firstMouse = true;
-						}
-						break;
 					case SDLK_z:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::FORWARD);
 						break;
@@ -381,14 +373,22 @@ void Game::run(int argc, char *argv[]) {
 					case SDLK_d:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::RIGHT);
 						break;
-					case SDLK_LSHIFT:
+					case SDLK_e:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::DOWN);
 						break;
 					case SDLK_SPACE:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement | Camera::UP);
 						break;
-					case SDLK_e:
+					case SDLK_LSHIFT:
 						_camera->movementSpeedUp();
+						break;
+					case SDLK_F1:
+						mouseCaptured = !mouseCaptured;
+						SDL_SetRelativeMouseMode(mouseCaptured ? SDL_TRUE : SDL_FALSE);
+						if (mouseCaptured) {
+							_window.warpMouseCenter();
+							firstMouse = true;
+						}
 						break;
             	}
 			} else if (event.type == SDL_KEYUP) {
@@ -405,13 +405,13 @@ void Game::run(int argc, char *argv[]) {
 					case SDLK_d:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::RIGHT);
 						break;
-					case SDLK_LSHIFT:
+					case SDLK_e:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::DOWN);
 						break;
 					case SDLK_SPACE:
 						cameraMovement = static_cast<Camera::Movement>(cameraMovement & ~Camera::UP);
 						break;
-					case SDLK_e:
+					case SDLK_LSHIFT:
 						_camera->movementSpeedDown();
 						break;
 				}
