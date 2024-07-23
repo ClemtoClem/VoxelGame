@@ -6,11 +6,11 @@
 #include <variant>
 #include <string>
 #include <memory>
+#include <functional>
 #include <glm/glm.hpp>
 #include "../Core/Color.hpp"
 #include "../Core/Texture.hpp"
 #include "../Core/Font.hpp"
-#include <functional>
 
 namespace Render2D {
 
@@ -21,58 +21,29 @@ public:
         WRITE_ONLY,
         READ_WRITE
     };
-    using Value = std::variant<int, unsigned int, float, glm::vec2, Color, std::shared_ptr<Texture>, std::shared_ptr<Font>>;
 
-    Property(const Value& value, std::function<void(const Value&)> updateFunction = nullptr, Access acces = Access::READ_WRITE)
-        : _value(value), _acces(acces), _modified(false), _updateFunction(updateFunction) {}
+    using Value = std::variant<int, unsigned int, float, glm::vec2, glm::vec3, glm::vec4, std::shared_ptr<Texture>, std::shared_ptr<Font>>;
 
-    const Value& getValue() const {
-        if (_acces == Access::READ_WRITE || _acces == Access::READ_ONLY) {
-            return _value;
-        } else {
-            throw std::runtime_error("Property is read-only");
-        }
-    }
+    Property(const Value& value, std::function<void(const Value&)> updateFunction = nullptr, Access access = Access::READ_WRITE);
 
-    void setValue(const Value& value) {
-        if (_acces == Access::READ_WRITE || _acces == Access::WRITE_ONLY) {
-            _value = value;
-            _modified = true;
-        } else {
-            throw std::runtime_error("Property is write-only");
-        }
-    }
+    const Value& getValue() const;
+    void setValue(const Value& value);
 
-    bool isReadable() const {
-        return (_acces == Access::READ_ONLY) || (_acces == Access::READ_WRITE);
-    }
+    bool isReadable() const;
+    bool isWritable() const;
+    bool isModified() const;
 
-    bool isWritable() const {
-        return (acces == Access::WRITE_ONLY) || (_acces == Access::READ_WRITE);
-    }
-
-    bool isModified() const {
-        return _modified;
-    }
-
-    void resetModified() {
-        _modified = false;
-    }
-
-    void update() {
-        if (_updateFunction && _modified) {
-            _updateFunction(_value);
-            _modified = false;
-        }
-    }
+    void resetModified();
+    void update();
 
 private:
     Value _value;
-    Access _acces;
+    Access _access;
     bool _modified;
     std::function<void(const Value&)> _updateFunction;
 };
 
-}
+} // namespace Render2D
 
 #endif // PROPERTY_HPP
+

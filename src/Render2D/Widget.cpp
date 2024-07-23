@@ -20,20 +20,20 @@ Widget::~Widget() {
 }
 
 void Widget::initDefaultProperties() {
-    _properties["position"]     = Property(glm::vec2(0.0f, 0.0f), false, [this](const Property::Value& value) {
+    _properties["position"] = Property(glm::vec2(0.0f, 0.0f), [this](const Property::Value& value) {
         _position = std::get<glm::vec2>(value);
     });
-    _properties["size"]         = Property(glm::vec2(1.0f, 1.0f), false, [this](const Property::Value& value) {
+    _properties["size"] = Property(glm::vec2(1.0f, 1.0f), [this](const Property::Value& value) {
         _size = std::get<glm::vec2>(value);
     });
-    _properties["rotatePoint"]  = Property(glm::vec2(0.5f, 0.5f), false, [this](const Property::Value& value) {
+    _properties["rotatePoint"] = Property(glm::vec2(0.5f, 0.5f), [this](const Property::Value& value) {
         _rotatePoint = std::get<glm::vec2>(value);
     });
-    _properties["angle"]        = Property(0.0f, false, [this](const Property::Value& value) {
+    _properties["angle"] = Property(0.0f, [this](const Property::Value& value) {
         _angle = std::get<float>(value);
     });
-    _properties["center"]       = Property(0.0f, true);
-    _properties["enable"]       = Property(true, false, [this](const Property::Value& value) {
+    _properties["center"] = Property(glm::vec2(0.0f), nullptr, Property::Access::READ_ONLY);
+    _properties["enable"] = Property(true, [this](const Property::Value& value) {
         _enable = std::get<bool>(value);
     });
 }
@@ -61,6 +61,7 @@ Widget::Value &Widget::getProperty(const std::string &property_name) {
 }
 
 void Widget::updateProperties() {
+    _properties["center"].setValue(center());
     for (auto& [name, property] : _properties) {
         if (property.isModified()) {
             property.update();
@@ -202,7 +203,7 @@ void Widget::updateChildren(float dt) {
     }
 }
 
-void Widget::renderChildren(const Shader &shader2D) {
+void Widget::renderChildren(const Shader &shader2D) const {
     for (auto &child : _children) {
         child->render(shader2D);
     }

@@ -16,6 +16,15 @@ Texture::~Texture() {
     free();
 }
 
+void Texture::free() {
+    if (_textureID != 0) {
+        glDeleteTextures(1, &_textureID);
+        _textureID = 0;
+    }
+    _isLoaded = false;
+    _pixels.clear();
+}
+
 bool Texture::loadFromFile(const std::string &path) {
     free();
     
@@ -146,13 +155,4 @@ void Texture::updateTexture() {
 
 void Texture::use() const {
     glBindTexture(GL_TEXTURE_2D, _textureID);
-}
-
-void Texture::free() {
-    if (_textureID != 0) {
-        glDeleteTextures(1, &_textureID);
-        _textureID = 0;
-    }
-    _isLoaded = false;
-    _pixels.clear();
 }

@@ -22,7 +22,8 @@ void Panel::reset() {
 
 void Panel::handleEvent(const SDL_Event &evt) {
     if (!_enable) return;
-    // Handle 
+    // Handle
+    handleEventChildren(evt);
 }
 
 void Panel::update(float dt) {
@@ -38,7 +39,9 @@ void Panel::render(const Shader &shader2D) {
     // Render the panel
 
     // Draw rectangle
-
+    if (_color.a > 0.0f) {
+           
+    }
 
     // Render code here, using _color for the panel color
     renderChildren(shader2D);

@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <memory>
+#include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 #include "../Core/Shader.hpp"
 #include "Entities/Entity.hpp"

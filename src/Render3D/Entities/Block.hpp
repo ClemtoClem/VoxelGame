@@ -22,8 +22,8 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Entity.hpp"
-#include "../CoreShader.hpp"
-#include "../Core/Texture.hpp"
+#include "../../Core/Shader.hpp"
+#include "../../Core/Texture.hpp"
 
 namespace Render3D {
 

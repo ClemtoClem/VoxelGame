@@ -1,5 +1,7 @@
 #include "Light.hpp"
-#include "Shader.hpp"
+#include "../Core/Shader.hpp"
+
+namespace Render3D {
 
 Light::Light() : _type(DIRECTIONAL), _position(glm::vec3(0.0f)), _direction(glm::vec3(0.0f, -1.0f, 0.0f)), _color(glm::vec3(1.0f)), _constant(1.0f), _linear(0.09f), _quadratic(0.032f) {}
 
@@ -124,4 +126,4 @@ void Light::setUniforms(Shader &shader, int index) const {
     }
 }
 
-
+}

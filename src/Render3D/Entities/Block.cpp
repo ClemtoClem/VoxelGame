@@ -1,6 +1,6 @@
 #include "Block.hpp"
-#include "../CoreLogger.hpp"
-#include "../Core/Utils.hpp"
+#include "../../Core/Logger.hpp"
+#include "../../Core/Utils.hpp"
 
 namespace Render3D {
 

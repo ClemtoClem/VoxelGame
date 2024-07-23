@@ -38,20 +38,20 @@ bool Font::loadFromFile(const std::string &path) {
     return true;
 }
 
-std::shared_ptr<Texture> Font::update() {
+std::shared_ptr<Texture> Font::renderText(const std::string &text, const glm::vec4 &color) const {
     if (!_font) {
         _error = "Font not loaded!";
         return nullptr;
     }
 
-    SDL_Color sdlForegroundColor = {
-        static_cast<Uint8>(_foregroundColor.r * 255),
-        static_cast<Uint8>(_foregroundColor.g * 255),
-        static_cast<Uint8>(_foregroundColor.b * 255),
-        static_cast<Uint8>(_foregroundColor.a * 255)
+    SDL_Color sdlcolor = {
+        static_cast<Uint8>(color.r * 255),
+        static_cast<Uint8>(color.g * 255),
+        static_cast<Uint8>(color.b * 255),
+        static_cast<Uint8>(color.a * 255)
     };
 
-    SDL_Surface* surface = TTF_RenderText_Blended(_font, _text.c_str(), sdlForegroundColor);
+    SDL_Surface* surface = TTF_RenderText_Blended(_font, _text.c_str(), sdlcolor);
     if (!surface) {
         _error = "Failed to render text: " + std::string(TTF_GetError());
         return nullptr;
@@ -61,18 +61,6 @@ std::shared_ptr<Texture> Font::update() {
     SDL_FreeSurface(surface);
 
     return _texture;
-}
-
-std::shared_ptr<Texture> Font::getTexture() {
-    return _texture;
-}
-
-void Font::text(const std::string &str) {
-    _text = str;
-}
-
-const std::string &Font::text() const {
-    return _text;
 }
 
 void Font::fontSize(int size) {

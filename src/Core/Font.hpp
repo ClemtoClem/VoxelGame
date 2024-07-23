@@ -32,18 +32,13 @@ public:
     const std::string &getError() const;
 
     bool loadFromFile(const std::string &path);
-    std::shared_ptr<Texture> update(); // créer ou met à jour la texture
-    std::shared_ptr<Texture> getTexture();
-
-    void text(const std::string &str);
-    const std::string &text() const;
+    std::shared_ptr<Texture> renderText(const std::string &text, const glm::vec4 &color) const;
 
     void fontSize(int size);
     int fontSize() const;
 
 private:
     TTF_Font* _font;
-    std::shared_ptr<Texture> _texture;
     int _fontSize;
     std::string _error;
 

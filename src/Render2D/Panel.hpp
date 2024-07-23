@@ -14,7 +14,7 @@ class Panel : public Widget {
 public:
     Panel(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
 
-    void initDefaultProperties() override;
+	void initDefaultProperties() override;
     void reset() override;
 
     void handleEvent(const SDL_Event &evt) override;

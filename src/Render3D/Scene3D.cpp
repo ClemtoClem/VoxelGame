@@ -1,7 +1,7 @@
 #include "Scene3D.hpp"
 #include <algorithm> // pour std::remove
 #include <glm/gtc/matrix_transform.hpp>
-#include "Logger.hpp"
+#include "../Core/Logger.hpp"
 
 namespace Render3D {
 

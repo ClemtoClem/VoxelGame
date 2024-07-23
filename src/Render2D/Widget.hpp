@@ -69,14 +69,14 @@ public:
     void deleteChild(const std::string &name);
     void deleteChildren();
 
-    virtual void handleEvent(const SDL_Event &evt) = 0;
+    virtual void handleEvent(SDL_Event& evt) = 0;
     virtual void update(float dt) = 0;
-    virtual void render(const Shader &shader2D) = 0;
+    virtual void render(const Shader &shader2D) const = 0;
 
 protected:
     void handleEventChildren(const SDL_Event &evt);
     void updateChildren(float dt);
-    void renderChildren(const Shader &shader2D);
+    void renderChildren(const Shader &shader2D) const;
 
     void updateProperties();
 
@@ -92,6 +92,6 @@ protected:
     std::map<std::string, Property> _properties;
 };
 
-}
+} // namespace Render2D
 
 #endif // WIDGET_HPP

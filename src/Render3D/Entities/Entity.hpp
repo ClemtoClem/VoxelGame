@@ -17,7 +17,7 @@
 
 #include <array>
 #include <glm/glm.hpp>
-#include "../Core/Shader.hpp"
+#include "../../Core/Shader.hpp"
 
 namespace Render3D {
 

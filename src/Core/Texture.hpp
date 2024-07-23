@@ -29,6 +29,9 @@ public:
     Texture(int width, int height, const std::vector<glm::vec4> &pixels);
     Texture(SDL_Surface *surface);
     ~Texture();
+    
+    // Méthode pour libérer la texture
+    void free();
 
     bool loadFromFile(const std::string &path);
     bool createFromSurface(SDL_Surface *surface);
@@ -41,7 +44,7 @@ public:
     void use() const;
 
     // Méthodes d'accès aux propriétés de la texture
-    void create(int width, int height, const glm::vec4 &color = glm::vec4::WHITE);
+    void create(int width, int height, const glm::vec4 &color = Color::WHITE);
     int getWidth() const { return _width; }
     int getHeight() const { return _height; }
     GLuint getTextureID() const { return _textureID; }
@@ -51,9 +54,6 @@ private:
     bool _isLoaded;
     int _width, _height;
     std::vector<glm::vec4> _pixels;
-    
-    // Méthode pour libérer la texture
-    void free();
 };
 
 #endif // TEXTURE_HPP

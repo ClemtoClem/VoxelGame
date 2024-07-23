@@ -31,7 +31,9 @@ void Button::handleEvent(const SDL_Event &evt) {
 
 void Button::update(float dt) {
     if (!_enable) return;
-    // Mettre à jour les propriétés spécifiques au bouton ici
+    // Update properties
+    updateProperties();
+    updateChildren(dt);
 }
 
 void Button::render(const Shader &shader2D) {
