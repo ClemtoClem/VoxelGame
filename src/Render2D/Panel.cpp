@@ -3,14 +3,14 @@
 
 namespace Render2D {
 
-Panel::Panel(const std::string &name, std::shared_ptr<Widget> parent)
+Panel::Panel(const std::string &name, WidgetPtr parent)
 	: Widget(name, parent), _color(Color::WHITE), _border_color(Color::BLACK), _border_width(0) {
 	initDefaultProperties();
 }
 
 void Panel::initDefaultProperties() {
 	Widget::initDefaultProperties();
-	setProperty("color", _color, Property::Access::READ_WRITE,
+	createProperty("color", _color, Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_color = std::get<glm::vec4>(value);
 		},
@@ -19,7 +19,7 @@ void Panel::initDefaultProperties() {
 		}
 	);
 
-	setProperty("border_color", _color, Property::Access::READ_WRITE,
+	createProperty("border_color", _color, Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_border_color = std::get<glm::vec4>(value);
 		},
@@ -27,7 +27,7 @@ void Panel::initDefaultProperties() {
 			return _border_color;
 		}
 	);
-	setProperty("border_width", _color, Property::Access::READ_WRITE,
+	createProperty("border_width", _color, Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_border_width = std::get<int>(value);
 		},
@@ -44,6 +44,30 @@ void Panel::reset() {
 	_border_width = 1;
 }
 
+void Panel::setColor(const glm::vec4 &color) {
+	_color = color;
+}
+
+void Panel::setBorderColor(const glm::vec4 &color) {
+	_border_color = color;
+}
+
+void Panel::setBorderWidth(int width) {
+	_border_width = width;
+}
+
+glm::vec4 Panel::getColor() const {
+    return _color;
+}
+
+glm::vec4 Panel::getBorderColor() const {
+    return _border_color;
+}
+
+int Panel::getBorderWidth() const {
+    return _border_width;
+}
+
 void Panel::handleEvent(const SDL_Event &evt) {
 	if (!_enable) return;
 	// Handle
@@ -52,13 +76,11 @@ void Panel::handleEvent(const SDL_Event &evt) {
 
 void Panel::update(float dt) {
 	if (!_enable) return;
-	// Update properties
-	updateProperties();
 	updateChildren(dt);
 	
 }
 
-void Panel::render(const Shader &shader2D) {
+void Panel::render(const Shader &shader2D) const {
 	if (!_enable) return;
 	// Render the panel
 

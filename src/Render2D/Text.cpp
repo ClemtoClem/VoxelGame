@@ -7,9 +7,13 @@
 
 namespace Render2D {
 
-Text::Text(const std::string &name, std::shared_ptr<Font> font, const std::string& text, const glm::vec4& color)
-	: Widget(name), _text(text), _color(color), _font(font) {
-	_texture = _font->renderText(_text, Color::WHITE);
+Text::Text(const std::string &name, WidgetPtr parent, FontPtr font, const std::string& text, const glm::vec4& color)
+ : Widget(name, parent), _text(text), _color(color), _font(font) {
+	if (!_font) {
+		_texture = _font->renderText(_text, Color::WHITE);
+	}
+	
+	initDefaultProperties();
 }
 
 Text::~Text() {
@@ -17,7 +21,7 @@ Text::~Text() {
 
 void Text::initDefaultProperties() {
 	Widget::initDefaultProperties();
-	_properties["text"] = Property(_text, Property::Access::READ_WRITE,
+	createProperty("text", _text, Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
 			setText(std::get<std::string>(value));
 		},
@@ -25,7 +29,7 @@ void Text::initDefaultProperties() {
 			return _text;
 		}
 	);
-	_properties["color"] = Property(_color, Property::Access::READ_WRITE,
+	createProperty("color", _color, Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
 			_color = std::get<glm::vec4>(value);
 		},
@@ -33,19 +37,17 @@ void Text::initDefaultProperties() {
 			return _color;
 		}
 	);
-
 }
 
 void Text::reset() {
 	Widget::reset();
-	_text = "";
-	_color = Color::WHITE;
-	_texture = nullptr;
 }
 
 void Text::setText(const std::string& text) {
 	_text = text;
-	_texture = _font->renderText(_text, Color::WHITE);
+	if (!_font) {
+		_texture = _font->renderText(_text, Color::WHITE);
+	}
 }
 
 void Text::handleEvent(const SDL_Event& evt) {
@@ -55,7 +57,6 @@ void Text::handleEvent(const SDL_Event& evt) {
 
 void Text::update(float dt) {
 	if (!_enable) return;
-	updateProperties();
 	updateChildren(dt);
 }
 

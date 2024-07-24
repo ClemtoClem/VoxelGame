@@ -135,6 +135,8 @@ private:
 
 };
 
+using Scene2DPtr = std::shared_ptr<Scene2D>;
+
 }
 
 #endif // SCENE_2D_HPP

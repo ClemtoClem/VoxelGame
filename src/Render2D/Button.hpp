@@ -13,19 +13,19 @@ namespace Render2D {
 
 class Button : public Widget {
 public:
-	Button(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
+	Button(const std::string &name, WidgetPtr parent = nullptr);
 
-	void initDefaultProperties() ;
-	void reset() ;
-
-	void handleEvent(const SDL_Event &evt) ;
-	void update(float dt) ;
-	void render(const Shader &shader2D) ;
+	void initDefaultProperties();
+	void reset();
 
 	void setText(const std::string &text);
 	void setFont(const std::shared_ptr<Font> &font);
 	void setTextColor(const glm::vec4 &color);
 	void setBackgroundColor(const glm::vec4 &color);
+
+	void handleEvent(const SDL_Event &evt) override;
+	void update(float dt) override;
+	void render(const Shader &shader2D) const override;
 
 private:
 	std::shared_ptr<Panel> _background;

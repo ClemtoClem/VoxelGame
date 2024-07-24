@@ -19,7 +19,7 @@ void ResourcesManager::setPaths(const std::string &images_path, const std::strin
 }
 
 bool ResourcesManager::loadTexture(const std::string &name, const std::string &path) {
-	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+	TexturePtr texture = std::make_shared<Texture>();
 	if (!texture->loadFromFile(path)) {
 		LOG(Error) << "Failed to load texture: " << name << " from path: " << path;
 		return false;
@@ -40,7 +40,7 @@ bool ResourcesManager::loadShader(const std::string &name, const std::string &ve
 }
 
 bool ResourcesManager::loadFont(const std::string &name, const std::string &path) {
-	std::shared_ptr<Font> font = std::make_shared<Font>();
+	FontPtr font = std::make_shared<Font>();
 	if (!font->loadFromFile(path, 24)) {
 		LOG(Error) << font->getError();
 		LOG(Error) << "Failed to load font: " << name << " from path: " << path;
@@ -50,7 +50,7 @@ bool ResourcesManager::loadFont(const std::string &name, const std::string &path
 	return true;
 }
 
-std::shared_ptr<Texture> ResourcesManager::getTexture(const std::string &name) {
+TexturePtr ResourcesManager::getTexture(const std::string &name) {
 	for (auto &resource : _resources) {
 		if (resource.type == ResourceType::TEXTURE && resource.name == name) {
 			return std::static_pointer_cast<Texture>(resource.data);
@@ -70,7 +70,7 @@ std::shared_ptr<Shader> ResourcesManager::getShader(const std::string &name) {
 	return nullptr;
 }
 
-std::shared_ptr<Font> ResourcesManager::getFont(const std::string &name) {
+FontPtr ResourcesManager::getFont(const std::string &name) {
 	for (auto &resource : _resources) {
 		if (resource.type == ResourceType::FONT && resource.name == name) {
 			return std::static_pointer_cast<Font>(resource.data);

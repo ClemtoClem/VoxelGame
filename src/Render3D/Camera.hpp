@@ -14,6 +14,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -83,6 +84,8 @@ private:
 	float _mouseSensitivity;
 	float _zoom;
 };
+
+using CameraPtr = std::shared_ptr<Camera>;
 
 }
 

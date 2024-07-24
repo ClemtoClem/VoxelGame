@@ -70,12 +70,12 @@ private:
 	bool _isLoad;
 	bool _running;
 
-	Window		   _window;
-	ResourcesManager _resourcesManager;
+	Window		         _window;
+	ResourcesManager     _resourcesManager;
 
-	std::shared_ptr<Camera> _camera;
-	std::shared_ptr<Render3D::Scene3D> _scene3D;
-	std::shared_ptr<Render2D::Scene2D> _scene2D;
+	Render3D::CameraPtr  _camera;
+	Render3D::Scene3DPtr _scene3D;
+	Render2D::Scene2DPtr _scene2D;
 };
 
 #endif // GAME_HPP

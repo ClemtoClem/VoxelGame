@@ -32,7 +32,7 @@ public:
 	const std::string &getError() const;
 
 	bool loadFromFile(const std::string &path);
-	std::shared_ptr<Texture> renderText(const std::string &text, const glm::vec4 &color) const;
+	TexturePtr renderText(const std::string &text, const glm::vec4 &color) const;
 
 	void fontSize(int size);
 	int fontSize() const;
@@ -44,5 +44,7 @@ private:
 
 	void free();
 };
+
+using FontPtr = std::shared_ptr<Font>;
 
 #endif // FONT_HPP

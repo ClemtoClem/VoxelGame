@@ -38,7 +38,7 @@ bool Font::loadFromFile(const std::string &path) {
 	return true;
 }
 
-std::shared_ptr<Texture> Font::renderText(const std::string &text, const glm::vec4 &color) const {
+TexturePtr Font::renderText(const std::string &text, const glm::vec4 &color) const {
 	if (!_font) {
 		_error = "Font not loaded!";
 		return nullptr;

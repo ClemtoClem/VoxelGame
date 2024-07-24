@@ -140,32 +140,21 @@ void Game::closeSDL() {
 /* - - - - - - - - - - - - - - - - - - - - */
 
 bool Game::load() {
+	if (_isLoad) {
+		unload();
+	}
+
+	// Load gui
+
+		
+
+	// Load game resources
+
+	std::array<TexturePtr, 6> textures_block1;
+	std::array<TexturePtr, 6> textures_block2;
+	std::array<TexturePtr, 6> textures_block3;
 	try {
-		if (_isLoad) {
-			unload();
-		}
-
-		// Load gui
-
-		/*std::shared_ptr<Frame> mainFrame = std::make_shared<Frame>("mainFrame", glm::vec2(5.0f, 5.0f), glm::vec2(120.0f, 100.0f), Color::GRAY3, Color::DARK_GRAY2, 2.0f);
-		mainFrame->setRotation(20.0f);
-		_scene2D->addChild(mainFrame);
-
-		std::shared_ptr<Button> button = std::make_shared<Button>("button1", FONT_PATH + "arial.ttf", 24, "Click Me", Color::PURPLE2, Color::WHITE);
-		button->setHoverBackgroundColor(Color::PURPLE1);
-		button->setPosition(glm::vec2(5.0f, 5.0f));
-		button->setSize(glm::vec2(110.0f, 30.0f));
-		button->setCallback([]() {
-			std::cout << "Button clicked!" << std::endl;
-		});
-
-		mainFrame->addChild(button);*/
-
-		// Load game resources
-
-		//LOG(Debug) << "Loading game resources...";
-
-		std::array<std::shared_ptr<Texture>, 6> textures_block1 = {
+		textures_block1 = {
 			_resourcesManager.getTexture("concrete_front"),
 			_resourcesManager.getTexture("concrete_back"),
 			_resourcesManager.getTexture("concrete_left"),
@@ -174,10 +163,10 @@ bool Game::load() {
 			_resourcesManager.getTexture("concrete_bottom")
 		};
 		for (auto texture : textures_block1) {
-			throwIfNullptr<std::shared_ptr<Texture>>(texture, "resources is null");
+			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
 
-		std::array<std::shared_ptr<Texture>, 6> textures_block2 = {
+		textures_block2 = {
 			_resourcesManager.getTexture("bricks_wall"),
 			_resourcesManager.getTexture("bricks_wall"),
 			_resourcesManager.getTexture("bricks_wall"),
@@ -186,10 +175,10 @@ bool Game::load() {
 			_resourcesManager.getTexture("bricks_wall")
 		};
 		for (auto texture : textures_block2) {
-			throwIfNullptr<std::shared_ptr<Texture>>(texture, "resources is null");
+			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
 
-		std::array<std::shared_ptr<Texture>, 6> textures_block3 = {
+		textures_block3 = {
 			_resourcesManager.getTexture("wood_planks"),
 			_resourcesManager.getTexture("wood_planks"),
 			_resourcesManager.getTexture("wood_planks"),
@@ -198,9 +187,20 @@ bool Game::load() {
 			_resourcesManager.getTexture("wood_planks")
 		};
 		for (auto texture : textures_block3) {
-			throwIfNullptr<std::shared_ptr<Texture>>(texture, "resources is null");
+			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
+	} catch(const CustomException& e) {
+		e.generateLog();
+		if (e.getLevel() == Fatal) {
+			LOG(Fatal) << "Failed to load game resources";
+			return false;
+		}
+	}
 
+
+	// Load scene
+
+	try {
 		_camera->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 		// Créer une source de lumière directionnelle (similaire au soleil)
@@ -278,17 +278,17 @@ bool Game::load() {
 		inner_stair_block4->rotate(270.0f, AxisY); // rotation autour de l'axe y
 		_scene3D->addEntity(inner_stair_block4);
 
-
 		_camera->setPosition(glm::vec3(0.0f, 3.0f, 3.0f));
-
-		_isLoad = true;
-
-		LOG(Debug) << "Load game success!";
-	} catch (std::exception &e) {
-		LOG(Error) << "Load game failed: " << e.what();
+	} catch (const CustomException& e) {
+		e.generateLog();
+		if (e.getLevel() == Fatal) {
+			LOG(Fatal) << "Failed to load scene";
+			return false;
+		}
 	}
-	
-	return _isLoad;
+
+	_isLoad = true;
+	return true;
 }
 
 void Game::unload() {

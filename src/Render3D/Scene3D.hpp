@@ -72,6 +72,8 @@ private:
 	bool _enabled;
 };
 
+using Scene3DPtr = std::shared_ptr<Scene3D>;
+
 }
 
 #endif // SCENE_HPP

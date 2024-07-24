@@ -1,18 +1,17 @@
-#include "Widget.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 #include "../Core/Color.hpp"
 #include "../Core/Logger.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+#include "../Core/Utils.hpp"
+#include "Property.hpp"
+#include "Widget.hpp"
 
 namespace Render2D {
-
-#include "Widget.hpp"
 
 Widget::Widget(const std::string &name, std::shared_ptr<Widget> parent)
 	: _name(name), _parent(parent), _position(0.0f), _size(1.0f), _rotatePoint(0.5f), _angle(0.0f), _enable(true) {
 	if (parent) {
 		parent->addChild(shared_from_this());
 	}
-	initDefaultProperties();
 }
 
 Widget::~Widget() {
@@ -24,23 +23,25 @@ const std::string &Widget::getName() const {
 }
 
 void Widget::initDefaultProperties() {
-	_properties["position"] = Property(glm::vec2(0.0f, 0.0f), Property::Access::READ_WRITE,
+	createProperty("position", glm::vec2(0.0f, 0.0f), Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
 			_position = std::get<glm::vec2>(value);
 		},
 		[this]() {
 			return _position;
-		}
+		},
+		false
 	);
-	_properties["size"] = Property(glm::vec2(1.0f, 1.0f), Property::Access::READ_WRITE,
+	createProperty("size", glm::vec2(1.0f, 1.0f), Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
-			_size = std::get<glm::vec2>(value);
+			setSize(std::get<glm::vec2>(value));
 		},
 		[this]() {
 			return _size;
-		}
+		},
+		false
 	);
-	_properties["rotatePoint"] = Property(glm::vec2(0.5f, 0.5f), Property::Access::READ_WRITE,
+	createProperty("rotatePoint", glm::vec2(0.5f, 0.5f), Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
 			_rotatePoint = std::get<glm::vec2>(value);
 		},
@@ -48,20 +49,21 @@ void Widget::initDefaultProperties() {
 			return _rotatePoint;
 		}
 	);
-	_properties["angle"] = Property(0.0f, Property::Access::READ_WRITE,
+	createProperty("angle", 0.0f, Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
-			_angle = std::get<float>(value);
+			setAngle(std::get<float>(value));
 		},
 		[this]() {
 			return _angle;
 		}
 	);
-	_properties["center"] = Property(glm::vec2(0.0f), Property::Access::READ_ONLY, nullptr,
+	createProperty("center", getCenter(), Property::Access::READ_ONLY, nullptr,
 		[this]() {
-			return center();
-		}
+			return getCenter();
+		},
+		false
 	);
-	_properties["enable"] = Property(true, Property::Access::READ_WRITE,
+	createProperty("enable", true, Property::Access::READ_WRITE,
 		[this](const Property::Value& value) {
 			_enable = std::get<bool>(value);
 		},
@@ -72,84 +74,93 @@ void Widget::initDefaultProperties() {
 }
 
 void Widget::reset() {
-	//_position = glm::vec2(0.0f);
-	//_size = glm::vec2(1.0f);
-	_rotatePoint = glm::vec2(0.5f);
-	_angle = 0.0f;
-	_enable = true;
+	resetProperties();
 }
 
-void Widget::setProperty(const std::string &property_name, const Property::Value &value, std::function<void(const Property::Value&)> updateFunction, Property::Access access) {
+void Widget::createProperty(const std::string &property_name, const Property::Value &default_value, Property::Access access, std::function<void(const Property::Value&)> setterFunction, std::function<Property::Value(void)> getterFunction, bool authorize_reset) {
 	if (hasProperty(property_name)) {
-		_properties[property_name].setValue(value);
-		if (updateFunction) {
-			_properties[property_name].setUpdateFunction(updateFunction);
-		}
+		_properties[property_name].setParameters(default_value, access, setterFunction, getterFunction, authorize_reset);
 	} else {
-		_properties[property_name] = Property(value, updateFunction, access);
+		_properties[property_name] = Property(default_value, setterFunction, getterFunction, access);
 	}
 }
 
-bool Widget::hasProperty(const std::string &property_name) {
-	return _properties.find(property_name) != _properties.end();
+bool Widget::setProperty(const std::string &property_name, const Property::Value &value) {
+	if (hasProperty(property_name)) {
+		_properties[property_name].setValue(value);
+		return true;
+	}
+	return false;
 }
 
 Widget::Value &Widget::getProperty(const std::string &property_name) {
 	if (hasProperty(property_name)) {
 		return _properties[property_name];
 	}
-	throw std::runtime_error("Property not found");
+	THROW_CUSTOM_EXCEPTION(Error, "Property not found");
 }
 
-void Widget::position(const glm::vec2 &vec) {
+bool Widget::hasProperty(const std::string &property_name) {
+	return _properties.find(property_name) != _properties.end();
+}
+
+bool Widget::resetProperty(const std::string &property_name) {
+	if (hasProperty(property_name)) {
+		_properties[property_name].reset();
+		return true;
+	}
+	return false;
+}
+
+void Widget::resetProperties() {
+	for (auto &property : _properties) {
+		property.second.reset();
+	}
+}
+
+void Widget::setPosition(const glm::vec2 &vec) {
 	_position = vec;
 }
 
-void Widget::position(float x, float y) {
-	_position = glm::vec2(x, y);
+void Widget::setSize(const glm::vec2 &vec) {
+	if (vec.x > 0.0f || vec.y > 0.0f) {
+		_size = vec;
+	}
 }
 
-glm::vec2 Widget::position() const {
-	return _position;
-}
-
-void Widget::size(const glm::vec2 &vec) {
-	_size = vec;
-}
-
-void Widget::size(float w, float h) {
-	_size = glm::vec2(w, h);
-}
-
-glm::vec2 Widget::size() const {
-	return _size;
-}
-
-glm::vec2 Widget::center() const {
-	return _position + _size * 0.5f;
-}
-
-void Widget::rotatePoint(const glm::vec2 &vec) {
+void Widget::setRotatePoint(const glm::vec2 &vec) {
 	_rotatePoint = vec;
 }
 
-glm::vec2 Widget::rotatePoint() const {
-	return _rotatePoint;
+void Widget::setAngle(float degree) {
+	_angle = modulo360(degree);
 }
 
-void Widget::angle(float degree) {
-	_angle = degree;
-}
-
-float Widget::angle() const {
-	return _angle;
-}
-
-void Widget::enable(bool state) {
+void Widget::setEnable(bool state) {
 	_enable = state;
 }
 
-bool Widget::enable() const {
+glm::vec2 Widget::getPosition() const {
+	return _position;
+}
+
+glm::vec2 Widget::getSize() const {
+	return _size;
+}
+
+glm::vec2 Widget::getCenter() const {
+	return _position + _size * 0.5f;
+}
+
+glm::vec2 Widget::getRotatePoint() const {
+	return _rotatePoint;
+}
+
+float Widget::getAngle() const {
+	return _angle;
+}
+
+bool Widget::isEnable() const {
 	return _enable;
 }
 

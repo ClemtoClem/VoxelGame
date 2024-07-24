@@ -56,4 +56,6 @@ private:
 	std::vector<glm::vec4> _pixels;
 };
 
+using TexturePtr = std::shared_ptr<Texture>;
+
 #endif // TEXTURE_HPP

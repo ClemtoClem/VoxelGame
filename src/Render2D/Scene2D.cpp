@@ -162,7 +162,7 @@ void Scene2D::render() const {
 		glDisable(GL_TEXTURE_2D);
 
 		_shader2D->use();
-		glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(_screenWidth), static_cast<float>(_screenHeight), 0.0f, -1.0f, 1.0f);
+		glm::mat4 projection = glm::ortho(0.0f, _screenSize.x, _screenSize.y, 0.0f, -1.0f, 1.0f);
 		_shader2D->setMat4("projection", projection);
 
 		glBindVertexArray(_vao);

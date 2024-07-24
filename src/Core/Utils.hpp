@@ -7,6 +7,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include <cmath>
+#include "CustomException.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -36,9 +37,9 @@ T lerp(T a, T b, T c, float t) {
 }
 
 template<typename T>
-T throwIfNullptr(T value, const std::string &msg) {
+inline T throwIfNullptr(T value, LogLevel lvl, const std::string &msg) {
 	if (value == nullptr) {
-		throw std::runtime_error(msg);
+		THROW_CUSTOM_EXCEPTION(lvl, msg);
 	}
 	return value;
 }
