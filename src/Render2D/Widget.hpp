@@ -4,7 +4,7 @@
  * \ \/  \/ / |/ _` |/ _` |/ _ \ __|
  *  \  /\  /| | (_| | (_| |  __/ |_ 
  *   \/  \/ |_|\__,_|\__, |\___|\__|
- *                   |___/          
+ *                   |___/		  
  * 
  * @file Widget.cpp
  * @author @ClemtoClem (https://github.com/ClemtoClem)
@@ -29,67 +29,67 @@ namespace Render2D {
 
 class Widget : public std::enable_shared_from_this<Widget> {
 public:
-    Widget(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
-    virtual ~Widget();
+	Widget(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
+	virtual ~Widget();
+	
+	const void std::string &getName() const;
 
-    virtual void initDefaultProperties();
-    virtual void reset() = 0;
+	virtual void initDefaultProperties();
+	virtual void reset();
 
-    void setProperty(const std::string &property_name, const Property::Value &value, std::function<void(const Property::Value&)> updateFunction = nullptr, Property::Access access = Property::Access::READ_WRITE);
-    bool hasProperty(const std::string &property_name);
-    Property::Value getProperty(const std::string &property_name);
+	void setProperty(const std::string &property_name, const Property::Value &value, std::function<void(const Property::Value&)> updateFunction = nullptr, Property::Access access = Property::Access::READ_WRITE);
+	bool hasProperty(const std::string &property_name);
+	Property::Value getProperty(const std::string &property_name);
 
-    void position(const glm::vec2 &vec);
-    void position(float x, float y);
-    glm::vec2 position() const;
+	void position(const glm::vec2 &vec);
+	void position(float x, float y);
+	glm::vec2 position() const;
 
-    void size(const glm::vec2 &vec);
-    void size(float w, float h);
-    glm::vec2 size() const;
+	void size(const glm::vec2 &vec);
+	void size(float w, float h);
+	glm::vec2 size() const;
 
-    glm::vec2 center() const;
+	glm::vec2 center() const;
 
-    void rotatePoint(const glm::vec2 &vec);
-    glm::vec2 rotatePoint() const;
+	void rotatePoint(const glm::vec2 &vec);
+	glm::vec2 rotatePoint() const;
 
-    void angle(float degree);
-    float angle() const;
+	void angle(float degree);
+	float angle() const;
 
-    void enable(bool state);
-    bool enable() const;
+	void enable(bool state);
+	bool enable() const;
 
-    void addChild(std::shared_ptr<Widget> child);
-    size_t getNumberOfChildren() const;
-    std::shared_ptr<Widget> getChild(const std::string &name);
-    std::shared_ptr<Widget> findWidget(const std::string &path);
-    void setParent(std::shared_ptr<Widget> parent);
-    bool hasParent() const;
-    std::shared_ptr<Widget> getParent() const;
-    std::shared_ptr<Widget> detachChild(const std::string &name);
-    void deleteChild(const std::string &name);
-    void deleteChildren();
+	void addChild(std::shared_ptr<Widget> child);
+	size_t getNumberOfChildren() const;
+	std::shared_ptr<Widget> getChild(const std::string &name);
+	std::shared_ptr<Widget> findWidget(const std::string &path);
+	void setParent(std::shared_ptr<Widget> parent);
+	bool hasParent() const;
+	std::shared_ptr<Widget> getParent() const;
+	std::shared_ptr<Widget> detachChild(const std::string &name);
+	void deleteChild(const std::string &name);
+	void deleteChildren();
 
-    virtual void handleEvent(SDL_Event& evt) = 0;
-    virtual void update(float dt) = 0;
-    virtual void render(const Shader &shader2D) const = 0;
+	virtual void handleEvent(SDL_Event& evt) = 0;
+	virtual void update(float dt) = 0;
+	virtual void render(const Shader &shader2D) const = 0;
 
 protected:
-    void handleEventChildren(const SDL_Event &evt);
-    void updateChildren(float dt);
-    void renderChildren(const Shader &shader2D) const;
+	void handleEventChildren(const SDL_Event &evt);
+	void updateChildren(float dt);
+	void renderChildren(const Shader &shader2D) const;
 
-    void updateProperties();
+	std::shared_ptr<Widget> _parent;
+	std::vector<std::shared_ptr<Widget>> _children;
 
-    std::shared_ptr<Widget> _parent;
-    std::vector<std::shared_ptr<Widget>> _children;
+	glm::vec2 _position;
+	glm::vec2 _size;
+	glm::vec2 _rotatePoint;
+	float _angle;
+	bool _enable;
 
-    glm::vec2 _position;
-    glm::vec2 _size;
-    glm::vec2 _rotatePoint;
-    float _angle;
-    bool _enable;
-
-    std::map<std::string, Property> _properties;
+	std::map<std::string, Property> _properties;
 };
 
 } // namespace Render2D

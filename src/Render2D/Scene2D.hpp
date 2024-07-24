@@ -66,18 +66,18 @@ public:
 
 
 
-    /// @brief Afficher un rectangle coloré sur la scène
-    /// @param position		Position du rectangle
-    /// @param size			Taille du rectangle
-    /// @param color		Couleur du rectangle
-    void drawRectangle(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color);
-    
+	/// @brief Afficher un rectangle coloré sur la scène
+	/// @param position		Position du rectangle
+	/// @param size			Taille du rectangle
+	/// @param color		Couleur du rectangle
+	void drawRectangle(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color);
+	
 	/// @brief Afficher une image sur la scène
 	/// @param texture  	Texture à afficher
 	/// @param position		Position de l'image
 	/// @param size			Taille de l'image
 	void drawImage(const Texture &texture, const glm::vec2 &position, const glm::vec2 &size);
-    
+	
 	/// @brief Afficher du texte sur la scène
 	/// @param font			Police de caractère
 	/// @param text			Texte à afficher

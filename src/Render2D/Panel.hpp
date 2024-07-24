@@ -12,17 +12,19 @@ namespace Render2D {
 
 class Panel : public Widget {
 public:
-    Panel(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
+	Panel(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
 
-	void initDefaultProperties() override;
-    void reset() override;
+	void initDefaultProperties() ;
+	void reset() ;
 
-    void handleEvent(const SDL_Event &evt) override;
-    void update(float dt) override;
-    void render(const Shader &shader2D) override;
+	void handleEvent(const SDL_Event &evt) ;
+	void update(float dt) ;
+	void render(const Shader &shader2D) ;
 
 private:
 	glm::vec4 _color;
+	glm::vec4 _border_color;
+	int _border_width
 };
 
 }

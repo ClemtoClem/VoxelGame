@@ -1,5 +1,5 @@
 /**
- *    ___                     
+ *    ___
  *   / _ \__ _ _ __ ___   ___ 
  *  / /_\/ _` | '_ ` _ \ / _ \
  * / /_\\ (_| | | | | | |  __/
@@ -70,7 +70,7 @@ private:
 	bool _isLoad;
 	bool _running;
 
-	Window           _window;
+	Window		   _window;
 	ResourcesManager _resourcesManager;
 
 	std::shared_ptr<Camera> _camera;

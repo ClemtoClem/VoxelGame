@@ -36,9 +36,9 @@ void Camera::processKeyboard(float deltaTime, unsigned int movementFlags) {
 	if (movementFlags & Movement::RIGHT)
 		_position += _right * velocity;
 	if (movementFlags & Movement::UP)
-		_position += _up * velocity;     // Déplacement vers le haut
+		_position += _up * velocity;	 // Déplacement vers le haut
 	if (movementFlags & Movement::DOWN)
-		_position -= _up * velocity;     // Déplacement vers le bas
+		_position -= _up * velocity;	 // Déplacement vers le bas
 }
 
 void Camera::processMouseMovement(float xoffset, float yoffset) {
@@ -74,19 +74,19 @@ const glm::vec3 &Camera::getPosition() const {
 }
 
 const glm::vec3 &Camera::getFront() const {
-    return _front;
+	return _front;
 }
 
 const glm::vec3 &Camera::getUp() const {
-    return _up;
+	return _up;
 }
 
 const glm::vec3 &Camera::getRight() const {
-    return _right;
+	return _right;
 }
 
 const glm::vec3 &Camera::getWorldUp() const {
-    return _worldUp;
+	return _worldUp;
 }
 
 void Camera::setMovementSpeed(float movementSpeed) {
@@ -128,7 +128,7 @@ void Camera::updateCameraVectors() {
 	front.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
 	_front = glm::normalize(front);
 	_right = glm::normalize(glm::cross(_front, _worldUp));
-	_up    = glm::normalize(glm::cross(_right, _front));
+	_up	= glm::normalize(glm::cross(_right, _front));
 }
 
 }

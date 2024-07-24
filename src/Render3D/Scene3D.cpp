@@ -32,7 +32,7 @@ void Scene3D::enable() {
 }
 
 bool Scene3D::isEnabled() const {
-    return _enabled;
+	return _enabled;
 }
 
 void Scene3D::addEntity(std::shared_ptr<Entity> entity) {
@@ -74,7 +74,7 @@ void Scene3D::handleEvent(const SDL_Event &event) {
 }
 
 void Scene3D::update(float dt) {
-    if (_enabled) {
+	if (_enabled) {
 		//LOG(Debug) << "Update entities...";
 		for (auto &entity : _entities) {
 			entity->update(dt);

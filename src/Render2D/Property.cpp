@@ -3,47 +3,38 @@
 
 namespace Render2D {
 
-Property::Property(const Value &value, std::function<void(const Value &)> updateFunction, Access access)
-    : _value(value), _access(access), _modified(false), _updateFunction(updateFunction) {}
+Property::Property(const Value& default_value, Access access, std::function<void(const Value&)> setFunction, std::function<Value(const Value&)> getFunction)
+ : _default_value(default_value), _access(access), _setFunction(setFunction), _getFunction(getFunction) {
+	if (isWritable() && _setFunction == nullptr) {
+		throw std::runtime_error("Set function is null for write property");
+	}
+	if (isReadable() && _getFunction == nullptr) {
+		throw std::runtime_error("Get function is null for read property");
+	}
+}
 
 const Property::Value &Property::getValue() const {
-    if (_access == Access::READ_WRITE || _access == Access::READ_ONLY) {
-        return _value;
-    } else {
-        throw std::runtime_error("Property is write-only");
-    }
+	if (_access == Access::READ_WRITE || _access == Access::READ_ONLY) {
+		_getFunction(_value);
+	} else {
+		throw std::runtime_error("Property is write-only");
+	}
 }
 
 void Property::setValue(const Property::Value &value) {
-    if (_access == Access::READ_WRITE || _access == Access::WRITE_ONLY) {
-        _value = value;
-        _modified = true;
-    } else {
-        throw std::runtime_error("Property is read-only");
-    }
+	if (_access == Access::READ_WRITE || _access == Access::WRITE_ONLY) {
+		_setFunction(value);
+	} else {
+		throw std::runtime_error("Property is read-only");
+	}
 }
 
 bool Property::isReadable() const {
-    return _access == Access::READ_ONLY || _access == Access::READ_WRITE;
+	return _access == Access::READ_ONLY || _access == Access::READ_WRITE;
 }
 
 bool Property::isWritable() const {
-    return _access == Access::WRITE_ONLY || _access == Access::READ_WRITE;
-}
-
-bool Property::isModified() const {
-    return _modified;
-}
-
-void Property::resetModified() {
-    _modified = false;
-}
-
-void Property::update() {
-    if (_updateFunction && _modified) {
-        _updateFunction(_value);
-        _modified = false;
-    }
+	return _access == Access::WRITE_ONLY || _access == Access::READ_WRITE;
 }
 
 } // namespace Render2D

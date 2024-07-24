@@ -34,13 +34,13 @@ Shader::~Shader() {
 }
 
 std::string Shader::getError() {
-    std::string str = _error;
-    _error.clear();
-    return str;
+	std::string str = _error;
+	_error.clear();
+	return str;
 }
 
 bool Shader::hasError() const {
-    return !_error.empty();
+	return !_error.empty();
 }
 
 void Shader::use() const {
@@ -104,7 +104,7 @@ std::string Shader::loadShaderSource(const std::string &filePath) {
 	std::stringstream shaderStream;
 
 	// ouverture du fichier
-    shaderFile.open(filePath);
+	shaderFile.open(filePath);
 	if (!shaderFile.is_open()) {
 		std::stringstream ss;
 		ss << "SHADER_FILE_NOT_FOUND: " << filePath;
@@ -112,19 +112,19 @@ std::string Shader::loadShaderSource(const std::string &filePath) {
 		return "";
 	}
 	// lecture du fichier et place le contenu dans le flux
-    shaderStream << shaderFile.rdbuf();
+	shaderStream << shaderFile.rdbuf();
 	shaderFile.close();
 
 	return shaderStream.str();
 }
 
 GLuint Shader::compileShader(const std::string &source, GLenum shaderType) {
-    GLuint shader = glCreateShader(shaderType);
-    const GLchar* shaderCode = source.c_str();
-    glShaderSource(shader, 1, &shaderCode, NULL);
-    glCompileShader(shader);
-    checkCompileErrors(shader, shaderType == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT");
-    return shader;
+	GLuint shader = glCreateShader(shaderType);
+	const GLchar* shaderCode = source.c_str();
+	glShaderSource(shader, 1, &shaderCode, NULL);
+	glCompileShader(shader);
+	checkCompileErrors(shader, shaderType == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT");
+	return shader;
 }
 
 void Shader::checkCompileErrors(GLuint shader, std::string type) {

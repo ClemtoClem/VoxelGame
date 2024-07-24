@@ -1,5 +1,5 @@
 /**
- *  __ _               _           
+ *  __ _               _		   
  * / _\ |__   __ _  __| | ___ _ __ 
  * \ \| '_ \ / _` |/ _` |/ _ \ '__|
  * _\ \ | | | (_| | (_| |  __/ |   
@@ -21,7 +21,7 @@
 class Shader {
 public:
 	// le constructeur lit et construit le shader
-    Shader(const std::string &vertexPath, const std::string &fragmentPath);
+	Shader(const std::string &vertexPath, const std::string &fragmentPath);
 	
 	~Shader();
 
@@ -29,10 +29,10 @@ public:
 	bool hasError() const;
 
 	// Activation du shader
-    void use() const;
+	void use() const;
 	
 	// fonctions utiles pour l'uniform
-    void setBool(const std::string &name, bool value) const;
+	void setBool(const std::string &name, bool value) const;
 	void setInt(const std::string &name, int value) const;
 	void setFloat(const std::string &name, float value) const;
 	void setDouble(const std::string &name, double value) const;

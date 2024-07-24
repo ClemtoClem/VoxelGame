@@ -1,5 +1,5 @@
 /**
- *    ___      _            
+ *    ___      _			
  *   / __\___ | | ___  _ __ 
  *  / /  / _ \| |/ _ \| '__|
  * / /__| (_) | | (_) | |   
@@ -26,7 +26,7 @@ namespace Color {
 
 	/* Définition de quelques couleurs */
 
-	const glm::vec4 TRANSPARENT           = _c(00,00,00,00);
+	const glm::vec4 TRANSPARENT		   = _c(00,00,00,00);
 
 	const glm::vec4 ALICE_BLUE			= _c(F0,F8,FF,FF);
 	const glm::vec4 ANTIQUE_WHITE		= _c(FA,EB,D7,FF);
@@ -46,7 +46,7 @@ namespace Color {
 	const glm::vec4 CORN_FLOWER_BLUE	= _c(64,95,ED,FF);
 	const glm::vec4 CORN_SILK			= _c(FF,F8,DC,FF);
 	const glm::vec4 CRIMSON				= _c(DC,14,50,FF);
-	const glm::vec4 CYAN			    = _c(00,FF,FF,FF);
+	const glm::vec4 CYAN				= _c(00,FF,FF,FF);
 	const glm::vec4 DARK_BLUE			= _c(00,00,8B,FF);
 	const glm::vec4 DARK_CYAN			= _c(00,8B,8B,FF);
 	const glm::vec4 DARK_GOLDEN_ROD		= _c(B8,86,0B,FF);

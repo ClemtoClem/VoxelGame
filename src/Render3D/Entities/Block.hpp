@@ -1,5 +1,5 @@
 /**
- *    ___ _            _    
+ *    ___ _            _
  *   / __\ | ___   ___| | __
  *  /__\// |/ _ \ / __| |/ /
  * / \/  \ | (_) | (__|   < 
@@ -73,8 +73,8 @@ private:
 
 	// créer des vertices et indices à partir d'une liste de cuboid
 	/*void createVerticesAndIndicesFromCuboid(const std::vector<std::pair<glm::vec3, glm::vec3>>& cuboids,
-                                    std::vector<float>& vertices,
-                                    std::vector<unsigned int>& indices);
+									std::vector<float>& vertices,
+									std::vector<unsigned int>& indices);
 	*/
 
 	glm::vec3 _position;

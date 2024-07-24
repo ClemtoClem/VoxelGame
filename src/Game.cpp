@@ -74,10 +74,10 @@ bool Game::init(int argc, char *argv[]) {
 	result &= _resourcesManager.loadTexture("concrete_back",   IMAGE_PATH + "concrete_back.png");
 	result &= _resourcesManager.loadTexture("concrete_left",   IMAGE_PATH + "concrete_left.png");
 	result &= _resourcesManager.loadTexture("concrete_right",  IMAGE_PATH + "concrete_right.png");
-	result &= _resourcesManager.loadTexture("concrete_top",    IMAGE_PATH + "concrete_top.png");
+	result &= _resourcesManager.loadTexture("concrete_top",	IMAGE_PATH + "concrete_top.png");
 	result &= _resourcesManager.loadTexture("concrete_bottom", IMAGE_PATH + "concrete_bottom.png");
-	result &= _resourcesManager.loadTexture("bricks_wall",     IMAGE_PATH + "bricks_wall.jpg");
-	result &= _resourcesManager.loadTexture("wood_planks",     IMAGE_PATH + "wood_planks.jpg");
+	result &= _resourcesManager.loadTexture("bricks_wall",	 IMAGE_PATH + "bricks_wall.jpg");
+	result &= _resourcesManager.loadTexture("wood_planks",	 IMAGE_PATH + "wood_planks.jpg");
 
 	if (!result) {
 		LOG(Fatal) << "Failed to load resources";
@@ -394,7 +394,7 @@ void Game::run(int argc, char *argv[]) {
 							firstMouse = true;
 						}
 						break;
-            	}
+				}
 			} else if (event.type == SDL_KEYUP) {
 				switch (event.key.keysym.sym) {
 					case SDLK_z:

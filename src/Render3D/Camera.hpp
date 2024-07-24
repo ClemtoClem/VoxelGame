@@ -1,5 +1,5 @@
 /**
- *    ___                               
+ *    ___
  *   / __\__ _ _ __ ___   ___ _ __ __ _ 
  *  / /  / _` | '_ ` _ \ / _ \ '__/ _` |
  * / /__| (_| | | | | | |  __/ | | (_| |
@@ -21,7 +21,7 @@ namespace Render3D {
 
 // Default camera values
 const float YAW					= -90.0f;
-const float PITCH       		=  0.0f;
+const float PITCH	   		=  0.0f;
 const float MOVEMENT_LOW_SPEED	=  2.5f;
 const float MOVEMENT_HIGH_SPEED	=  10.0f;
 const float MOUSE_SENSITIVITY	=  0.1f;

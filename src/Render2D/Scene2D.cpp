@@ -8,7 +8,7 @@
 namespace Render2D {
 
 Scene2D::Scene2D(const glm::vec2 &screenSize) : _screenSize(screenSize), _enabled(true) {
-    _projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
+	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
 }
 
 Scene2D::~Scene2D() {
@@ -31,15 +31,15 @@ bool Scene2D::init() {
 
 void Scene2D::initRenderData() {
 	static float vertices[] = {
-        // positions   // texture coords
-         0.0f,  1.0f,  0.0f, 1.0f,
-         1.0f,  0.0f,  1.0f, 0.0f,
-         0.0f,  0.0f,  0.0f, 0.0f,
+		// positions   // texture coords
+		 0.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f,  0.0f,  1.0f, 0.0f,
+		 0.0f,  0.0f,  0.0f, 0.0f,
 
-         0.0f,  1.0f,  0.0f, 1.0f,
-         1.0f,  1.0f,  1.0f, 1.0f,
-         1.0f,  0.0f,  1.0f, 0.0f
-    };
+		 0.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f,
+		 1.0f,  0.0f,  1.0f, 0.0f
+	};
 
 	glGenVertexArrays(1, &_vao);
 	glGenBuffers(1, &_vbo);
@@ -47,15 +47,15 @@ void Scene2D::initRenderData() {
 	glBindVertexArray(_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void Scene2D::reset() {
@@ -65,8 +65,8 @@ void Scene2D::reset() {
 
 
 void Scene2D::setScreenSize(const glm::vec2 &screenSize) {
-    _screenSize = screenSize;
-    _projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
+	_screenSize = screenSize;
+	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
 }
 
 glm::vec2 Scene2D::getScreenSize() const {
@@ -74,7 +74,7 @@ glm::vec2 Scene2D::getScreenSize() const {
 }
 
 glm::mat4 Scene2D::getProjectionMatrix() const {
-    return _projection;
+	return _projection;
 }
 
 void Scene2D::disable() {
@@ -86,7 +86,7 @@ void Scene2D::enable() {
 }
 
 bool Scene2D::isEnabled() const {
-    return _enabled;
+	return _enabled;
 }
 
 void Scene2D::drawRectangle(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color) {

@@ -25,24 +25,24 @@
 
 class Font {
 public:
-    Font();
-    ~Font();
+	Font();
+	~Font();
 
-    bool hasError() const;
-    const std::string &getError() const;
+	bool hasError() const;
+	const std::string &getError() const;
 
-    bool loadFromFile(const std::string &path);
-    std::shared_ptr<Texture> renderText(const std::string &text, const glm::vec4 &color) const;
+	bool loadFromFile(const std::string &path);
+	std::shared_ptr<Texture> renderText(const std::string &text, const glm::vec4 &color) const;
 
-    void fontSize(int size);
-    int fontSize() const;
+	void fontSize(int size);
+	int fontSize() const;
 
 private:
-    TTF_Font* _font;
-    int _fontSize;
-    std::string _error;
+	TTF_Font* _font;
+	int _fontSize;
+	std::string _error;
 
-    void free();
+	void free();
 };
 
 #endif // FONT_HPP
