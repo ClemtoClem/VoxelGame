@@ -14,7 +14,7 @@ class Panel : public Widget {
 public:
 	Panel(const std::string &name, WidgetPtr parent = nullptr);
 
-	void initDefaultProperties();
+	void initProperties();
 	void reset();
 
 	void setColor(const glm::vec4 &color);

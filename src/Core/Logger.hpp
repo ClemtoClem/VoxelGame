@@ -41,17 +41,13 @@ public:
 	using Stream = std::ostringstream;
 	using Buffer_p = std::unique_ptr<Stream, std::function<void(Stream*)>>;
 
-	Logger();
+	Logger(bool removeLastFile = true);
 
 	virtual ~Logger();
 
-	static void removeFile();
-	
-	static Logger &createInstance();
 	static Logger &getInstance();
-	static Logger &setInstance(Logger *logger);
-	static void destroyInstance();
 
+	void removeFile();
 	void enableWriteInTerminal();
 	void disableWriteInTerminal();
 
@@ -81,7 +77,7 @@ private:
 	std::string _msg_file;
 	int _msg_line;
 
-	std::mutex _mutex; // Ajout du mutex pour la synchronisation
+	static std::mutex _mutex; // Ajout du mutex pour la synchronisation
 
 	static std::string getLabel(LogLevel type);
 	static std::string getColor(LogLevel type);

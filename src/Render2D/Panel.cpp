@@ -5,33 +5,33 @@ namespace Render2D {
 
 Panel::Panel(const std::string &name, WidgetPtr parent)
 	: Widget(name, parent), _color(Color::WHITE), _border_color(Color::BLACK), _border_width(0) {
-	initDefaultProperties();
+	initProperties();
 }
 
-void Panel::initDefaultProperties() {
-	Widget::initDefaultProperties();
-	createProperty("color", _color, Property::Access::READ_WRITE,
+void Panel::initProperties() {
+	Widget::initProperties();
+	createProperty("color", Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_color = std::get<glm::vec4>(value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _color;
 		}
 	);
 
-	createProperty("border_color", _color, Property::Access::READ_WRITE,
+	createProperty("border_color",Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_border_color = std::get<glm::vec4>(value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _border_color;
 		}
 	);
-	createProperty("border_width", _color, Property::Access::READ_WRITE,
+	createProperty("border_width", Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_border_width = std::get<int>(value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _border_width;
 		}
 	);
@@ -39,9 +39,6 @@ void Panel::initDefaultProperties() {
 
 void Panel::reset() {
 	Widget::reset();
-	_color = glm::vec4(Color::WHITE);
-	_border_color = glm::vec4(Color::BLACK);
-	_border_width = 1;
 }
 
 void Panel::setColor(const glm::vec4 &color) {
@@ -77,7 +74,6 @@ void Panel::handleEvent(const SDL_Event &evt) {
 void Panel::update(float dt) {
 	if (!_enable) return;
 	updateChildren(dt);
-	
 }
 
 void Panel::render(const Shader &shader2D) const {

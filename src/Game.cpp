@@ -23,14 +23,12 @@ Game::Game() : _isLoad(false), _running(false), _window("OpenGL with SDL2", 800,
 Game::~Game() {
 	closeSDL();
 	LOG(Debug) << "Close game success!";
-	Logger::destroyInstance();
 }
 
 /* - - - - - - - - - - - - - - - - - - - - */
 
 bool Game::init(int argc, char *argv[]) {
-	Logger::removeFile();
-	Logger::createInstance().enableWriteInTerminal();
+	Logger::getInstance().enableWriteInTerminal();
 
 	if (!initSDL()) {
 		LOG(Fatal) << "Failed to initialize SDL";

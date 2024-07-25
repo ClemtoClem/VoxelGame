@@ -15,7 +15,7 @@ class Button : public Widget {
 public:
 	Button(const std::string &name, WidgetPtr parent = nullptr);
 
-	void initDefaultProperties();
+	void initProperties();
 	void reset();
 
 	void setText(const std::string &text);

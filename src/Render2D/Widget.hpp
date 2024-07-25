@@ -15,16 +15,14 @@
 #define WIDGET_HPP
 
 #include <string>
+#include <vector>
 #include <memory>
-#include <map>
-#include <variant>
-#include <glm/glm.hpp>
-#include <SDL2/SDL.h>
+#include <unordered_map>
+#include <algorithm>
+#include <stdexcept>
 #include "../Core/CustomException.hpp"
-#include "../Core/Texture.hpp"
-#include "../Core/Font.hpp"
 #include "../Core/Shader.hpp"
-#include "Property.hpp"
+#include "../Core/Property.hpp"
 
 namespace Render2D {
 
@@ -35,38 +33,48 @@ public:
 	
 	const std::string &getName() const;
 
-	virtual void initDefaultProperties();
+	virtual void initProperties();
 	virtual void reset();
 
-	void createProperty(const std::string &property_name, const Property::Value &default_value, Property::Access access, std::function<void(const Property::Value&)> setterFunction, std::function<Property::Value(void)> getterFunction = nullptr, bool authorize_reset = true);
-	bool setProperty(const std::string &property_name, const Property::Value &value);
-	Property::Value getProperty(const std::string &property_name);
+	/// @brief Set the property value
+	template <typename T>
+	bool setProperty(const std::string &property_name, const T &value);
+
+	/// @brief Get the property value
+	template <typename T>
+	T &getProperty(const std::string &property_name);
+
+	/// @brief Check if widget has a property
 	bool hasProperty(const std::string &property_name);
-	bool resetProperty(const std::string &property_name);
-	void resetProperties();
 
-	void setPosition(const glm::vec2 &vec);
-	void setSize(const glm::vec2 &vec);
-	void setRotatePoint(const glm::vec2 &vec);
-	void setAngle(float degree);
-	void setEnable(bool state);
-
-	glm::vec2 getPosition() const;
-	glm::vec2 getSize() const;
-	glm::vec2 getCenter() const;
-	glm::vec2 rotatePoint() const;
-	float getAngle() const;
-	bool isEnable() const;
-
+	/// @brief Add a child widget
 	void addChild(std::shared_ptr<Widget> child);
-	size_t getNumberOfChildren() const;
+
+	/// @brief Get the child widget by name
 	std::shared_ptr<Widget> getChild(const std::string &name);
+
+	/// Get number of children
+	size_t getNumberOfChildren() const;
+	
+	/// @brief Find a widget by path
 	std::shared_ptr<Widget> findWidget(const std::string &path);
+
+	/// @brief Set the parent widget
 	void setParent(std::shared_ptr<Widget> parent);
+
+	/// @brief Check if widget has a parent
 	bool hasParent() const;
+
+	/// @brief Get the parent widget
 	std::shared_ptr<Widget> getParent() const;
+
+	/// @brief Detach a child widget by name
 	std::shared_ptr<Widget> detachChild(const std::string &name);
+
+	/// @brief Delete a child widget by name
 	void deleteChild(const std::string &name);
+
+	/// @brief Delete all children
 	void deleteChildren();
 
 	virtual void handleEvent(const SDL_Event& evt) = 0;
@@ -74,6 +82,9 @@ public:
 	virtual void render(const Shader &shader2D) const = 0;
 
 protected:
+	template <typename T>
+	void createProperty(const std::string &name, BaseProperty::Access access, T &value);
+
 	void handleEventChildren(const SDL_Event &evt);
 	void updateChildren(float dt);
 	void renderChildren(const Shader &shader2D) const;
@@ -82,13 +93,7 @@ protected:
 	std::vector<std::shared_ptr<Widget>> _children;
 
 	std::string _name;
-	glm::vec2 _position;
-	glm::vec2 _size;
-	glm::vec2 _rotatePoint;
-	float _angle;
-	bool _enable;
-
-	std::map<std::string, Property> _properties;
+	std::unordered_map<std::string, std::shared_ptr<BaseProperty>> _properties;
 };
 
 using WidgetPtr = std::shared_ptr<Widget>;

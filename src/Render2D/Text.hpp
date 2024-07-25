@@ -27,29 +27,17 @@ namespace Render2D {
 
 class Text : public Widget {
 public:
-	Text(const std::string &name, WidgetPtr parent, FontPtr font = nullptr, const std::string& text = "", const glm::vec4& color = Color::WHITE);
+	Text(const std::string &name, WidgetPtr parent);
 	~Text();
 
-	void initDefaultProperties() ;
-	void reset() ;
-
-	void setText(const std::string& text);
-	std::string getText() const { return _text; }
-
-	void setColor(const glm::vec4& color) { _color = color; }
-	glm::vec4 getColor() const { return _color; }
-
-	void setFont(FontPtr font) { _font = font; }
-	FontPtr getFont() const { return _font; }
+	void initProperties();
+	void reset();
 
 	void handleEvent(const SDL_Event& evt) override;
 	void update(float dt) override;
 	void render(const Shader &shader2D) const override;
 
 private:
-	std::string _text;
-	glm::vec4 _color;
-	FontPtr _font;
 	std::shared_ptr<Texture> _texture;
 };
 

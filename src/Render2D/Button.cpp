@@ -7,42 +7,42 @@ namespace Render2D {
 
 Button::Button(const std::string &name, WidgetPtr parent)
  : Widget(name, parent), _background(std::make_shared<Panel>(name + "_background", shared_from_this())), _text(std::make_shared<Text>(name + "_text", shared_from_this())) {
-	initDefaultProperties();
+	initProperties();
 }
 
-void Button::initDefaultProperties() {
-	Widget::initDefaultProperties();
+void Button::initProperties() {
+	Widget::initProperties();
 	addChild(_background);
 	addChild(_text);
-	createProperty("background_color", glm::vec4(Color::LIGHT_GRAY2), Property::Access::READ_WRITE,
+	createProperty("background_color", Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_background->setProperty("color", value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _background->getProperty("color");
 		}
 	);
-	createProperty("border_color", glm::vec4(Color::BLACK), Property::Access::READ_WRITE,
+	createProperty("border_color", Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_background->setProperty("border_color", value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _background->getProperty("border_color");
 		}
 	);
-	createProperty("border_width", 1, Property::Access::READ_WRITE,
+	createProperty("border_width", Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_background->setProperty("border_width", value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _background->getProperty("border_width");
 		}
 	);
-	createProperty("text_color", Color::BLACK, Property::Access::READ_WRITE,
+	createProperty("text_color", Property::Access::READ_WRITE,
 		[this](const Property::Value &value) {
 			_text->setProperty("color", value);
 		},
-		[this]() {
+		[this]() -> Property::Value& {
 			return _text->getProperty("color");
 		}
 	);
