@@ -1,15 +1,16 @@
 #include "Text.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <GL/glew.h>
 #include <iostream>
 #include "../Core/Color.hpp"
 #include "../Core/ResourcesManager.hpp"
 
 namespace Render2D {
 
-Text::Text(const std::string &name, WidgetPtr parent, const std::string &text, const std::string &font_name, int font_size, const glm::vec4 &color, const glm::vec4 &hover_color)
- : Widget(name, parent), _text(text), _font_name(font_name), _font_size(font_size), _color(color), _hover_color(hover_color) {
+Text::Text(const std::string &name, WidgetPtr parent,
+	const glm::vec2 &position, const glm::vec2 &scale,
+	const std::string &text, const std::string &font_name, int font_size, const glm::vec4 &color, const glm::vec4 &hover_color)
+ : Widget(name, parent, position, scale), _text(text), _font_name(font_name), _font_size(font_size), _color(color), _hover_color(hover_color) {
 }
 
 Text::~Text() {
@@ -73,7 +74,7 @@ const glm::vec4 &Text::getHoverColor() const {
 
 /* --------- EVENTS ---------- */
 
-void Text::handleEvent(const SDL_Event& evt) {
+void Text::handleEvent(SDL_Event& evt) {
 	if (!_enabled) return;
 	if (evt.type == SDL_MOUSEMOTION) {
 		glm::vec2 mouse_pos = glm::vec2(evt.motion.x, evt.motion.y);

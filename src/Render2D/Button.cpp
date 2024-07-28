@@ -5,8 +5,12 @@
 
 namespace Render2D {
 
-Button::Button(const std::string &name, WidgetPtr parent, const std::string &text, const glm::vec4 &textColor, const glm::vec4 &backgroundColor)
- : Widget(name, parent), _background(std::make_shared<Panel>("", nullptr, backgroundColor)), _text(std::make_shared<Text>("", nullptr, text)) {
+Button::Button(const std::string &name, WidgetPtr parent, 
+	const glm::vec2 &position, const glm::vec2 &scale,
+	const std::string &text, const glm::vec4 &textColor, const glm::vec4 &backgroundColor)
+ : Widget(name, parent, position, scale),
+   _background(std::make_shared<Panel>("", nullptr, position, scale)), _text(std::make_shared<Text>("", nullptr, position, scale, text)) {
+	_background->setColor(backgroundColor);
 	_text->setColor(textColor);
  }
 
@@ -118,7 +122,7 @@ float Button::getBorderRadius() const {
 	return _background->getBorderRadius();
 }
 
-void Button::handleEvent(const SDL_Event &evt) {
+void Button::handleEvent(SDL_Event& evt) {
 	if (!_enabled) return;
 	// Gérer les événements spécifiques au bouton ici
 

@@ -4,8 +4,8 @@
 
 namespace Render2D {
 
-Widget::Widget(const std::string &name, std::shared_ptr<Widget> parent)
-    : Node(name), _position(0.0f), _scale(1.0f), _angle(0.0f), _rotateOrigin(0.5f, 0.5f), _enabled(true), _needs_update_transform(true) {
+Widget::Widget(const std::string &name, std::shared_ptr<Widget> parent, const glm::vec2 &position, const glm::vec2 &scale, float rotation, const glm::vec2 &rotateOrigin)
+    : Node(name), _position(position), _scale(scale), _angle(rotation), _rotateOrigin(rotateOrigin), _enabled(true), _needs_update_transform(true) {
     if (parent) {
         parent->addChild(shared_from_this());
     }
@@ -122,7 +122,7 @@ glm::vec4 Widget::getAABB(const std::array<glm::vec2, 4> &corners) const {
 
 /* -------- EVENTS ---------- */
 
-void Widget::handleEventChildren(const SDL_Event &evt) {
+void Widget::handleEventChildren(SDL_Event& evt) {
     for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
         auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
         if (widgetChild) {

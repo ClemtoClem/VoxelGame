@@ -5,14 +5,16 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
-
+#include "../Core/Color.hpp"
 #include "Widget.hpp"
 
 namespace Render2D {
 
 class Panel : public Widget {
 public:
-	Panel(const std::string &name, WidgetPtr parent = nullptr, const glm::vec4 &color = glm::vec4(1.0f), const glm::vec4 &border_color = glm::vec4(0.0f), float border_width = 1.0f, float border_radius = 0.0f, const glm::vec4 &hover_color = glm::vec4(0.0f), const glm::vec4 &hover_border_color = glm::vec4(0.0f));
+	Panel(const std::string &name, WidgetPtr parent = nullptr,
+		const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(1.0f),
+		const glm::vec4 &color = Color::WHITE, const glm::vec4 &border_color = Color::BLACK, float border_width = 1.0f, float border_radius = 0.0f, const glm::vec4 &hover_color = glm::vec4(0.0f), const glm::vec4 &hover_border_color = glm::vec4(0.0f));
 
 /* -------- PROPERTIES ------- */
 
@@ -44,7 +46,7 @@ public:
 
 	/// @brief Handle an event
 	/// @param[in] evt Event
-	void handleEvent(const SDL_Event& evt) override;
+	void handleEvent(SDL_Event& evt) override;
 
 /* --------- UPDATE ---------- */
 

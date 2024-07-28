@@ -37,7 +37,8 @@ void Node::setNext(std::shared_ptr<Node> next) {
 
 /* Getters */
 
-const std::string &Node::getName() const {
+const std::string &Node::getName() const
+{
     return _name;
 }
 

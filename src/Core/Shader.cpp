@@ -6,18 +6,17 @@
 #include "Logger.hpp"
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) : _error("") {
-	LOG(Info) << "Loading shader 2D";
 	std::string vertexCode = loadShaderSource(vertexPath);
 	if (vertexCode.empty()) {
 		return;
 	}
-	LOG(Info) << "Vertex shader loaded";
+	//LOG(Info) << "Vertex shader loaded";
 	
 	std::string fragmentCode = loadShaderSource(fragmentPath);
 	if (fragmentCode.empty()) {
 		return;
 	}
-	LOG(Info) << "Fragment shader loaded";
+	//LOG(Info) << "Fragment shader loaded";
 
 	GLuint vertexShader = compileShader(vertexCode.c_str(), GL_VERTEX_SHADER);
 	GLuint fragmentShader = compileShader(fragmentCode.c_str(), GL_FRAGMENT_SHADER);
@@ -140,9 +139,9 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
 			std::stringstream ss;
 			ss << "SHADER_COMPILATION_ERROR of type: " << type << "\n\t\t" << infoLog;
 			_error = ss.str();	
-		} else {
+		}/* else {
 			LOG(Info) << "Shader " << type << " compiled successfully";
-		}
+		}*/
 	} else {
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success) {
@@ -150,8 +149,8 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
 			std::stringstream ss;
 			ss << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n\t\t" << infoLog;
 			_error = ss.str();
-		} else {
+		}/* else {
 			LOG(Info) << "Program linked successfully";
-		}
+		}*/
 	}
 }

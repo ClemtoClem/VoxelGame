@@ -7,8 +7,8 @@
 
 namespace Render2D {
 
-Scene2D::Scene2D(const glm::vec2 &screenSize) : Node(""), _screenSize(screenSize), _enabled(true) {
-	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
+Scene2D::Scene2D(const glm::vec2 &screenSize) : Widget("@", nullptr), _screenSize(screenSize), _enabled(true) {
+	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y, -1.0f, 1.0f);
 }
 
 Scene2D::~Scene2D() {
@@ -23,7 +23,7 @@ bool Scene2D::init() {
 		LOG(Error) << err;
 		return false;
 	}
-	LOG(Info) << "Shader 2D loaded";
+	//LOG(Info) << "Shader 2D loaded";
 
 	initRenderData();
 
@@ -58,54 +58,32 @@ void Scene2D::initRenderData() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	LOG(Info) << "Scene2D initialized.";
+	//LOG(Info) << "Scene2D initialized.";
 }
 
-void Scene2D::setScreenSize(const glm::vec2 &screenSize) {
-	_screenSize = screenSize;
-	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
-}
-
-glm::vec2 Scene2D::getScreenSize() const {
-	return _screenSize;
+void Scene2D::setScale(const glm::vec2 &screenSize) {
+	Widget::setScale(screenSize);
+	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y, -1.0f, 1.0f);
 }
 
 glm::mat4 Scene2D::getProjectionMatrix() const {
 	return _projection;
 }
 
-void Scene2D::setEnable(bool enable) {
-	_enabled = enable;
-}
-
-bool Scene2D::isEnabled() const {
-	return _enabled;
-}
-
 void Scene2D::handleEvent(SDL_Event& evt) {
 	if (_enabled) {
 		if (evt.type == SDL_WINDOWEVENT) {
 			if (evt.window.event == SDL_WINDOWEVENT_RESIZED) {
-				setScreenSize(glm::vec2(evt.window.data1, evt.window.data2));
+				setScale(glm::vec2(evt.window.data1, evt.window.data2));
 			}
 		}
-		for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
-			auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
-			if (widgetChild) {
-				widgetChild->handleEvent(evt);
-			}
-		}
+		handleEventChildren(evt);
 	}
 }
 
 void Scene2D::update(float dt) {
 	if (_enabled) {
-		for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
-			auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
-			if (widgetChild) {
-				widgetChild->update(dt);
-			}
-		}
+		updateChildren(dt);
 	}
 }
 
@@ -119,21 +97,20 @@ void Scene2D::render() const {
 		glDisable(GL_TEXTURE_2D);
 
 		_shader2D->use();
-		glm::mat4 projection = glm::ortho(0.0f, _screenSize.x, _screenSize.y, 0.0f, -1.0f, 1.0f);
-		_shader2D->setMat4("projection", projection);
+		_shader2D->setMat4("projection", _projection);
 
 		glBindVertexArray(_vao);
-		for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
-			auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
-			if (widgetChild) {
-				widgetChild->render(*_shader2D.get());
-			}
-		}
+		renderChildren(*_shader2D.get());
 		glBindVertexArray(0);
 
 		// Restaurer les états OpenGL
 		glPopAttrib();
 	}
+}
+
+void Scene2D::render(const Shader &shader2D) const {
+	LOG(Warning) << "Scene2D::render(const Shader &shader2D) const is not implemented.";
+	render();
 }
 
 }

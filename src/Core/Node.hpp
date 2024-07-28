@@ -106,7 +106,6 @@ public:
     /// @brief Move the node to the bottom of the list of children
     void moveToBottom();
 
-
 private:
     std::string _name;
 

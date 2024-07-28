@@ -31,7 +31,8 @@ namespace Render2D {
 
 class Widget : public Node {
 public:
-	Widget(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
+	Widget(const std::string &name, std::shared_ptr<Widget> parent = nullptr,
+	const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(1.0f), float rotation = 0.0f, const glm::vec2 &rotateOrigin = glm::vec2(0.0f));
 	virtual ~Widget();
 
 /* -------- PROPERTIES -------- */
@@ -109,7 +110,7 @@ public:
 
 	/// @brief Handle an event
 	/// @param[in] evt Event
-	virtual void handleEvent(const SDL_Event& evt) = 0;
+	virtual void handleEvent(SDL_Event& evt) = 0;
 
 	bool isHovered() const;
 
@@ -140,7 +141,7 @@ protected:
 
 	bool _is_hovered;
 
-	void handleEventChildren(const SDL_Event &evt);
+	void handleEventChildren(SDL_Event& evt);
 	void updateChildren(float dt);
 	void renderChildren(const Shader &shader2D) const;
 };

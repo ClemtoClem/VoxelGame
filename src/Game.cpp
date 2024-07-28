@@ -54,12 +54,13 @@ bool Game::init(int argc, char *argv[]) {
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIB_STRIDE, &maxVertexAttribStride);
 	LOG(Info) << "Max vertex attrib stride: " << maxVertexAttribStride;
 
-	/*if (!_scene2D->init()) {
+	_scene2D = std::make_shared<Scene2D>();
+	if (!_scene2D->init()) {
 		LOG(Fatal) << "Failed to initialize 2D scene";
 		return false;
 	} else {
 		LOG(Debug) << "Init 2D scene success!";
-	}*/
+	}
 	
 	_camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 	_scene3D = std::make_shared<Scene3D>(_camera);
@@ -147,9 +148,11 @@ bool Game::load() {
 		unload();
 	}
 
-	LOG(Debug) << "Load game";
+	LOG(Debug) << "Load game ...";
 
 	// Load gui
+
+	auto panel = std::make_shared<Panel>("panel1", _scene2D, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
 
 	// Load game resources
 
@@ -335,7 +338,7 @@ void Game::run(int argc, char *argv[]) {
 		_window.warpMouseCenter();
 		firstMouse = true;
 	}
-	//_scene2D->setScreenSize(_window.getSize());
+	_scene2D->setScale(_window.getSize());
 
 	_running = true;
 
@@ -428,12 +431,12 @@ void Game::run(int argc, char *argv[]) {
 				}
 			}
 
-			//_scene2D->handleEvent(event);
+			_scene2D->handleEvent(event);
 			_scene3D->handleEvent(event);
 		}
 
 		// Mettre à jour la scène 2D
-		//_scene2D->update(deltaTime);
+		_scene2D->update(deltaTime);
 
 		// Mettre à jour la position de la caméra
 		_camera->processKeyboard(deltaTime, cameraMovement);
@@ -448,7 +451,7 @@ void Game::run(int argc, char *argv[]) {
 		_scene3D->render(_window.getRatio());
 
 		// Rendu de la scène 2D
-		//_scene2D->render();
+		_scene2D->render();
 
 		// Échange des buffers et mise à jour de l'écran
 		_window.GLSwap();

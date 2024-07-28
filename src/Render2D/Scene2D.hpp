@@ -26,7 +26,7 @@ namespace Render2D {
 
 const std::string PATH_SHADERS_2D = "./resources/shaders/";
 
-class Scene2D: public Node {
+class Scene2D : public Widget {
 public:
 	Scene2D(const glm::vec2 &screenSize = glm::vec2(1280, 720));
 	~Scene2D();
@@ -36,23 +36,12 @@ public:
 	bool init();
 
 	/// @brief Changer la taille de la scène
-	/// @param screenSize	Nouvelle taille de la scène
-	void setScreenSize(const glm::vec2 &screenSize);
-
-	/// @brief Récupérer la taille de la scène
-	/// @return Taille de la scène
-	glm::vec2 getScreenSize() const;
+	/// @param scale Nouvelle taille de la scène
+	void setScale(const glm::vec2 &scale) override;
 
 	/// @brief Réccipérer la matrice de projection de la scène
 	/// @return Matrice de projection de la scène
 	glm::mat4 getProjectionMatrix() const;
-
-	/// @brief Activer la scène
-	void setEnable(bool enable);
-
-	/// @brief Savoir si la scène est activée
-	/// @return True si la scène est activée, false sinon
-	bool isEnabled() const;
 
 	/// @brief Gérer les événements de la scène
 	/// @param evt 
@@ -64,6 +53,9 @@ public:
 	
 	/// @brief Afficher la scène
 	void render() const;
+
+	/// @brief Fonction de rendu de la scène désactivée
+	void render(const Shader &shader2D) const override;
 
 private:
 	/// @brief Initialiser les données de rendu de la scène

@@ -4,8 +4,11 @@
 
 namespace Render2D {
 
-Panel::Panel(const std::string &name, WidgetPtr parent, const glm::vec4 &color, const glm::vec4 &border_color, float border_width, float border_radius, const glm::vec4 &hover_color, const glm::vec4 &hover_border_color)
-	: Widget(name, parent), _color(color), _hover_color(hover_color), _border_color(border_color), _hover_border_color(hover_border_color), _border_width(border_width), _border_radius(border_radius) {
+Panel::Panel(const std::string &name, WidgetPtr parent,
+	const glm::vec2 &position, const glm::vec2 &scale,
+	const glm::vec4 &color, const glm::vec4 &border_color, float border_width, float border_radius, const glm::vec4 &hover_color, const glm::vec4 &hover_border_color)
+	: Widget(name, parent, position, scale),
+	 _color(color), _hover_color(hover_color), _border_color(border_color), _hover_border_color(hover_border_color), _border_width(border_width), _border_radius(border_radius) {
 }
 
 /* -------- PROPERTIES ------- */
@@ -58,7 +61,7 @@ float Panel::getBorderRadius() const {
     return _border_radius;
 }
 
-void Panel::handleEvent(const SDL_Event &evt) {
+void Panel::handleEvent(SDL_Event& evt) {
 	if (!_enabled) return;
 	if (evt.type == SDL_MOUSEMOTION) {
 		glm::vec2 mouse_pos = glm::vec2(evt.motion.x, evt.motion.y);

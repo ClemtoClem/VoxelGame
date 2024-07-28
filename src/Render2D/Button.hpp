@@ -13,7 +13,9 @@ namespace Render2D {
 
 class Button : public Widget {
 public:
-	Button(const std::string &name, WidgetPtr parent = nullptr, const std::string &text = "", const glm::vec4 &textColor = glm::vec4(1.0f), const glm::vec4 &backgroundColor = glm::vec4(0.0f));
+	Button(const std::string &name, WidgetPtr parent = nullptr, 
+		const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(100.0f, 30.0f),
+		const std::string &text = "", const glm::vec4 &textColor = glm::vec4(1.0f), const glm::vec4 &backgroundColor = glm::vec4(0.0f));
 
 	~Button();
 
@@ -91,7 +93,7 @@ public:
 
 	/// @brief Handle an event
 	/// @param[in] evt Event
-	void handleEvent(const SDL_Event &evt) override;
+	void handleEvent(SDL_Event& evt) override;
 
 /* --------- UPDATE ---------- */
 

@@ -14,6 +14,7 @@
 #define TEXT_HPP
 
 #include <SDL2/SDL_ttf.h>
+#include <glm/glm.hpp>
 #include <string>
 #include <memory>
 #include "../Core/Font.hpp"
@@ -25,7 +26,9 @@ namespace Render2D {
 
 class Text : public Widget {
 public:
-	Text(const std::string &name, WidgetPtr parent, const std::string &text = "", const std::string &font_name = "arial", int font_size = 12, const glm::vec4 &color = Color::BLACK, const glm::vec4 &hover_color = Color::BLACK);
+	Text(const std::string &name, WidgetPtr parent = nullptr,
+		const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(0.0f),
+		const std::string &text = "", const std::string &font_name = "arial", int font_size = 12, const glm::vec4 &color = Color::BLACK, const glm::vec4 &hover_color = Color::BLACK);
 	
 	~Text();
 
@@ -55,7 +58,7 @@ public:
 
 	/// @brief Handle an event
 	/// @param[in] evt Event
-	void handleEvent(const SDL_Event& evt) override;
+	void handleEvent(SDL_Event& evt) override;
 
 /* --------- UPDATE ---------- */
 
