@@ -20,80 +20,129 @@
 #include <unordered_map>
 #include <algorithm>
 #include <stdexcept>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <SDL2/SDL.h>
 #include "../Core/CustomException.hpp"
 #include "../Core/Shader.hpp"
-#include "../Core/Property.hpp"
+#include "../Core/Node.hpp"
 
 namespace Render2D {
 
-class Widget : public std::enable_shared_from_this<Widget> {
+class Widget : public Node {
 public:
 	Widget(const std::string &name, std::shared_ptr<Widget> parent = nullptr);
 	virtual ~Widget();
-	
-	const std::string &getName() const;
 
-	virtual void initProperties();
-	virtual void reset();
+/* -------- PROPERTIES -------- */
 
-	/// @brief Set the property value
-	template <typename T>
-	bool setProperty(const std::string &property_name, const T &value);
+	/// @brief Set position of the widget
+	/// @param[in] position New position
+	virtual void setPosition(const glm::vec2 &position);
 
-	/// @brief Get the property value
-	template <typename T>
-	T &getProperty(const std::string &property_name);
+	/// @brief Set size of the widget
+	/// @param[in] scale New size
+	virtual void setScale(const glm::vec2 &scale);
 
-	/// @brief Check if widget has a property
-	bool hasProperty(const std::string &property_name);
+	/// @brief Set rotation around the origin of the widget
+	/// @param[in] rotation New rotation
+	virtual void setRotate(float rotation);
 
-	/// @brief Add a child widget
-	void addChild(std::shared_ptr<Widget> child);
+	/// @brief Set rotation origin of the widget
+	/// @param[in] origin New rotation origin
+	virtual void setRotateOrigin(const glm::vec2 &origin);
 
-	/// @brief Get the child widget by name
-	std::shared_ptr<Widget> getChild(const std::string &name);
+	/// @brief Enable or disable the widget
+	virtual void SetEnable(bool enable);
 
-	/// Get number of children
-	size_t getNumberOfChildren() const;
-	
-	/// @brief Find a widget by path
-	std::shared_ptr<Widget> findWidget(const std::string &path);
+	/// @brief Get position of the widget
+	/// @retval glm::vec2 Position
+	virtual glm::vec2 getPosition() const;
 
-	/// @brief Set the parent widget
-	void setParent(std::shared_ptr<Widget> parent);
+	/// @brief Get size of the widget
+	/// @retval glm::vec2 Size
+	virtual glm::vec2 getScale() const;
 
-	/// @brief Check if widget has a parent
-	bool hasParent() const;
+	/// @brief Get rotation of the widget
+	/// @retval float Rotation
+	virtual float getRotate() const;
 
-	/// @brief Get the parent widget
-	std::shared_ptr<Widget> getParent() const;
+	/// @brief Get rotation origin of the widget
+	/// @retval glm::vec2 Rotation origin
+	virtual glm::vec2 getRotateOrigin() const;
 
-	/// @brief Detach a child widget by name
-	std::shared_ptr<Widget> detachChild(const std::string &name);
+	/// @brief Get enable status of the widget
+	/// @retval bool Enable status
+	virtual bool isEnable() const;
 
-	/// @brief Delete a child widget by name
-	void deleteChild(const std::string &name);
 
-	/// @brief Delete all children
-	void deleteChildren();
+/* ------ BOUNDING BOX ------- */
 
+	/// @brief Get the transformed bounding box
+	/// @returns std::array<glm::vec2, 4> Transformed bounding box
+	std::array<glm::vec2, 4> getTransformedBoundingBox() const;
+
+	/// @brief Check if the bounding box of the widget overlaps with another widget
+	/// @param[in] widget Widget to check
+	/// @retval bool True if the bounding box overlaps, false otherwise
+	bool overlapsWith(const Widget &widget) const;
+
+	/// @brief Check if the widget contains a point
+	/// @param[in] point Point to check
+	/// @retval bool True if the point is inside the widget, false otherwise
+	bool containsPoint(const glm::vec2 &point) const;
+
+protected:
+
+	/// @brief Update the transform matrix
+	/// @details Update the transform matrix if needed
+	void updateTransform();
+
+	/// @brief Axis-Aligned Bounding Box (AABB) from corners
+	/// @param[in] corners Corners of the AABB
+	/// @retval glm::vec4 AABB
+	glm::vec4 getAABB(const std::array<glm::vec2, 4> &corners) const;
+
+public:
+
+/* --------- EVENTS ---------- */
+
+	/// @brief Handle an event
+	/// @param[in] evt Event
 	virtual void handleEvent(const SDL_Event& evt) = 0;
+
+	bool isHovered() const;
+
+	bool isSelected() const;
+
+/* -------- UPDATING --------- */
+
+	/// @brief Update the widget
+	/// @param[in] dt Delta time
 	virtual void update(float dt) = 0;
+
+/* -------- RENDERING -------- */
+
+	/// @brief Render the widget
+	/// @param[in] shader2D Shader
 	virtual void render(const Shader &shader2D) const = 0;
 
 protected:
-	template <typename T>
-	void createProperty(const std::string &name, BaseProperty::Access access, T &value);
+
+	glm::vec2 _position;
+	glm::vec2 _scale;
+	float _angle;
+	glm::vec2 _rotateOrigin;
+	bool _enabled;
+
+	glm::mat4 _transform;
+	bool _needs_update_transform;
+
+	bool _is_hovered;
 
 	void handleEventChildren(const SDL_Event &evt);
 	void updateChildren(float dt);
 	void renderChildren(const Shader &shader2D) const;
-
-	std::shared_ptr<Widget> _parent;
-	std::vector<std::shared_ptr<Widget>> _children;
-
-	std::string _name;
-	std::unordered_map<std::string, std::shared_ptr<BaseProperty>> _properties;
 };
 
 using WidgetPtr = std::shared_ptr<Widget>;

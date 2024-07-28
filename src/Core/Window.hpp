@@ -46,6 +46,7 @@ public:
 	// Window dimensions
 	int getWidth() const;
 	int getHeight() const;
+	glm::vec2 getSize() const;
 	int getCenterX() const;
 	int getCenterY() const;
 	float getRatio() const;

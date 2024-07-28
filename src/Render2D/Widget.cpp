@@ -1,136 +1,165 @@
-#include <glm/gtc/matrix_transform.hpp>
-#include "../Core/Color.hpp"
-#include "../Core/Logger.hpp"
-#include "../Core/Utils.hpp"
-#include "../Core/Property.hpp"
 #include "Widget.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include "../Core/Logger.hpp"
 
 namespace Render2D {
 
 Widget::Widget(const std::string &name, std::shared_ptr<Widget> parent)
-	: _name(name), _parent(parent), _position(0.0f), _size(1.0f), _rotatePoint(0.5f), _angle(0.0f), _enable(true) {
-	if (parent) {
-		parent->addChild(shared_from_this());
-	}
+    : Node(name), _position(0.0f), _scale(1.0f), _angle(0.0f), _rotateOrigin(0.5f, 0.5f), _enabled(true), _needs_update_transform(true) {
+    if (parent) {
+        parent->addChild(shared_from_this());
+    }
 }
 
 Widget::~Widget() {
-	deleteChildren();
+    removeAllChildren();
 }
 
-const std::string &Widget::getName() const {
-	return _name;
+/* -------- PROPERTIES -------- */
+
+void Widget::setPosition(const glm::vec2 &position) {
+    _position = position;
+    _needs_update_transform = true;
 }
 
-void Widget::initProperties() {
-	createProperty("position", BaseProperty::Access::READ_WRITE, glm::vec2(0.0f));
-	createProperty("size", BaseProperty::Access::READ_WRITE, glm::vec2(1.0f));
-	createProperty("enable", BaseProperty::Access::READ_WRITE, true);
+void Widget::setScale(const glm::vec2 &scale) {
+    _scale = scale;
+    _needs_update_transform = true;
 }
 
-void Widget::reset() {
+void Widget::setRotate(float rotation) {
+    _angle = rotation;
+    _needs_update_transform = true;
 }
 
-bool Widget::hasProperty(const std::string &property_name) {
-	return _properties.find(property_name) != _properties.end();
+void Widget::setRotateOrigin(const glm::vec2 &origin) {
+    _rotateOrigin = origin;
+    _needs_update_transform = true;
 }
 
-void Widget::addChild(std::shared_ptr<Widget> child) {
-	if (child) {
-        child->setParent(shared_from_this());
-        _children.push_back(child);
+void Widget::SetEnable(bool enable) {
+    _enabled = enable;
+}
+
+glm::vec2 Widget::getPosition() const {
+    return _position;
+}
+
+glm::vec2 Widget::getScale() const {
+    return _scale;
+}
+
+float Widget::getRotate() const {
+    return _angle;
+}
+
+glm::vec2 Widget::getRotateOrigin() const {
+    return _rotateOrigin;
+}
+
+bool Widget::isEnable() const {
+    return _enabled;
+}
+
+/* ------ BOUNDING BOX ------- */
+
+std::array<glm::vec2, 4> Widget::getTransformedBoundingBox() const {
+    glm::vec2 halfSize = _scale * 0.5f;
+
+    // Local corners of the bounding box
+    std::array<glm::vec2, 4> corners = {
+        glm::vec2(-halfSize.x, -halfSize.y),
+        glm::vec2(halfSize.x, -halfSize.y),
+        glm::vec2(halfSize.x, halfSize.y),
+        glm::vec2(-halfSize.x, halfSize.y)
+    };
+
+    std::array<glm::vec2, 4> transformedCorners;
+    glm::mat4 transform = _transform;
+    for (int i = 0; i < 4; ++i) {
+        glm::vec4 transformedCorner = transform * glm::vec4(corners[i], 0.0f, 1.0f);
+        transformedCorners[i] = glm::vec2(transformedCorner);
+    }
+
+    return transformedCorners;
+}
+
+bool Widget::overlapsWith(const Widget &other) const {
+    auto bbox1 = getAABB(getTransformedBoundingBox());
+    auto bbox2 = getAABB(other.getTransformedBoundingBox());
+
+    // Check for overlap
+    return !(bbox1.z < bbox2.x || bbox1.x > bbox2.z || bbox1.w < bbox2.y || bbox1.y > bbox2.w);
+}
+
+bool Widget::containsPoint(const glm::vec2 &point) const {
+    glm::vec4 transformedPoint = glm::inverse(_transform) * glm::vec4(point, 0.0f, 1.0f);
+    glm::vec2 localPoint = glm::vec2(transformedPoint);
+
+    glm::vec2 halfSize = _scale * 0.5f;
+    return localPoint.x >= -halfSize.x && localPoint.x <= halfSize.x && localPoint.y >= -halfSize.y && localPoint.y <= halfSize.y;
+}
+
+void Widget::updateTransform() {
+    if (_needs_update_transform) {
+        glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(_position, 0.0f));
+        glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(_angle), glm::vec3(_rotateOrigin, 0.0f));
+        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(_scale, 1.0f));
+        _transform = translate * rotate * scale;
+        _needs_update_transform = false;
     }
 }
 
-size_t Widget::getNumberOfChildren() const {
-	return _children.size();
-}
-
-std::shared_ptr<Widget> Widget::getChild(const std::string &name) {
-	auto it = std::find_if(_children.begin(), _children.end(), [&](const std::shared_ptr<Widget> &child) {
-        return child->getName() == name;
-    });
-    if (it != _children.end()) {
-        return *it;
+glm::vec4 Widget::getAABB(const std::array<glm::vec2, 4> &corners) const {
+    glm::vec2 min = corners[0];
+    glm::vec2 max = corners[0];
+    for (const auto &corner : corners) {
+        min = glm::min(min, corner);
+        max = glm::max(max, corner);
     }
-    return nullptr;
+    return glm::vec4(min, max);
 }
 
-std::shared_ptr<Widget> Widget::findWidget(const std::string &path) {
-	size_t pos = path.find('/');
-    std::string current = path.substr(0, pos);
-    std::string remaining = pos == std::string::npos ? "" : path.substr(pos + 1);
-
-    if (current == _name) {
-        if (remaining.empty()) {
-            return shared_from_this();
-        } else {
-            for (auto &child : _children) {
-                std::shared_ptr<Widget> found = child->findWidget(remaining);
-                if (found) {
-                    return found;
-                }
-            }
-        }
-    }
-    return nullptr;
-}
-
-void Widget::setParent(std::shared_ptr<Widget> parent) {
-	_parent = parent;
-}
-
-bool Widget::hasParent() const {
-	return _parent != nullptr;
-}
-
-std::shared_ptr<Widget> Widget::getParent() const {
-	return _parent;
-}
-
-std::shared_ptr<Widget> Widget::detachChild(const std::string &name) {
-	auto it = std::remove_if(_children.begin(), _children.end(), [&](const std::shared_ptr<Widget> &child) {
-		return child->getName() == name;
-	});
-
-	if (it != _children.end()) {
-		auto child = *it;
-		_children.erase(it);
-		return child;
-	}
-	return nullptr;
-}
-
-void Widget::deleteChild(const std::string &name) {
-	auto it = std::remove_if(_children.begin(), _children.end(), [&](const std::shared_ptr<Widget> &child) {
-		return child->getName() == name;
-	});
-
-	if (it != _children.end()) {
-		_children.erase(it);
-	}
-}
-
-void Widget::deleteChildren() {
-	_children.clear();
-}
+/* -------- EVENTS ---------- */
 
 void Widget::handleEventChildren(const SDL_Event &evt) {
-	for (auto &child : _children) {
-		child->handleEvent(evt);
-	}
+    for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
+        auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
+        if (widgetChild) {
+            widgetChild->handleEvent(evt);
+        }
+    }
 }
+
+bool Widget::isHovered() const {
+    return _is_hovered;
+}
+
+bool Widget::isSelected() const
+{
+    return false;
+}
+
+/* -------- UPDATE ---------- */
 
 void Widget::updateChildren(float dt) {
-	for (auto &child : _children) {
-		child->update(dt);
-	}
+    for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
+        auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
+        if (widgetChild) {
+            widgetChild->update(dt);
+        }
+    }
 }
+
+/* -------- RENDER ---------- */
 
 void Widget::renderChildren(const Shader &shader2D) const {
-	for (auto &child : _children) {
-		child->render(shader2D);
-	}
+    for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
+        auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
+        if (widgetChild) {
+            widgetChild->render(shader2D);
+        }
+    }
 }
 
-}
+} // namespace Render2D

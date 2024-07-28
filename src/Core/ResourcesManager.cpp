@@ -1,5 +1,7 @@
 #include "ResourcesManager.hpp"
 
+std::shared_ptr<ResourcesManager> ResourcesManager::instance = nullptr;
+
 ResourcesManager::ResourcesManager()
 	: _imagesPath(IMAGES_PATH_DEFAULT),
 	  _shadersPath(SHADERS_PATH_DEFAULT),
@@ -7,8 +9,10 @@ ResourcesManager::ResourcesManager()
 	createDefaultTexture();
 }
 
-ResourcesManager &ResourcesManager::getInstance() {
-	static ResourcesManager instance;
+std::shared_ptr<ResourcesManager> ResourcesManager::getInstance() {
+	if (!instance) {
+		instance = std::make_shared<ResourcesManager>();
+	}
 	return instance;
 }
 
@@ -41,7 +45,7 @@ bool ResourcesManager::loadShader(const std::string &name, const std::string &ve
 
 bool ResourcesManager::loadFont(const std::string &name, const std::string &path) {
 	FontPtr font = std::make_shared<Font>();
-	if (!font->loadFromFile(path, 24)) {
+	if (!font->loadFromFile(path)) {
 		LOG(Error) << font->getError();
 		LOG(Error) << "Failed to load font: " << name << " from path: " << path;
 		return false;
@@ -82,12 +86,12 @@ FontPtr ResourcesManager::getFont(const std::string &name) {
 
 void ResourcesManager::createDefaultTexture() {
 	_defaultTexture = std::make_shared<Texture>();
-	_defaultTexture->create(16, 16);
+	std::vector<glm::vec4> pixels(16*16);
 	for (int y = 0; y < 16; ++y) {
 		for (int x = 0; x < 16; ++x) {
-			glm::vec4 color = ((x + y) % 2 == 0) ? glm::vec4(1.0, 0.0, 0.0, 1.0) : glm::vec4(0.0, 0.0, 0.0, 1.0);
-			_defaultTexture->setPixel(x, y, color);
+			glm::vec4 color = ((x + y) % 2 == 0) ? glm::vec4(Color::RED) : glm::vec4(Color::BLACK);
+			pixels[y * 16 + x] = color;
 		}
 	}
-	_defaultTexture->updateTexture();
+	_defaultTexture->createFromPixels(glm::vec2(16, 16), pixels);
 }

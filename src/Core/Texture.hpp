@@ -1,16 +1,3 @@
-/**
- *  _____          _				  
- * /__   \_____  _| |_ _   _ _ __ ___ 
- *   / /\/ _ \ \/ / __| | | | '__/ _ \
- *  / / |  __/>  <| |_| |_| | | |  __/
- *  \/   \___/_/\_\\__|\__,_|_|  \___|
- *
- * @file Texture.hpp
- * @author @ClemtoClem (https://github.com/ClemtoClem)
- * @date 09/07/2024
- * @brief Texture class
- */
-
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
@@ -25,35 +12,33 @@
 
 class Texture {
 public:
-	Texture();
-	Texture(int width, int height, const std::vector<glm::vec4> &pixels);
-	Texture(SDL_Surface *surface);
-	~Texture();
-	
-	// Méthode pour libérer la texture
-	void free();
+    Texture();
+    Texture(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter = false);
+    Texture(SDL_Surface *surface, bool linearOrNearestFilter = false);
+    ~Texture();
+    
+    // Méthode pour libérer la texture
+    void free();
 
-	bool loadFromFile(const std::string &path);
-	bool createFromSurface(SDL_Surface *surface);
+    bool loadFromFile(const std::string &path);
+    
+    void createFromPixels(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter = false);
+    bool createFromSDLSurface(SDL_Surface *surface, bool linearOrNearestFilter = false);
 
-	// Méthodes pour créer et modifier une texture arbitraire
-	void setPixel(int x, int y, const glm::vec4 &color);
-	glm::vec4 getPixel(int x, int y) const;
-	void updateTexture();
+    // Méthodes pour créer et modifier une texture arbitraire
+    void setPixel(const glm::ivec2 &position, const glm::vec4 &color);
+    glm::vec4 getPixel(const glm::ivec2 &position) const;
 
-	void use() const;
+    glm::ivec2 getSize() const;
 
-	// Méthodes d'accès aux propriétés de la texture
-	void create(int width, int height, const glm::vec4 &color = Color::WHITE);
-	int getWidth() const { return _width; }
-	int getHeight() const { return _height; }
-	GLuint getTextureID() const { return _textureID; }
+    void use() const;
+    void bind() const;
+    void unbind() const;
 
 private:
-	GLuint _textureID;
-	bool _isLoaded;
-	int _width, _height;
-	std::vector<glm::vec4> _pixels;
+    bool _isLoaded;
+    GLuint _textureID;
+    glm::ivec2 _size;
 };
 
 using TexturePtr = std::shared_ptr<Texture>;

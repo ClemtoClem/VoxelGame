@@ -5,83 +5,143 @@
 
 namespace Render2D {
 
-Button::Button(const std::string &name, WidgetPtr parent)
- : Widget(name, parent), _background(std::make_shared<Panel>(name + "_background", shared_from_this())), _text(std::make_shared<Text>(name + "_text", shared_from_this())) {
-	initProperties();
+Button::Button(const std::string &name, WidgetPtr parent, const std::string &text, const glm::vec4 &textColor, const glm::vec4 &backgroundColor)
+ : Widget(name, parent), _background(std::make_shared<Panel>("", nullptr, backgroundColor)), _text(std::make_shared<Text>("", nullptr, text)) {
+	_text->setColor(textColor);
+ }
+
+Button::~Button() {
 }
 
-void Button::initProperties() {
-	Widget::initProperties();
-	addChild(_background);
-	addChild(_text);
-	createProperty("background_color", Property::Access::READ_WRITE,
-		[this](const Property::Value &value) {
-			_background->setProperty("color", value);
-		},
-		[this]() -> Property::Value& {
-			return _background->getProperty("color");
-		}
-	);
-	createProperty("border_color", Property::Access::READ_WRITE,
-		[this](const Property::Value &value) {
-			_background->setProperty("border_color", value);
-		},
-		[this]() -> Property::Value& {
-			return _background->getProperty("border_color");
-		}
-	);
-	createProperty("border_width", Property::Access::READ_WRITE,
-		[this](const Property::Value &value) {
-			_background->setProperty("border_width", value);
-		},
-		[this]() -> Property::Value& {
-			return _background->getProperty("border_width");
-		}
-	);
-	createProperty("text_color", Property::Access::READ_WRITE,
-		[this](const Property::Value &value) {
-			_text->setProperty("color", value);
-		},
-		[this]() -> Property::Value& {
-			return _text->getProperty("color");
-		}
-	);
+void Button::setPosition(const glm::vec2 &position) {
+	Widget::setPosition(position);
+	_background->setPosition(position);
+	glm::vec2 text_position = (position + _scale/2.0f - _text->getScale()/2.0f);
+	_text->setPosition(text_position);
 }
 
-void Button::reset() {
-	Widget::reset();
-	_background->reset();
-	_text->reset();
+void Button::setScale(const glm::vec2 &scale) {
+	Widget::setScale(scale);
+	_background->setScale(scale);
+	//_text->setScale(scale);
+}
+
+void Button::setRotate(float rotation) {
+	Widget::setRotate(rotation);
+	_background->setRotate(rotation);
+	_text->setRotate(rotation);
+}
+
+void Button::setRotateOrigin(const glm::vec2 &origin) {
+	Widget::setRotateOrigin(origin);
+	_background->setRotateOrigin(origin);
+	_text->setRotateOrigin(origin);
 }
 
 void Button::setText(const std::string &text) {
 	_text->setText(text);
 }
 
-void Button::setFont(const std::shared_ptr<Font> &font) {
-	_text->setFont(font);
+void Button::setFontName(const std::string &font_name) {
+	_text->setFontName(font_name);
 }
 
 void Button::setTextColor(const glm::vec4 &color) {
 	_text->setColor(color);
 }
 
+void Button::setHoverTextColor(const glm::vec4 &color) {
+	_text->setHoverColor(color);
+}
+
 void Button::setBackgroundColor(const glm::vec4 &color) {
-	_background->setProperty("color", color);
+	_background->setColor(color);
+}
+
+void Button::setHoverBackgroundColor(const glm::vec4 &color) {
+	_background->setHoverColor(color);
+}
+
+void Button::setBorderColor(const glm::vec4 &color) {
+	_background->setBorderColor(color);
+}
+
+void Button::setHoverBorderColor(const glm::vec4 &color) {
+	_background->setHoverBorderColor(color);
+}
+
+void Button::setBorderWidth(float width) {
+	_background->setBorderWidth(width);
+}
+
+void Button::setBorderRadius(float radius) {
+	_background->setBorderRadius(radius);
+}
+
+const std::string &Button::getText() const {
+    return _text->getText();
+}
+
+const std::string &Button::getFontName() const {
+	return _text->getFontName();
+}
+
+const glm::vec4 &Button::getTextColor() const {
+	return _text->getColor();
+}
+
+const glm::vec4 &Button::getHoverTextColor() const {
+	return _text->getHoverColor();
+}
+
+const glm::vec4 &Button::getBackgroundColor() const {
+	return _background->getColor();
+}
+
+const glm::vec4 &Button::getHoverBackgroundColor() const {
+	return _background->getHoverColor();
+}
+
+const glm::vec4 &Button::getBorderColor() const {
+	return _background->getBorderColor();
+}
+
+const glm::vec4 &Button::getHoverBorderColor() const {
+	return _background->getHoverBorderColor();
+}
+
+float Button::getBorderWidth() const {
+	return _background->getBorderWidth();
+}
+
+float Button::getBorderRadius() const {
+	return _background->getBorderRadius();
 }
 
 void Button::handleEvent(const SDL_Event &evt) {
-	if (!_enable) return;
+	if (!_enabled) return;
 	// Gérer les événements spécifiques au bouton ici
+
+	_background->handleEvent(evt);
+	_text->handleEvent(evt);
+	if (_background->isHovered() || _text->isHovered()) {
+		_is_hovered = true;
+	} else {
+		_is_hovered = false;
+	}
+	handleEventChildren(evt);
 }
 
 void Button::update(float dt) {
-	if (!_enable) return;
+	if (!_enabled) return;
+
+	_background->update(dt);
+	_text->update(dt);
 	updateChildren(dt);
 }
 
 void Button::render(const Shader &shader2D) const {
-	if (!_enable) return;
+	if (!_enabled) return;
 
 	_background->render(shader2D);
 	_text->render(shader2D);

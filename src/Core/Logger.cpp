@@ -1,6 +1,6 @@
 #include "Logger.hpp"
 
-Logger *Logger::instance = nullptr;
+std::shared_ptr<Logger> Logger::instance = nullptr;
 
 Logger::Logger(bool removeLastFile) : _minLevel(Debug), _maxLevel(Fatal), _writeInTerminal(false) {
 	if (removeLastFile) {
@@ -22,8 +22,10 @@ void Logger::removeFile() {
 	}
 }
 
-Logger &Logger::getInstance() {
-	static Logger instance;
+std::shared_ptr<Logger> Logger::getInstance() {
+	if (instance == nullptr) {
+		instance = std::make_shared<Logger>();
+	}
 	return instance;
 }
 

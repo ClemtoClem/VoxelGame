@@ -32,15 +32,15 @@ public:
 	const std::string &getError() const;
 
 	bool loadFromFile(const std::string &path);
-	TexturePtr renderText(const std::string &text, const glm::vec4 &color) const;
+	TexturePtr renderText(const std::string &text) const;
 
-	void fontSize(int size);
-	int fontSize() const;
+	void setSize(int size);
+	int getSize() const;
 
 private:
-	TTF_Font* _font;
-	int _fontSize;
-	std::string _error;
+	TTF_Font* _sdl_font;
+	int _sdl_fontSize;
+	mutable std::string _error;
 
 	void free();
 };

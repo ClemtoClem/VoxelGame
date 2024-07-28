@@ -1,162 +1,156 @@
 #include "Texture.hpp"
+#include <stdexcept>
+#include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 #include "Logger.hpp"
 
-Texture::Texture() : _textureID(0), _isLoaded(false), _width(0), _height(0) {}
-
-Texture::Texture(int width, int height, const std::vector<glm::vec4> &pixels)
-	: _textureID(0), _isLoaded(false), _width(width), _height(height), _pixels(pixels) {
-	updateTexture();
+Texture::Texture()
+    : _isLoaded(false), _textureID(0), _size(0, 0) {
 }
 
-Texture::Texture(SDL_Surface *surface) : _textureID(0), _isLoaded(false), _width(0), _height(0) {
-	createFromSurface(surface);
+Texture::Texture(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter)
+    : Texture() {
+    createFromPixels(size, pixels, linearOrNearestFilter);
+}
+
+Texture::Texture(SDL_Surface *surface, bool linearOrNearestFilter)
+    : Texture() {
+    createFromSDLSurface(surface, linearOrNearestFilter);
 }
 
 Texture::~Texture() {
-	free();
+    free();
 }
 
 void Texture::free() {
-	if (_textureID != 0) {
-		glDeleteTextures(1, &_textureID);
-		_textureID = 0;
-	}
-	_isLoaded = false;
-	_pixels.clear();
+    if (_isLoaded) {
+        glDeleteTextures(1, &_textureID);
+        _isLoaded = false;
+    }
 }
 
 bool Texture::loadFromFile(const std::string &path) {
-	free();
-	
-	SDL_Surface *surface = IMG_Load(path.c_str());
-	if (!surface) {
-		LOG(Error) << "Failed to load texture: " << path << " " << IMG_GetError();
-		return false;
-	}
+    free(); // Free any existing texture
 
-	glGenTextures(1, &_textureID);
+    SDL_Surface *surface = IMG_Load(path.c_str());
+    if (!surface) {
+        LOG(Error) << "Failed to load image: " << IMG_GetError();
+        return false;
+    }
 
-	glBindTexture(GL_TEXTURE_2D, _textureID);
-
-	int mode = surface->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-	_width  = surface->w;
-	_height = surface->h;
-
-	glTexImage2D(GL_TEXTURE_2D, 0, mode, _width, _height, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
-
-	_pixels.resize(_width * _height);
-	float alpha = 1.0f;
-	for (int i = 0; i < _width * _height; i++) {
-		if (mode == GL_RGBA) {
-			alpha = static_cast<float>(_pixels[i].a) / 255.0f;
-		}
-		_pixels[i] = glm::vec4(
-			static_cast<float>(_pixels[i].r) / 255.0f,
-			static_cast<float>(_pixels[i].g) / 255.0f,
-			static_cast<float>(_pixels[i].b) / 255.0f,
-			alpha
-		);
-	}
-	
-	// Filtrage
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	SDL_FreeSurface(surface);
-
-	LOG(Debug) << "Load texture success";
-	_isLoaded = true;
-	return true;
+    bool success = createFromSDLSurface(surface);
+    SDL_FreeSurface(surface); // Free SDL surface after creating texture
+    return success;
 }
 
-bool Texture::createFromSurface(SDL_Surface *surface) {
-	if (!surface) {
-		LOG(Error) << "Failed to create texture from surface: " << IMG_GetError();
-		return false;
-	}
+void Texture::createFromPixels(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter) {
+    free(); // Free any existing texture
 
-	free();
+    _size = size;
+    glGenTextures(1, &_textureID);
+    glBindTexture(GL_TEXTURE_2D, _textureID);
 
-	glGenTextures(1, &_textureID);
+    GLenum format = GL_RGBA;
+    GLenum type = GL_FLOAT;
 
-	glBindTexture(GL_TEXTURE_2D, _textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, size.x, size.y, 0, format, type, pixels.data());
 
-	int mode = surface->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-	_width  = surface->w;
-	_height = surface->h;
+    if (linearOrNearestFilter) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 
-	glTexImage2D(GL_TEXTURE_2D, 0, mode, _width, _height, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	_pixels.resize(_width * _height);
-	float alpha = 1.0f;
-	for (int i = 0; i < _width * _height; i++) {
-		if (mode == GL_RGBA) {
-			alpha = static_cast<float>(_pixels[i].a) / 255.0f;
-		}
-		_pixels[i] = glm::vec4(
-			static_cast<float>(_pixels[i].r) / 255.0f,
-			static_cast<float>(_pixels[i].g) / 255.0f,
-			static_cast<float>(_pixels[i].b) / 255.0f,
-			alpha
-		);
-	}
-	
-	// Filtrage
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	LOG(Debug) << "Load texture success";
-	_isLoaded = true;
-	return true;
+    glBindTexture(GL_TEXTURE_2D, 0);
+    _isLoaded = true;
 }
 
-void Texture::create(int width, int height, const glm::vec4 &color) {
-	free();
+bool Texture::createFromSDLSurface(SDL_Surface *surface, bool linearOrNearestFilter) {
+    if (!surface) return false;
 
-	_width = width;
-	_height = height;
-	_pixels.resize(_width * _height, color);
+    _size = glm::ivec2(surface->w, surface->h);
 
-	updateTexture();
-	_isLoaded = true;
+    GLenum format;
+    if (surface->format->BytesPerPixel == 4) {
+        format = (surface->format->Rmask == 0x000000ff) ? GL_RGBA : GL_BGRA;
+    } else {
+        format = GL_RGB;
+    }
+
+    createFromPixels(_size, std::vector<glm::vec4>(surface->w * surface->h), linearOrNearestFilter);
+
+    glBindTexture(GL_TEXTURE_2D, _textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    if (linearOrNearestFilter) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return true;
 }
 
-void Texture::setPixel(int x, int y, const glm::vec4 &color) {
-	if (x < 0 || x >= _width || y < 0 || y >= _height) {
-		LOG(Error) << "Pixel coordinates out of bounds: (" << x << ", " << y << ")";
-		return;
-	}
-	_pixels[(y * _width) + x] = color;
+void Texture::setPixel(const glm::ivec2 &position, const glm::vec4 &color) {
+    if (!_isLoaded) {
+        LOG(Error) << "Texture is not loaded";
+        return;
+    }
+
+    // Update texture pixel
+    glBindTexture(GL_TEXTURE_2D, _textureID);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, position.x, position.y, 1, 1, GL_RGBA, GL_FLOAT, &color);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-glm::vec4 Texture::getPixel(int x, int y) const {
-	if (x < 0 || x >= _width || y < 0 || y >= _height) {
-		LOG(Error) << "Pixel coordinates out of bounds: (" << x << ", " << y << ")";
-		return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // Return default color if out of bounds
-	}
-	return _pixels[(y * _width) + x];
+glm::vec4 Texture::getPixel(const glm::ivec2 &position) const {
+    if (!_isLoaded) {
+        LOG(Error) << "Texture is not loaded";
+        return glm::vec4(0.0f);
+    }
+
+    // Read pixel from texture (only works if the texture is set to GL_READ_WRITE)
+    glBindTexture(GL_TEXTURE_2D, _textureID);
+    glm::vec4 color;
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, glm::value_ptr(color));
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return color;
 }
 
-void Texture::updateTexture() {
-	if (_width == 0 || _height == 0) {
-		LOG(Error) << "Cannot update texture: texture is not initialized";
-		return;
-	}
-
-	if (_textureID == 0) {
-		glGenTextures(1, &_textureID);
-	}
-	
-	glBindTexture(GL_TEXTURE_2D, _textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_FLOAT, _pixels.data());
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, 0);
+glm::ivec2 Texture::getSize() const {
+    return _size;
 }
 
 void Texture::use() const {
-	glBindTexture(GL_TEXTURE_2D, _textureID);
+    if (!_isLoaded) {
+        LOG(Error) << "Texture is not loaded";
+        return;
+    }
+    glBindTexture(GL_TEXTURE_2D, _textureID);
+}
+
+void Texture::bind() const {
+    if (!_isLoaded) {
+        LOG(Error) << "Texture is not loaded";
+        return;
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, _textureID);
+}
+
+void Texture::unbind() const {
+    glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
 }

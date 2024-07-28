@@ -36,7 +36,7 @@ enum LogLevel {
 
 class Logger {
 public:
-	static Logger *instance;
+	static std::shared_ptr<Logger> instance;
 
 	using Stream = std::ostringstream;
 	using Buffer_p = std::unique_ptr<Stream, std::function<void(Stream*)>>;
@@ -45,7 +45,7 @@ public:
 
 	virtual ~Logger();
 
-	static Logger &getInstance();
+	static std::shared_ptr<Logger> getInstance();
 
 	void removeFile();
 	void enableWriteInTerminal();
@@ -77,7 +77,7 @@ private:
 	std::string _msg_file;
 	int _msg_line;
 
-	static std::mutex _mutex; // Ajout du mutex pour la synchronisation
+	std::mutex _mutex; // Ajout du mutex pour la synchronisation
 
 	static std::string getLabel(LogLevel type);
 	static std::string getColor(LogLevel type);
@@ -87,9 +87,11 @@ private:
 	Logger &operator=(const Logger &) = delete;
 };
 
-#define LOG(level) (*Logger::getInstance().log(level, __FILE__, __LINE__))
-#define LOG_SEPARATION(sig) Logger::getInstance().write_separation(sig);
-#define LOG_BREAK_LINE() Logger::getInstance().write_break_line();
+#define LOG_TERMINAL_ENABLE() Logger::getInstance()->enableWriteInTerminal();
+#define LOG_REMOVE_FILE() Logger::getInstance()->removeFile();
+#define LOG(level) (*Logger::getInstance()->log(level, __FILE__, __LINE__))
+#define LOG_SEPARATION(sig) Logger::getInstance()->write_separation(sig);
+#define LOG_BREAK_LINE() Logger::getInstance()->write_break_line();
 
 inline void LogTest() {
 	LOG_SEPARATION('-');

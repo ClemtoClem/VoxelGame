@@ -24,9 +24,9 @@
 #include "Shader.hpp"
 #include "Logger.hpp"
 
-const std::string IMAGES_PATH_DEFAULT = "./resources/images/";
+const std::string IMAGES_PATH_DEFAULT  = "./resources/images/";
 const std::string SHADERS_PATH_DEFAULT = "./resources/shaders/";
-const std::string FONTS_PATH_DEFAULT = "./resources/fonts/";
+const std::string FONTS_PATH_DEFAULT   = "./resources/fonts/";
 
 enum class ResourceType {
 	TEXTURE,
@@ -45,7 +45,7 @@ class ResourcesManager {
 public:
 	ResourcesManager();
 
-	static ResourcesManager &getInstance();
+	static std::shared_ptr<ResourcesManager> getInstance();
 
 	void setPaths(const std::string &images_path, const std::string &shaders_path, const std::string &fonts_path);
 
@@ -57,6 +57,9 @@ public:
 	std::shared_ptr<Shader> getShader(const std::string &name);
 	std::shared_ptr<Font> getFont(const std::string &name);
 
+
+	static std::shared_ptr<ResourcesManager> instance;
+
 private:
 	std::vector<Resource> _resources;
 	std::string _imagesPath, _shadersPath, _fontsPath;
@@ -64,5 +67,7 @@ private:
 	void createDefaultTexture();
 	std::shared_ptr<Texture> _defaultTexture;
 };
+
+using ResourcesManagerPtr = std::shared_ptr<ResourcesManager>;
 
 #endif // RESOURCES_MANAGER_HPP

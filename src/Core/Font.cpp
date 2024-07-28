@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 
-Font::Font() : _font(nullptr), _fontSize(24) {
+Font::Font() : _sdl_font(nullptr), _sdl_fontSize(24) {
 }
 
 Font::~Font() {
@@ -14,9 +14,9 @@ Font::~Font() {
 }
 
 void Font::free() {
-	if (_font) {
-		TTF_CloseFont(_font);
-		_font = nullptr;
+	if (_sdl_font) {
+		TTF_CloseFont(_sdl_font);
+		_sdl_font = nullptr;
 	}
 }
 
@@ -30,28 +30,21 @@ const std::string &Font::getError() const {
 
 bool Font::loadFromFile(const std::string &path) {
 	free();
-	_font = TTF_OpenFont(path.c_str(), _fontSize);
-	if (!_font) {
+	_sdl_font = TTF_OpenFont(path.c_str(), _sdl_fontSize);
+	if (!_sdl_font) {
 		_error = "Failed to load font: " + std::string(TTF_GetError());
 		return false;
 	}
 	return true;
 }
 
-TexturePtr Font::renderText(const std::string &text, const glm::vec4 &color) const {
-	if (!_font) {
+TexturePtr Font::renderText(const std::string &text) const {
+	if (!_sdl_font) {
 		_error = "Font not loaded!";
 		return nullptr;
 	}
 
-	SDL_Color sdlcolor = {
-		static_cast<Uint8>(color.r * 255),
-		static_cast<Uint8>(color.g * 255),
-		static_cast<Uint8>(color.b * 255),
-		static_cast<Uint8>(color.a * 255)
-	};
-
-	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), sdlcolor);
+	SDL_Surface* surface = TTF_RenderText_Blended(_sdl_font, text.c_str(), SDL_Color{ 0xFF, 0xFF, 0xFF, 0xFF});
 	if (!surface) {
 		_error = "Failed to render text: " + std::string(TTF_GetError());
 		return nullptr;
@@ -63,13 +56,13 @@ TexturePtr Font::renderText(const std::string &text, const glm::vec4 &color) con
 	return texture;
 }
 
-void Font::fontSize(int size) {
-	_fontSize = size;
-	if (_font) {
-		TTF_SetFontSize(_font, _fontSize);
+void Font::setSize(int size) {
+	_sdl_fontSize = size;
+	if (_sdl_font) {
+		TTF_SetFontSize(_sdl_font, _sdl_fontSize);
 	}
 }
 
-int Font::fontSize() const {
-	return _fontSize;
+int Font::getSize() const {
+	return _sdl_fontSize;
 }

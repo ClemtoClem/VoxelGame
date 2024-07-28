@@ -94,6 +94,10 @@ int Window::getHeight() const {
 	return _height;
 }
 
+glm::vec2 Window::getSize() const {
+    return glm::vec2(static_cast<float>(_width), static_cast<float>(_height));
+}
+
 int Window::getCenterX() const {
 	return _centerX;
 }

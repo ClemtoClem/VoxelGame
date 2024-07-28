@@ -24,7 +24,6 @@
 
 #include "Core/ResourcesManager.hpp"
 #include "Core/Window.hpp"
-#include "Core/Scene.hpp"
 #include "Core/Utils.hpp"
 #include "Render2D/Scene2D.hpp"
 #include "Render3D/Scene3D.hpp"
@@ -71,7 +70,7 @@ private:
 	bool _running;
 
 	Window		         _window;
-	ResourcesManager     _resourcesManager;
+	std::shared_ptr<ResourcesManager> _resourcesManager;
 
 	Render3D::CameraPtr  _camera;
 	Render3D::Scene3DPtr _scene3D;

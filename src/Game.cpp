@@ -9,14 +9,14 @@
 #include "Render3D/Entities/Stair.hpp"
 #include "Render3D/Entities/InnerStair.hpp"
 
-#include "Render2D/Frame.hpp"
+#include "Render2D/Panel.hpp"
 #include "Render2D/Button.hpp"
 #include "Render2D/Text.hpp"
 
 using namespace Render2D;
 using namespace Render3D;
 
-Game::Game() : _isLoad(false), _running(false), _window("OpenGL with SDL2", 800, 600), _gui() {
+Game::Game() : _isLoad(false), _running(false), _window("OpenGL with SDL2", 800, 600) {
 	setPerformanceFrequency(60.0f);
 }
 
@@ -28,7 +28,7 @@ Game::~Game() {
 /* - - - - - - - - - - - - - - - - - - - - */
 
 bool Game::init(int argc, char *argv[]) {
-	Logger::getInstance().enableWriteInTerminal();
+	LOG_TERMINAL_ENABLE();
 
 	if (!initSDL()) {
 		LOG(Fatal) << "Failed to initialize SDL";
@@ -54,28 +54,33 @@ bool Game::init(int argc, char *argv[]) {
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIB_STRIDE, &maxVertexAttribStride);
 	LOG(Info) << "Max vertex attrib stride: " << maxVertexAttribStride;
 
-	if (!_scene2D->init()) {
+	/*if (!_scene2D->init()) {
 		LOG(Fatal) << "Failed to initialize 2D scene";
 		return false;
-	}
+	} else {
+		LOG(Debug) << "Init 2D scene success!";
+	}*/
 	
 	_camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 	_scene3D = std::make_shared<Scene3D>(_camera);
 	if (!_scene3D->init()) {
 		LOG(Fatal) << "Failed to initialize 3D scene";
 		return false;
+	} else {
+		LOG(Debug) << "Init 3D scene success!";
 	}
 
 	/* Import resources */
 	bool result = true;
-	result &= _resourcesManager.loadTexture("concrete_front",  IMAGE_PATH + "concrete_front.png");
-	result &= _resourcesManager.loadTexture("concrete_back",   IMAGE_PATH + "concrete_back.png");
-	result &= _resourcesManager.loadTexture("concrete_left",   IMAGE_PATH + "concrete_left.png");
-	result &= _resourcesManager.loadTexture("concrete_right",  IMAGE_PATH + "concrete_right.png");
-	result &= _resourcesManager.loadTexture("concrete_top",	IMAGE_PATH + "concrete_top.png");
-	result &= _resourcesManager.loadTexture("concrete_bottom", IMAGE_PATH + "concrete_bottom.png");
-	result &= _resourcesManager.loadTexture("bricks_wall",	 IMAGE_PATH + "bricks_wall.jpg");
-	result &= _resourcesManager.loadTexture("wood_planks",	 IMAGE_PATH + "wood_planks.jpg");
+	_resourcesManager = ResourcesManager::getInstance();
+	result &= _resourcesManager->loadTexture("concrete_front",  IMAGE_PATH + "concrete_front.png");
+	result &= _resourcesManager->loadTexture("concrete_back",   IMAGE_PATH + "concrete_back.png");
+	result &= _resourcesManager->loadTexture("concrete_left",   IMAGE_PATH + "concrete_left.png");
+	result &= _resourcesManager->loadTexture("concrete_right",  IMAGE_PATH + "concrete_right.png");
+	result &= _resourcesManager->loadTexture("concrete_top",	IMAGE_PATH + "concrete_top.png");
+	result &= _resourcesManager->loadTexture("concrete_bottom", IMAGE_PATH + "concrete_bottom.png");
+	result &= _resourcesManager->loadTexture("bricks_wall",	 IMAGE_PATH + "bricks_wall.jpg");
+	result &= _resourcesManager->loadTexture("wood_planks",	 IMAGE_PATH + "wood_planks.jpg");
 
 	if (!result) {
 		LOG(Fatal) << "Failed to load resources";
@@ -142,9 +147,9 @@ bool Game::load() {
 		unload();
 	}
 
-	// Load gui
+	LOG(Debug) << "Load game";
 
-		
+	// Load gui
 
 	// Load game resources
 
@@ -153,40 +158,42 @@ bool Game::load() {
 	std::array<TexturePtr, 6> textures_block3;
 	try {
 		textures_block1 = {
-			_resourcesManager.getTexture("concrete_front"),
-			_resourcesManager.getTexture("concrete_back"),
-			_resourcesManager.getTexture("concrete_left"),
-			_resourcesManager.getTexture("concrete_right"),
-			_resourcesManager.getTexture("concrete_top"),
-			_resourcesManager.getTexture("concrete_bottom")
+			_resourcesManager->getTexture("concrete_front"),
+			_resourcesManager->getTexture("concrete_back"),
+			_resourcesManager->getTexture("concrete_left"),
+			_resourcesManager->getTexture("concrete_right"),
+			_resourcesManager->getTexture("concrete_top"),
+			_resourcesManager->getTexture("concrete_bottom")
 		};
 		for (auto texture : textures_block1) {
 			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
 
 		textures_block2 = {
-			_resourcesManager.getTexture("bricks_wall"),
-			_resourcesManager.getTexture("bricks_wall"),
-			_resourcesManager.getTexture("bricks_wall"),
-			_resourcesManager.getTexture("bricks_wall"),
-			_resourcesManager.getTexture("bricks_wall"),
-			_resourcesManager.getTexture("bricks_wall")
+			_resourcesManager->getTexture("bricks_wall"),
+			_resourcesManager->getTexture("bricks_wall"),
+			_resourcesManager->getTexture("bricks_wall"),
+			_resourcesManager->getTexture("bricks_wall"),
+			_resourcesManager->getTexture("bricks_wall"),
+			_resourcesManager->getTexture("bricks_wall")
 		};
 		for (auto texture : textures_block2) {
 			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
 
 		textures_block3 = {
-			_resourcesManager.getTexture("wood_planks"),
-			_resourcesManager.getTexture("wood_planks"),
-			_resourcesManager.getTexture("wood_planks"),
-			_resourcesManager.getTexture("wood_planks"),
-			_resourcesManager.getTexture("wood_planks"),
-			_resourcesManager.getTexture("wood_planks")
+			_resourcesManager->getTexture("wood_planks"),
+			_resourcesManager->getTexture("wood_planks"),
+			_resourcesManager->getTexture("wood_planks"),
+			_resourcesManager->getTexture("wood_planks"),
+			_resourcesManager->getTexture("wood_planks"),
+			_resourcesManager->getTexture("wood_planks")
 		};
 		for (auto texture : textures_block3) {
 			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
+
+		LOG(Debug) << "Load game resources success!";
 	} catch(const CustomException& e) {
 		e.generateLog();
 		if (e.getLevel() == Fatal) {
@@ -277,6 +284,8 @@ bool Game::load() {
 		_scene3D->addEntity(inner_stair_block4);
 
 		_camera->setPosition(glm::vec3(0.0f, 3.0f, 3.0f));
+
+		LOG(Debug) << "Load scene success!";
 	} catch (const CustomException& e) {
 		e.generateLog();
 		if (e.getLevel() == Fatal) {
@@ -291,7 +300,7 @@ bool Game::load() {
 
 void Game::unload() {
 	if (_isLoad) {
-		_scene2D->reset();
+		//_scene2D->reset();
 		_scene3D->reset();
 		_isLoad = false;
 	}
@@ -326,7 +335,7 @@ void Game::run(int argc, char *argv[]) {
 		_window.warpMouseCenter();
 		firstMouse = true;
 	}
-	_scene2D->setScreenSize(_window.getWidth(), _window.getHeight());
+	//_scene2D->setScreenSize(_window.getSize());
 
 	_running = true;
 
@@ -419,12 +428,12 @@ void Game::run(int argc, char *argv[]) {
 				}
 			}
 
-			_scene2D->handleEvent(event);
+			//_scene2D->handleEvent(event);
 			_scene3D->handleEvent(event);
 		}
 
 		// Mettre à jour la scène 2D
-		_scene2D->update(deltaTime);
+		//_scene2D->update(deltaTime);
 
 		// Mettre à jour la position de la caméra
 		_camera->processKeyboard(deltaTime, cameraMovement);
@@ -439,7 +448,7 @@ void Game::run(int argc, char *argv[]) {
 		_scene3D->render(_window.getRatio());
 
 		// Rendu de la scène 2D
-		_scene2D->render();
+		//_scene2D->render();
 
 		// Échange des buffers et mise à jour de l'écran
 		_window.GLSwap();

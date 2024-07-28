@@ -13,7 +13,6 @@
 #ifndef TEXT_HPP
 #define TEXT_HPP
 
-#include <GL/glew.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <memory>
@@ -21,24 +20,64 @@
 #include "../Core/Texture.hpp"
 #include "../Core/Color.hpp"
 #include "Widget.hpp"
-#include "Property.hpp"
 
 namespace Render2D {
 
 class Text : public Widget {
 public:
-	Text(const std::string &name, WidgetPtr parent);
+	Text(const std::string &name, WidgetPtr parent, const std::string &text = "", const std::string &font_name = "arial", int font_size = 12, const glm::vec4 &color = Color::BLACK, const glm::vec4 &hover_color = Color::BLACK);
+	
 	~Text();
 
-	void initProperties();
-	void reset();
+/* -------- PROPERTIES ------- */
 
+	void setText(const std::string &text);
+
+	void setFontName(const std::string &font_name);
+
+	void setFontSize(int size);
+
+	void setColor(const glm::vec4 &color);
+
+	void setHoverColor(const glm::vec4 &color);
+
+	const std::string &getText() const;
+
+	const std::string &getFontName() const;
+
+	int getFontSize() const;
+
+	const glm::vec4 &getColor() const;
+
+	const glm::vec4 &getHoverColor() const;
+
+/* --------- EVENTS ---------- */
+
+	/// @brief Handle an event
+	/// @param[in] evt Event
 	void handleEvent(const SDL_Event& evt) override;
+
+/* --------- UPDATE ---------- */
+
+	/// @brief Update the widget
+	/// @param[in] dt Delta time
 	void update(float dt) override;
+
+/* --------- RENDER ---------- */
+
+	/// @brief Render the widget
+	/// @param[in] shader2D Shader
 	void render(const Shader &shader2D) const override;
 
 private:
-	std::shared_ptr<Texture> _texture;
+	std::string _text;
+	std::string _font_name;
+	int         _font_size;
+	glm::vec4   _color;
+	glm::vec4   _hover_color;
+
+	FontPtr _font;
+	TexturePtr _texture;
 };
 
 } // namespace Render2D

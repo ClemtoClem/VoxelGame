@@ -7,7 +7,7 @@
 
 namespace Render2D {
 
-Scene2D::Scene2D(const glm::vec2 &screenSize) : _screenSize(screenSize), _enabled(true) {
+Scene2D::Scene2D(const glm::vec2 &screenSize) : Node(""), _screenSize(screenSize), _enabled(true) {
 	_projection = glm::ortho(0.0f, screenSize.x, 0.0f, screenSize.y);
 }
 
@@ -16,13 +16,14 @@ Scene2D::~Scene2D() {
 	glDeleteBuffers(1, &_vbo);
 }
 
-bool Scene2D::init() {	
+bool Scene2D::init() {
 	_shader2D = std::make_shared<Shader>(PATH_SHADERS_2D + "vertex_shader_2d.glsl", PATH_SHADERS_2D + "fragment_shader_2d.glsl");
 	const std::string &err = _shader2D->getError();
 	if (!err.empty()) {
 		LOG(Error) << err;
 		return false;
 	}
+	LOG(Info) << "Shader 2D loaded";
 
 	initRenderData();
 
@@ -56,13 +57,9 @@ void Scene2D::initRenderData() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	LOG(Info) << "Scene2D initialized.";
 }
-
-void Scene2D::reset() {
-	deleteChilden();
-}
-
-
 
 void Scene2D::setScreenSize(const glm::vec2 &screenSize) {
 	_screenSize = screenSize;
@@ -77,58 +74,12 @@ glm::mat4 Scene2D::getProjectionMatrix() const {
 	return _projection;
 }
 
-void Scene2D::disable() {
-	_enabled = false;
-}
-
-void Scene2D::enable() {
-	_enabled = true;
+void Scene2D::setEnable(bool enable) {
+	_enabled = enable;
 }
 
 bool Scene2D::isEnabled() const {
 	return _enabled;
-}
-
-void Scene2D::drawRectangle(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color) {
-	if (_enabled) {
-
-	}
-}
-
-void Scene2D::drawImage(const Texture &texture, const glm::vec2 &position, const glm::vec2 &size) {
-	if (_enabled) {
-
-	}
-}
-
-void Scene2D::drawText(Font &font, const std::string &text, const glm::vec2 &position, const glm::vec4 &color)
-{
-}
-
-void Scene2D::addChild(std::shared_ptr<Widget> widget) {
-	_children.push_back(widget);
-}
-
-void Scene2D::deleteChild(const std::string &name) {
-	for (auto it = _children.begin(); it!= _children.end(); ++it) {
-		if ((*it)->getName() == name) {
-			_children.erase(it);
-			return;
-		}
-	}
-}
-
-std::shared_ptr<Widget> Scene2D::getChild(const std::string &name) const {
-	for (auto& widget : _children) {
-		if (widget->getName() == name) {
-			return widget;
-		}
-	}
-	return nullptr;
-}
-
-void Scene2D::deleteChilden() {
-	_children.clear();
 }
 
 void Scene2D::handleEvent(SDL_Event& evt) {
@@ -138,16 +89,22 @@ void Scene2D::handleEvent(SDL_Event& evt) {
 				setScreenSize(glm::vec2(evt.window.data1, evt.window.data2));
 			}
 		}
-		for (auto& widget : _children) {
-			widget->handleEvent(evt);
+		for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
+			auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
+			if (widgetChild) {
+				widgetChild->handleEvent(evt);
+			}
 		}
 	}
 }
 
 void Scene2D::update(float dt) {
 	if (_enabled) {
-		for (auto& widget : _children) {
-			widget->update(dt);
+		for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
+			auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
+			if (widgetChild) {
+				widgetChild->update(dt);
+			}
 		}
 	}
 }
@@ -166,8 +123,11 @@ void Scene2D::render() const {
 		_shader2D->setMat4("projection", projection);
 
 		glBindVertexArray(_vao);
-		for (const auto& widget : _children) {
-			widget->render(*_shader2D.get());
+		for (auto child = getFirstChild(); child != nullptr; child = child->getNext()) {
+			auto widgetChild = std::dynamic_pointer_cast<Widget>(child);
+			if (widgetChild) {
+				widgetChild->render(*_shader2D.get());
+			}
 		}
 		glBindVertexArray(0);
 
