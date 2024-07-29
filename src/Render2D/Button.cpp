@@ -4,6 +4,13 @@
 #include <iostream>
 
 namespace Render2D {
+std::shared_ptr<Button> Button::create(const std::string &name, WidgetPtr parent,
+	const glm::vec2 &position, const glm::vec2 &scale,
+	const std::string &text, const glm::vec4 &textColor, const glm::vec4 &backgroundColor) {
+	auto button_ptr = std::make_shared<Button>(name, parent, position, scale, text, textColor, backgroundColor);
+	button_ptr->init();
+	return button_ptr;
+}
 
 Button::Button(const std::string &name, WidgetPtr parent, 
 	const glm::vec2 &position, const glm::vec2 &scale,

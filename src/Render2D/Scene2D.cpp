@@ -17,6 +17,9 @@ Scene2D::~Scene2D() {
 }
 
 bool Scene2D::init() {
+	if (!Widget::init()) {
+		return false;
+	}
 	_shader2D = std::make_shared<Shader>(PATH_SHADERS_2D + "vertex_shader_2d.glsl", PATH_SHADERS_2D + "fragment_shader_2d.glsl");
 	const std::string &err = _shader2D->getError();
 	if (!err.empty()) {

@@ -3,16 +3,24 @@
 #include "../Core/Logger.hpp"
 
 namespace Render2D {
-
-Widget::Widget(const std::string &name, std::shared_ptr<Widget> parent, const glm::vec2 &position, const glm::vec2 &scale, float rotation, const glm::vec2 &rotateOrigin)
-    : Node(name), _position(position), _scale(scale), _angle(rotation), _rotateOrigin(rotateOrigin), _enabled(true), _needs_update_transform(true) {
-    if (parent) {
-        parent->addChild(shared_from_this());
-    }
-}
+Widget::Widget(const std::string &name, std::shared_ptr<Widget> parent,
+    const glm::vec2 &position, const glm::vec2 &scale, float rotation, const glm::vec2 &rotateOrigin)
+    : Node(name), _position(position), _scale(scale), _angle(rotation), _rotateOrigin(rotateOrigin), _enabled(true), _needs_update_transform(true), _is_init(false) {}
 
 Widget::~Widget() {
-    removeAllChildren();
+    deleteAllChildren();
+}
+
+bool Widget::init() {
+    if (getParent() && !_is_init) {
+        LOG(Info) << "Added widget \"" << getName() << "\" to parent \"" << getParent()->getName() << "\"";
+        if (!getParent()->insertChildToBottom(shared_from_this())) {
+            LOG(Error) << "Failed to add widget \"" << getName() << "\" to parent \"" << getParent()->getName() << "\"";
+            return false;
+        }
+        _is_init = true;
+    }
+    return true;
 }
 
 /* -------- PROPERTIES -------- */

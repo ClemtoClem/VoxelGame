@@ -33,7 +33,7 @@ public:
 
 	/// @brief Initialiser la scène
 	/// @return Return true si la scène a été initialisée avec succès, false sinon
-	bool init();
+	bool init() override;
 
 	/// @brief Changer la taille de la scène
 	/// @param scale Nouvelle taille de la scène

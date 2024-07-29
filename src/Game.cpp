@@ -151,8 +151,14 @@ bool Game::load() {
 	LOG(Debug) << "Load game ...";
 
 	// Load gui
+	try {
+		auto panel = Panel::create("panel1", _scene2D, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
 
-	auto panel = std::make_shared<Panel>("panel1", _scene2D, glm::vec2(0.0f, 0.0f), glm::vec2(100.0f, 100.0f));
+
+	} catch (const std::exception& e) {
+		LOG(Fatal) << "Failed to load gui: " << e.what();
+		return false;
+	}
 
 	// Load game resources
 

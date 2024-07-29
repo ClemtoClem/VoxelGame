@@ -32,8 +32,14 @@ namespace Render2D {
 class Widget : public Node {
 public:
 	Widget(const std::string &name, std::shared_ptr<Widget> parent = nullptr,
-	const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(1.0f), float rotation = 0.0f, const glm::vec2 &rotateOrigin = glm::vec2(0.0f));
+		const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(1.0f), float rotation = 0.0f, const glm::vec2 &rotateOrigin = glm::vec2(0.5f));
+
 	virtual ~Widget();
+
+	/// @brief Initialize the widget
+	/// @note This function must be called in the derived function
+	/// @retval true If the widget is initialized
+	virtual bool init();
 
 /* -------- PROPERTIES -------- */
 
@@ -97,6 +103,7 @@ protected:
 
 	/// @brief Update the transform matrix
 	/// @details Update the transform matrix if needed
+	/// @note This function must be called in the derived function 'void update(float dt)'
 	void updateTransform();
 
 	/// @brief Axis-Aligned Bounding Box (AABB) from corners
@@ -140,6 +147,7 @@ protected:
 	bool _needs_update_transform;
 
 	bool _is_hovered;
+	bool _is_init;
 
 	void handleEventChildren(SDL_Event& evt);
 	void updateChildren(float dt);

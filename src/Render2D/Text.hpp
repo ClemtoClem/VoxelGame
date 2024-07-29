@@ -24,12 +24,17 @@
 
 namespace Render2D {
 
-class Text : public Widget {
+class Text : public Widget, public std::enable_shared_from_this<Text> {
 public:
+	static std::shared_ptr<Text> create(const std::string &name, WidgetPtr parent = nullptr,
+		const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(0.0f),
+		const std::string &text = "", const std::string &font_name = "arial", int font_size = 12, const glm::vec4 &color = Color::BLACK, const glm::vec4 &hover_color = Color::BLACK);
+
 	Text(const std::string &name, WidgetPtr parent = nullptr,
 		const glm::vec2 &position = glm::vec2(0.0f), const glm::vec2 &scale = glm::vec2(0.0f),
 		const std::string &text = "", const std::string &font_name = "arial", int font_size = 12, const glm::vec4 &color = Color::BLACK, const glm::vec4 &hover_color = Color::BLACK);
-	
+
+public:
 	~Text();
 
 /* -------- PROPERTIES ------- */

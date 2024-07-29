@@ -1,20 +1,22 @@
 #include "Node.hpp"
 #include <iostream>
+#include <vector>
 #include "Logger.hpp"
 
 // Constructor
 Node::Node(const std::string &name) 
-    : _name(name), 
-      _parent(nullptr), 
-      _firstChild(nullptr), 
-      _lastChild(nullptr), 
-      _childCount(0), 
-      _previous(nullptr), 
-      _next(nullptr) {}
+    : _name(name),
+      _id(generateId()),
+      _childCount(0) {}
 
 // Destructor
 Node::~Node() {
-    removeAllChildren();
+    deleteAllChildren();
+}
+
+size_t Node::generateId() {
+    static size_t id = 0;
+    return ++id;
 }
 
 /* Setters */
@@ -37,13 +39,16 @@ void Node::setNext(std::shared_ptr<Node> next) {
 
 /* Getters */
 
-const std::string &Node::getName() const
-{
+const std::string &Node::getName() const {
     return _name;
 }
 
+size_t Node::getId() const {
+    return _id;
+}
+
 std::shared_ptr<Node> Node::getParent() const {
-    return _parent;
+    return _parent.lock();
 }
 
 std::shared_ptr<Node> Node::getFirstChild() const {
@@ -55,7 +60,7 @@ std::shared_ptr<Node> Node::getLastChild() const {
 }
 
 std::shared_ptr<Node> Node::getPrevious() const {
-    return _previous;
+    return _previous.lock();
 }
 
 std::shared_ptr<Node> Node::getNext() const {
@@ -64,12 +69,27 @@ std::shared_ptr<Node> Node::getNext() const {
 
 /* Methods to manage children */
 
-bool Node::addChild(std::shared_ptr<Node> child) {
+bool Node::insertChildToTop(std::shared_ptr<Node> child) {
     if (!child) return false;
-    if (getChild(child->getName())) {
-        LOG(Warning) << "Child '" << child->getName() << "' already exists";
-        return false;
+    removeChild(child);
+
+    child->setParent(shared_from_this());
+
+    if (!_firstChild) {
+        _firstChild = child;
+        _lastChild = child;
+    } else {
+        _firstChild->setPrevious(child);
+        child->setNext(_firstChild);
+        _firstChild = child;
     }
+    _childCount++;
+    return true;
+}
+
+bool Node::insertChildToBottom(std::shared_ptr<Node> child) {
+    if (!child) return false;
+    removeChild(child);
     
     child->setParent(shared_from_this());
 
@@ -81,14 +101,30 @@ bool Node::addChild(std::shared_ptr<Node> child) {
         child->setPrevious(_lastChild);
         _lastChild = child;
     }
-    ++_childCount;
+    _childCount++;
     return true;
 }
 
-void Node::removeChild(std::shared_ptr<Node> child) {
-    if (!child && _childCount > 0) return;
+bool Node::insertChild(std::shared_ptr<Node> child, size_t index) {
+    if (!child) return false;
+    removeChild(child);
+    
+    if (index < _childCount) {
+        auto node = getChildByIndex(index);
+        child->setNext(node);
+        child->setPrevious(node->getPrevious());
+        node->setPrevious(child);
+        if (child->getPrevious()) {
+            child->getPrevious()->setNext(child);
+        }
+        return true;
+    }
+    return false;
+}
 
-    if (child->getParent() != shared_from_this()) return;
+void Node::removeChild(std::shared_ptr<Node> child) {
+    if (!child || _childCount == 0) return;
+    if (child->getParent().get() != this) return;
 
     if (child == _firstChild) {
         _firstChild = child->getNext();
@@ -109,12 +145,13 @@ void Node::removeChild(std::shared_ptr<Node> child) {
     child->setParent(nullptr);
     child->setPrevious(nullptr);
     child->setNext(nullptr);
-    --_childCount;
+    _childCount--;
 }
 
-void Node::removeAllChildren() {
+void Node::deleteAllChildren() {
     while (_firstChild) {
         removeChild(_firstChild);
+        _firstChild.reset();
     }
 }
 
@@ -122,19 +159,8 @@ size_t Node::getChildCount() const {
     return _childCount;
 }
 
-std::shared_ptr<Node> Node::detachChild(const std::string &name) {
-    if (_childCount == 0 || name.empty()) return nullptr;
-
-    auto child = getChild(name);
-    if (!child) return nullptr;
-
-    removeChild(child);
-
-    return child;
-}
-
 // Method to get child by name
-std::shared_ptr<Node> Node::getChild(const std::string &name) {
+std::shared_ptr<Node> Node::getChildByName(const std::string &name) {
     if (_childCount == 0 || name.empty()) return nullptr;
 
     auto child = _firstChild;
@@ -147,30 +173,139 @@ std::shared_ptr<Node> Node::getChild(const std::string &name) {
     return nullptr;
 }
 
+std::shared_ptr<Node> Node::getChildByIndex(size_t index) {
+    if (_childCount == 0) return nullptr;
+    if (index >= _childCount) return nullptr;
+    if (index == 0) return _firstChild;
+    if (index == _childCount - 1) return _lastChild;
+
+    auto child = _firstChild;
+    size_t ind = 0;
+    while (child) {
+        if (ind == index) {
+            return child;
+        }
+        child = child->getNext();
+        ind++;
+    }
+    return nullptr;
+}
+
+std::shared_ptr<Node> Node::getChildByID(size_t id) {
+    if (_childCount == 0) return nullptr;
+
+    auto child = _firstChild;
+    while (child) {
+        if (child->getId() == id) {
+            return child;
+        }
+        child = child->getNext();
+    }
+    return nullptr;
+}
+
 // Method to find child by path
-std::shared_ptr<Node> Node::findChild(const std::string &path) {
+std::shared_ptr<Node> Node::getNodeByPath(const std::string &path) {
     if (_childCount == 0 || path.empty()) return nullptr;
 
-    size_t pos = path.find('/');
-    std::string current = path.substr(0, pos);
-    std::string remaining = pos == std::string::npos ? "" : path.substr(pos + 1);
-    auto child = getChild(current);
-    return child ? (remaining.empty() ? child : child->findChild(remaining)) : nullptr;
+    // token the path by '/'
+    std::vector<std::string> tokens;
+    std::string token;
+    for (char c : path) {
+        if (c == '/') {
+            tokens.push_back(token);
+            token.clear();
+        } else {
+            token += c;
+        }
+    }
+
+    // search for the node
+    std::shared_ptr<Node> current = nullptr;
+    for (auto &token : tokens) {
+        if (token.empty()) continue;
+        if (token == "@" ) { // get root node
+            if (!current) {
+                current = getRootNode();
+            } else {
+                current = current->getParent();
+            }
+        } else if (token == "..") { // go up one level
+            if (!current) {
+                LOG(Warning) << "Invalid path '" << path << "'";
+                return nullptr;
+            } else {
+                current = current->getParent();
+                if (!current) {
+                    LOG(Warning) << "Invalid path '" << path << "'";
+                    return nullptr;
+                }
+            }
+        } else if (token == ".") { // stay on the same node
+            current = shared_from_this();
+        } else { // get child node
+            if (!current) {
+                LOG(Warning) << "Invalid path '" << path << "'";
+                return nullptr;
+            }
+            current = current->getChildByName(token);
+            if (!current) {
+                LOG(Warning) << "Invalid path '" << path << "'";
+                return nullptr;
+            }
+        }
+    }
+    return current;
+}
+
+static std::shared_ptr<Node> _getNodeByID(std::shared_ptr<Node> node, const size_t id) {
+    if (node->getId() == id) {
+        return node;
+    }
+    if (node->getChildCount() == 0) return nullptr;
+
+    auto child = node->getFirstChild();
+    while (child) {
+        if (child->getId() == id) {
+            break;
+        } else {
+            child = _getNodeByID(child, id);
+        }
+        child = child->getNext();
+    }
+    return child;
+}
+
+std::shared_ptr<Node> Node::getNodeByID(const size_t id) {
+    if (_childCount == 0) return nullptr;
+
+    auto root = getRootNode();
+    if (root->getId() == id) {
+        return root;
+    }
+    return _getNodeByID(root, id);
+}
+
+std::shared_ptr<Node> Node::getRootNode() {
+    if (auto parent = _parent.lock()) {
+        return parent->getRootNode();
+    }
+    return shared_from_this();
 }
 
 /* Methods to manage node order */
 
 void Node::moveToFront() {
-    if (!_previous) return;
+    if (!_previous.lock()) return;
 
-    auto previous = _previous;
-    auto next = _next;
+    auto previous = _previous.lock();
+    auto next     = _next;
 
     // Update the previous node
-    if (previous->getPrevious()) {
-        previous->getPrevious()->setNext(shared_from_this());
+    if (auto prevPrev = previous->getPrevious()) {
+        prevPrev->setNext(shared_from_this());
     } else {
-        _parent->_firstChild = shared_from_this();
+        _parent.lock()->_firstChild = shared_from_this();
     }
 
     previous->setNext(next);
@@ -180,7 +315,7 @@ void Node::moveToFront() {
     if (next) {
         next->setPrevious(previous);
     } else {
-        _parent->_lastChild = previous;
+        _parent.lock()->_lastChild = previous;
     }
 
     setNext(previous);
@@ -190,14 +325,14 @@ void Node::moveToFront() {
 void Node::moveToBack() {
     if (!_next) return;
 
-    auto previous = _previous;
+    auto previous = _previous.lock();
     auto next = _next;
 
     // Update the next node
-    if (next->getNext()) {
-        next->getNext()->setPrevious(shared_from_this());
+    if (auto nextNext = next->getNext()) {
+        nextNext->setPrevious(shared_from_this());
     } else {
-        _parent->_lastChild = shared_from_this();
+        _parent.lock()->_lastChild = shared_from_this();
     }
 
     next->setPrevious(previous);
@@ -207,7 +342,7 @@ void Node::moveToBack() {
     if (previous) {
         previous->setNext(next);
     } else {
-        _parent->_firstChild = next;
+        _parent.lock()->_firstChild = next;
     }
 
     setPrevious(next);
@@ -215,15 +350,15 @@ void Node::moveToBack() {
 }
 
 void Node::moveToTop() {
-    if (!_previous) return;
+    if (!_previous.lock()) return;
 
-    auto previous = _previous;
+    auto previous = _previous.lock();
     auto next = _next;
 
     if (next) {
         next->setPrevious(previous);
     } else {
-        _parent->_lastChild = previous;
+        _parent.lock()->_lastChild = previous;
     }
 
     if (previous) {
@@ -231,25 +366,25 @@ void Node::moveToTop() {
     }
 
     setPrevious(nullptr);
-    setNext(_parent->_firstChild);
+    setNext(_parent.lock()->_firstChild);
 
-    if (_parent->_firstChild) {
-        _parent->_firstChild->setPrevious(shared_from_this());
+    if (_parent.lock()->_firstChild) {
+        _parent.lock()->_firstChild->setPrevious(shared_from_this());
     }
 
-    _parent->_firstChild = shared_from_this();
+    _parent.lock()->_firstChild = shared_from_this();
 }
 
 void Node::moveToBottom() {
     if (!_next) return;
 
-    auto previous = _previous;
+    auto previous = _previous.lock();
     auto next = _next;
 
     if (previous) {
         previous->setNext(next);
     } else {
-        _parent->_firstChild = next;
+        _parent.lock()->_firstChild = next;
     }
 
     if (next) {
@@ -257,11 +392,25 @@ void Node::moveToBottom() {
     }
 
     setNext(nullptr);
-    setPrevious(_parent->_lastChild);
+    setPrevious(_parent.lock()->_lastChild);
 
-    if (_parent->_lastChild) {
-        _parent->_lastChild->setNext(shared_from_this());
+    if (_parent.lock()->_lastChild) {
+        _parent.lock()->_lastChild->setNext(shared_from_this());
     }
 
-    _parent->_lastChild = shared_from_this();
+    _parent.lock()->_lastChild = shared_from_this();
+}
+
+bool Node::moveToIndex(size_t index) {
+    if (!_parent.lock()) return false;
+    if (_parent.lock()->_childCount == 0) return false;
+
+    if (index == 0) {
+        moveToTop();
+    } else if (index == _parent.lock()->_childCount - 1) {
+        moveToBottom();
+    } else if (index < _parent.lock()->_childCount) {
+        insertChild(shared_from_this(), index);
+    }
+    return true;
 }

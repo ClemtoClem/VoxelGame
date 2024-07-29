@@ -4,6 +4,12 @@
 
 namespace Render2D {
 
+std::shared_ptr<Panel> Panel::create(const std::string &name, WidgetPtr parent, const glm::vec2 &position, const glm::vec2 &scale, const glm::vec4 &color, const glm::vec4 &border_color, float border_width, float border_radius, const glm::vec4 &hover_color, const glm::vec4 &hover_border_color) {
+    auto panel_ptr = std::make_shared<Panel>(name, parent, position, scale, color, border_color, border_width, border_radius, hover_color, hover_border_color);
+	panel_ptr->init();
+	return panel_ptr;
+}
+
 Panel::Panel(const std::string &name, WidgetPtr parent,
 	const glm::vec2 &position, const glm::vec2 &scale,
 	const glm::vec4 &color, const glm::vec4 &border_color, float border_width, float border_radius, const glm::vec4 &hover_color, const glm::vec4 &hover_border_color)
@@ -11,10 +17,14 @@ Panel::Panel(const std::string &name, WidgetPtr parent,
 	 _color(color), _hover_color(hover_color), _border_color(border_color), _hover_border_color(hover_border_color), _border_width(border_width), _border_radius(border_radius) {
 }
 
+Panel::~Panel() {
+}
+
 /* -------- PROPERTIES ------- */
 
-void Panel::setColor(const glm::vec4 &color) {
-	_color = color;
+void Panel::setColor(const glm::vec4 &color)
+{
+    _color = color;
 }
 
 void Panel::setHoverColor(const glm::vec4 &color) {

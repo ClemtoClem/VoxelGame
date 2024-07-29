@@ -6,6 +6,13 @@
 #include "../Core/ResourcesManager.hpp"
 
 namespace Render2D {
+std::shared_ptr<Text> Text::create(const std::string &name, WidgetPtr parent,
+	const glm::vec2 &position, const glm::vec2 &scale,
+	const std::string &text, const std::string &font_name, int font_size, const glm::vec4 &color, const glm::vec4 &hover_color) {
+	auto text_ptr = std::make_shared<Text>(name, parent, position, scale, text, font_name, font_size, color, hover_color);
+	text_ptr->init();
+	return text_ptr;
+}
 
 Text::Text(const std::string &name, WidgetPtr parent,
 	const glm::vec2 &position, const glm::vec2 &scale,
