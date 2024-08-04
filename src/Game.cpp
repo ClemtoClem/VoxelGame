@@ -410,6 +410,9 @@ void Game::run(int argc, char *argv[]) {
 							firstMouse = true;
 						}
 						break;
+					case SDLK_F11:
+						_window.toggleFullscreen();
+						break;
 				}
 			} else if (event.type == SDL_KEYUP) {
 				switch (event.key.keysym.sym) {

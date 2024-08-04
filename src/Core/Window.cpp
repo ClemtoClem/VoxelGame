@@ -110,6 +110,15 @@ float Window::getRatio() const {
 	return _ratio;
 }
 
+void Window::toggleFullscreen() {
+	_fullScreen = !_fullScreen;
+	SDL_SetWindowFullscreen(_window, _fullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+}
+
+bool Window::isFullScreen() const {
+	return _fullScreen;
+}
+
 bool Window::hasMouseFocus() const {
 	return _mouseFocus;
 }

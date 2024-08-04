@@ -50,6 +50,8 @@ public:
 	int getCenterX() const;
 	int getCenterY() const;
 	float getRatio() const;
+	void toggleFullscreen();
+	bool isFullScreen() const;
 
 	// Window focus
 	bool hasMouseFocus() const;
