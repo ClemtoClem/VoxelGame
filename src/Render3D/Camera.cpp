@@ -6,14 +6,14 @@ namespace Render3D {
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	: _position(position), _worldUp(up), _yaw(yaw), _pitch(pitch), 
 	  _movementSpeed(MOVEMENT_LOW_SPEED), _movementLowSpeed(MOVEMENT_LOW_SPEED), _movementHighSpeed(MOVEMENT_HIGH_SPEED),
-	  _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
+	  _mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM), _freeMovement(true) {
 	updateCameraVectors();
 }
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
 	: _position(posX, posY, posZ), _worldUp(upX, upY, upZ), _yaw(yaw), _pitch(pitch),
 	_movementSpeed(MOVEMENT_LOW_SPEED), _movementLowSpeed(MOVEMENT_LOW_SPEED), _movementHighSpeed(MOVEMENT_HIGH_SPEED),
-	_mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM) {
+	_mouseSensitivity(MOUSE_SENSITIVITY), _zoom(ZOOM), _freeMovement(true) {
 	updateCameraVectors();
 }
 
@@ -48,10 +48,10 @@ void Camera::processMouseMovement(float xoffset, float yoffset) {
 	_yaw += xoffset;
 	_pitch += yoffset;
 
-	if (_pitch > 89.0f)
-		_pitch = 89.0f;
-	if (_pitch < -89.0f)
-		_pitch = -89.0f;
+	if (_pitch > MAX_PITCH)
+		_pitch = MAX_PITCH;
+	if (_pitch < MIN_PITCH)
+		_pitch = MIN_PITCH;
 
 	updateCameraVectors();
 }
@@ -119,6 +119,14 @@ void Camera::movementSpeedUp() {
 
 void Camera::movementSpeedDown() {
 	_movementSpeed = _movementLowSpeed;
+}
+
+void Camera::setFreeMovement(bool freeMovement) {
+	_freeMovement = freeMovement;
+}
+
+bool Camera::isFreeMovement() const {
+	return _freeMovement;
 }
 
 void Camera::updateCameraVectors() {

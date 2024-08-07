@@ -43,12 +43,33 @@ bool Texture::loadFromFile(const std::string &path) {
     return success;
 }
 
-void Texture::createFromPixels(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter) {
+bool Texture::createFromPixels(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter) {
+    if (size.x <= 0 || size.y <= 0) {
+        LOG(Error) << "Invalid texture size";
+        return false;
+    }
+    if (pixels.size() != static_cast<size_t>(size.x * size.y)) {
+        LOG(Error) << "Pixel data size does not match texture size";
+        return false;
+    }
+    if (pixels.empty()) {
+        LOG(Error) << "Pixel data is empty";
+        return false;
+    }
     free(); // Free any existing texture
 
     _size = size;
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glGenTextures(1, &_textureID);
     glBindTexture(GL_TEXTURE_2D, _textureID);
+
+    if (!_textureID) {
+        LOG(Error) << "Failed to create texture from pixels";
+        return false;
+    }
 
     GLenum format = GL_RGBA;
     GLenum type = GL_FLOAT;
@@ -67,11 +88,17 @@ void Texture::createFromPixels(const glm::ivec2 &size, const std::vector<glm::ve
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
     _isLoaded = true;
+    return true;
 }
 
 bool Texture::createFromSDLSurface(SDL_Surface *surface, bool linearOrNearestFilter) {
-    if (!surface) return false;
+    if (!surface) {
+        LOG(Error) << "Invalid SDL surface";
+        return false;
+    }
+    free(); // Free any existing texture
 
     _size = glm::ivec2(surface->w, surface->h);
 
@@ -82,9 +109,17 @@ bool Texture::createFromSDLSurface(SDL_Surface *surface, bool linearOrNearestFil
         format = GL_RGB;
     }
 
-    createFromPixels(_size, std::vector<glm::vec4>(surface->w * surface->h), linearOrNearestFilter);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glGenTextures(1, &_textureID);
     glBindTexture(GL_TEXTURE_2D, _textureID);
+
+    if (!_textureID) {
+        LOG(Error) << "Failed to create texture from SDL surface";
+        return false;
+    }
+
     glTexImage2D(GL_TEXTURE_2D, 0, format, surface->w, surface->h, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -99,6 +134,8 @@ bool Texture::createFromSDLSurface(SDL_Surface *surface, bool linearOrNearestFil
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    _isLoaded = true;
     return true;
 }
 
@@ -138,6 +175,8 @@ void Texture::use() const {
         LOG(Error) << "Texture is not loaded";
         return;
     }
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, _textureID);
 }
 
@@ -147,6 +186,8 @@ void Texture::bind() const {
         return;
     }
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, _textureID);
 }
 

@@ -60,11 +60,15 @@ public:
 	virtual void setRotateOrigin(const glm::vec2 &origin);
 
 	/// @brief Enable or disable the widget
-	virtual void SetEnable(bool enable);
+	virtual void setEnable(bool enable);
 
 	/// @brief Get position of the widget
 	/// @retval glm::vec2 Position
 	virtual glm::vec2 getPosition() const;
+
+	/// @brief Get absolute position of the widget
+	/// @return glm::vec2 Absolute position
+	virtual glm::vec2 getAbsolutePosition() const;
 
 	/// @brief Get size of the widget
 	/// @retval glm::vec2 Size
@@ -148,6 +152,8 @@ protected:
 
 	bool _is_hovered;
 	bool _is_init;
+
+	GLuint _vao, _vbo;
 
 	void handleEventChildren(SDL_Event& evt);
 	void updateChildren(float dt);

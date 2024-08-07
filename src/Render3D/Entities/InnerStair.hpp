@@ -154,7 +154,7 @@ inline const std::vector<unsigned int> INNER_STAIR_INDICES = {
 	//	Step 1
 	16, 17, 18, 18, 19, 16,
 	//	Step 2
-	21, 22, 22, 23, 20,
+	21, 22, 22, 23, 20, 21,
 	// Step 3
 	24, 25, 26, 26, 27, 24,
 	// Step 4

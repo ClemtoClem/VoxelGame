@@ -22,7 +22,7 @@ public:
 
     bool loadFromFile(const std::string &path);
     
-    void createFromPixels(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter = false);
+    bool createFromPixels(const glm::ivec2 &size, const std::vector<glm::vec4> &pixels, bool linearOrNearestFilter = false);
     bool createFromSDLSurface(SDL_Surface *surface, bool linearOrNearestFilter = false);
 
     // Méthodes pour créer et modifier une texture arbitraire

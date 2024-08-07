@@ -22,7 +22,9 @@ namespace Render3D {
 
 // Default camera values
 const float YAW					= -90.0f;
-const float PITCH	   		=  0.0f;
+const float PITCH	   		    =  0.0f;
+const float MIN_PITCH			= -89.0f;
+const float MAX_PITCH			=  89.0f;
 const float MOVEMENT_LOW_SPEED	=  2.5f;
 const float MOVEMENT_HIGH_SPEED	=  10.0f;
 const float MOUSE_SENSITIVITY	=  0.1f;
@@ -69,6 +71,9 @@ public:
 	void movementSpeedUp();
 	void movementSpeedDown();
 
+	void setFreeMovement(bool freeMovement);
+	bool isFreeMovement() const;
+
 private:
 	void updateCameraVectors();
 
@@ -83,6 +88,7 @@ private:
 	float _movementSpeed, _movementLowSpeed, _movementHighSpeed;
 	float _mouseSensitivity;
 	float _zoom;
+	bool _freeMovement;
 };
 
 using CameraPtr = std::shared_ptr<Camera>;

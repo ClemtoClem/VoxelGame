@@ -7,7 +7,7 @@ SOURCES   := $(shell find $(SRCDIR) -type f -name *.cpp)
 OBJECTS   := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(addsuffix .o,$(basename $(SOURCES))))
 DEPS	  := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(addsuffix .d,$(basename $(SOURCES))))
 CFLAGS	:= -Wall -D_GNU_SOURCE -g
-LIB	   := $(shell sdl2-config --libs) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lGL -lGLEW
+LIB	   := $(shell sdl2-config --libs) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lGL -lGLEW -lGLU
 INC	   := $(shell sdl2-config --cflags)
 
 GREEN=`tput setaf 2`

@@ -22,6 +22,8 @@ public:
 
 public:
 	~Panel();
+
+	virtual bool init() override;
 	
 /* -------- PROPERTIES ------- */
 

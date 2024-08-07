@@ -112,10 +112,7 @@ void Text::update(float dt) {
         _texture = _font->renderText(_text);
     }
 
-    if (_needs_update_transform) {
-        updateTransform();
-    }
-
+    updateTransform();
     updateChildren(dt);
 }
 

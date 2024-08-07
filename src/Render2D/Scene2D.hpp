@@ -57,10 +57,7 @@ public:
 	/// @brief Fonction de rendu de la scène désactivée
 	void render(const Shader &shader2D) const override;
 
-private:
-	/// @brief Initialiser les données de rendu de la scène
-	void initRenderData();
-	
+private:	
 	glm::vec2 _screenSize;
 	glm::mat4 _projection;
 	

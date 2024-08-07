@@ -45,12 +45,20 @@ void Widget::setRotateOrigin(const glm::vec2 &origin) {
     _needs_update_transform = true;
 }
 
-void Widget::SetEnable(bool enable) {
+void Widget::setEnable(bool enable) {
     _enabled = enable;
 }
 
 glm::vec2 Widget::getPosition() const {
     return _position;
+}
+
+glm::vec2 Widget::getAbsolutePosition() const {
+    if (getParent()) {
+        return _position + std::dynamic_pointer_cast<Widget>(getParent())->getAbsolutePosition();
+    } else {
+        return _position;
+    }
 }
 
 glm::vec2 Widget::getScale() const {
@@ -110,7 +118,8 @@ bool Widget::containsPoint(const glm::vec2 &point) const {
 
 void Widget::updateTransform() {
     if (_needs_update_transform) {
-        glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(_position, 0.0f));
+	    glm::vec2 absolute_pos = getAbsolutePosition();
+        glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(absolute_pos, 0.0f));
         glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(_angle), glm::vec3(_rotateOrigin, 0.0f));
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(_scale, 1.0f));
         _transform = translate * rotate * scale;

@@ -20,6 +20,36 @@ Panel::Panel(const std::string &name, WidgetPtr parent,
 Panel::~Panel() {
 }
 
+bool Panel::init() {
+	if (!Widget::init()) {
+		return false;
+	}
+
+	// Define vertices and texture coordinates for a full-screen quad
+    GLfloat vertices[] = {
+		0.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f
+	};
+
+    glGenVertexArrays(1, &_vao);
+	glGenBuffers(1, &_vbo);
+
+	glBindVertexArray(_vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+    return true;
+}
+
 /* -------- PROPERTIES ------- */
 
 void Panel::setColor(const glm::vec4 &color)
@@ -86,12 +116,38 @@ void Panel::handleEvent(SDL_Event& evt) {
 
 void Panel::update(float dt) {
 	if (!_enabled) return;
+	updateTransform();
 	updateChildren(dt);
 }
 
+// Render the panel
 void Panel::render(const Shader &shader2D) const {
 	if (!_enabled) return;
-	// Render the panel
+
+	// Activate the shader
+	shader2D.use();
+
+	// Drawing
+	shader2D.setMat4("transform", _transform);
+
+	// Draw rectangle
+	/*glm::vec4 color = (_is_hovered) ? _hover_color : _color;
+	if (color.a > 0.0f) {
+		shader2D.setVec4("color", color);
+		glBindVertexArray(_vao);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		glBindVertexArray(0);
+	}
+
+	// Draw borders lines
+	glm::vec4 bdcolor = (_is_hovered) ? _hover_border_color : _border_color;
+	if (_border_width > 0 && bdcolor.a > 0.0f) {
+		shader2D.setVec4("color", bdcolor);
+		glLineWidth(_border_width);
+		glBindVertexArray(_vao);
+		glDrawArrays(GL_LINE_LOOP, 0, 4);
+		glBindVertexArray(0);
+	}*/
 
 	// Draw rectangle
 	glm::vec4 color = (_is_hovered)? _hover_color : _color;
@@ -100,12 +156,12 @@ void Panel::render(const Shader &shader2D) const {
 		glBegin(GL_QUADS);
 		glVertex2f(0.0f, 0.0f);
 		glVertex2f(0.0f, 1.0f);
-		glVertex2f(1.0f, 0.0f);
 		glVertex2f(1.0f, 1.0f);
+		glVertex2f(1.0f, 0.0f);
 		glEnd();
 	}
 
-	// Draw border
+	// Draw borders lines
 	glm::vec4 bdcolor = (_is_hovered)? _hover_border_color : _border_color;
 	if (_border_width > 0 && bdcolor.a > 0.0f) {
 		shader2D.setVec4("color", bdcolor);

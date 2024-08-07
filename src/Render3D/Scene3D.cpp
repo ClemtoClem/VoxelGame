@@ -23,15 +23,11 @@ void Scene3D::reset() {
 	clearLights();
 }
 
-void Scene3D::disable() {
-	_enabled = false;
+void Scene3D::setEnable(bool enable) {
+	_enabled = enable;
 }
 
-void Scene3D::enable() {
-	_enabled = true;
-}
-
-bool Scene3D::isEnabled() const {
+bool Scene3D::isEnable() const {
 	return _enabled;
 }
 

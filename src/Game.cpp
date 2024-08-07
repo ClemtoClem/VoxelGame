@@ -82,6 +82,7 @@ bool Game::init(int argc, char *argv[]) {
 	result &= _resourcesManager->loadTexture("concrete_bottom", IMAGE_PATH + "concrete_bottom.png");
 	result &= _resourcesManager->loadTexture("bricks_wall",	 IMAGE_PATH + "bricks_wall.jpg");
 	result &= _resourcesManager->loadTexture("wood_planks",	 IMAGE_PATH + "wood_planks.jpg");
+	result &= _resourcesManager->loadTexture("glass",	     IMAGE_PATH + "texture6.bmp");
 
 	if (!result) {
 		LOG(Fatal) << "Failed to load resources";
@@ -275,7 +276,6 @@ bool Game::load() {
 			std::shared_ptr<Entity> stair_block2 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY-1), textures_block3);
 			stair_block2->rotate(180.0f, AxisY); // rotation autour de l'axe y
 			_scene3D->addEntity(stair_block2);
-
 		}
 
 
@@ -409,6 +409,14 @@ void Game::run(int argc, char *argv[]) {
 							_window.warpMouseCenter();
 							firstMouse = true;
 						}
+						break;
+					case SDLK_F2:
+					    _camera->setFreeMovement(!_camera->isFreeMovement());
+					case SDLK_F9:
+						_scene2D->setEnable(!_scene2D->isEnable());
+						break;
+					case SDLK_F10:
+						_scene3D->setEnable(!_scene3D->isEnable());
 						break;
 					case SDLK_F11:
 						_window.toggleFullscreen();

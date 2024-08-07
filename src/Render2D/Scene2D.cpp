@@ -28,12 +28,6 @@ bool Scene2D::init() {
 	}
 	//LOG(Info) << "Shader 2D loaded";
 
-	initRenderData();
-
-	return true;
-}
-
-void Scene2D::initRenderData() {
 	static float vertices[] = {
 		// positions   // texture coords
 		 0.0f,  1.0f,  0.0f, 1.0f,
@@ -61,7 +55,9 @@ void Scene2D::initRenderData() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//LOG(Info) << "Scene2D initialized.";
+	//LOG(Info) << "Scene 2D initialized";
+
+	return true;
 }
 
 void Scene2D::setScale(const glm::vec2 &screenSize) {
@@ -86,6 +82,7 @@ void Scene2D::handleEvent(SDL_Event& evt) {
 
 void Scene2D::update(float dt) {
 	if (_enabled) {
+		updateTransform();
 		updateChildren(dt);
 	}
 }
@@ -93,7 +90,7 @@ void Scene2D::update(float dt) {
 void Scene2D::render() const {
 	if (_enabled) {
 		// Sauvegarder les états OpenGL
-		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
+		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_TRANSFORM_BIT | GL_VIEWPORT_BIT);
 
 		glDisable(GL_DEPTH_TEST); // Disable depth testing for 2D rendering
 		glDisable(GL_LIGHTING);

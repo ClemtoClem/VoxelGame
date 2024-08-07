@@ -38,15 +38,12 @@ public:
 
 	void reset();
 
-	/// @brief Désactiver la scène
-	void disable();
-
-	/// @brief Activer la scène
-	void enable();
+	/// @brief Acyiver/Désactiver la scène
+	void setEnable(bool enable);
 
 	/// @brief Savoir si la scène est activée
 	/// @return True si la scène est activée, false sinon
-	bool isEnabled() const;
+	bool isEnable() const;
 
 	void addEntity(std::shared_ptr<Entity> entity);
 	void removeEntity(std::shared_ptr<Entity> entity);
