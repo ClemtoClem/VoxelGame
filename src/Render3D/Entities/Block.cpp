@@ -155,6 +155,10 @@ std::array<glm::vec3, 8> Block::getBoundingBoxCorners() const {
 	};
 }
 
+void Block::setTextures(const std::array<std::shared_ptr<Texture>, 6> &textures) {
+	_textures = textures;
+}
+
 void Block::free() {
 	if (_isMeshSetup) {
 		glDeleteVertexArrays(1, &_vao);

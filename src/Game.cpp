@@ -74,15 +74,17 @@ bool Game::init(int argc, char *argv[]) {
 	/* Import resources */
 	bool result = true;
 	_resourcesManager = ResourcesManager::getInstance();
-	result &= _resourcesManager->loadTexture("concrete_front",  IMAGE_PATH + "concrete_front.png");
-	result &= _resourcesManager->loadTexture("concrete_back",   IMAGE_PATH + "concrete_back.png");
-	result &= _resourcesManager->loadTexture("concrete_left",   IMAGE_PATH + "concrete_left.png");
-	result &= _resourcesManager->loadTexture("concrete_right",  IMAGE_PATH + "concrete_right.png");
-	result &= _resourcesManager->loadTexture("concrete_top",	IMAGE_PATH + "concrete_top.png");
-	result &= _resourcesManager->loadTexture("concrete_bottom", IMAGE_PATH + "concrete_bottom.png");
-	result &= _resourcesManager->loadTexture("bricks_wall",	 IMAGE_PATH + "bricks_wall.jpg");
-	result &= _resourcesManager->loadTexture("wood_planks",	 IMAGE_PATH + "wood_planks.jpg");
-	result &= _resourcesManager->loadTexture("glass",	     IMAGE_PATH + "texture6.bmp");
+	result &= _resourcesManager->loadTexture("concrete_front",			IMAGE_PATH + "concrete_front.png");
+	result &= _resourcesManager->loadTexture("concrete_back",			IMAGE_PATH + "concrete_back.png");
+	result &= _resourcesManager->loadTexture("concrete_left",			IMAGE_PATH + "concrete_left.png");
+	result &= _resourcesManager->loadTexture("concrete_right",			IMAGE_PATH + "concrete_right.png");
+	result &= _resourcesManager->loadTexture("concrete_top",			IMAGE_PATH + "concrete_top.png");
+	result &= _resourcesManager->loadTexture("concrete_bottom",			IMAGE_PATH + "concrete_bottom.png");
+	result &= _resourcesManager->loadTexture("bricks_wall",				IMAGE_PATH + "bricks_wall.jpg");
+	result &= _resourcesManager->loadTexture("wood_planks",				IMAGE_PATH + "wood_planks.png");
+	result &= _resourcesManager->loadTexture("satin_stone_red_hard",	IMAGE_PATH + "satin_stone_red_hard.png");
+	result &= _resourcesManager->loadTexture("satin_stoneware",			IMAGE_PATH + "satin_stoneware.png");
+	result &= _resourcesManager->loadTexture("glass",					IMAGE_PATH + "texture6.bmp");
 
 	if (!result) {
 		LOG(Fatal) << "Failed to load resources";
@@ -166,6 +168,7 @@ bool Game::load() {
 	std::array<TexturePtr, 6> textures_block1;
 	std::array<TexturePtr, 6> textures_block2;
 	std::array<TexturePtr, 6> textures_block3;
+	std::array<TexturePtr, 6> textures_block4;
 	try {
 		textures_block1 = {
 			_resourcesManager->getTexture("concrete_front"),
@@ -203,6 +206,18 @@ bool Game::load() {
 			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
 		}
 
+		textures_block4 = {
+			_resourcesManager->getTexture("satin_stone_red_hard"),
+			_resourcesManager->getTexture("satin_stone_red_hard"),
+			_resourcesManager->getTexture("satin_stone_red_hard"),
+			_resourcesManager->getTexture("satin_stone_red_hard"),
+			_resourcesManager->getTexture("satin_stone_red_hard"),
+			_resourcesManager->getTexture("satin_stone_red_hard")
+		};
+		for (auto texture : textures_block4) {
+			throwIfNullptr<TexturePtr>(texture, Fatal, "resources is null");
+		}
+
 		LOG(Debug) << "Load game resources success!";
 	} catch(const CustomException& e) {
 		e.generateLog();
@@ -231,7 +246,16 @@ bool Game::load() {
 		
 		for (int x = -plateauWidth/2; x < plateauWidth/2; x++) {
 			for (int z = -plateauHeight/2; z < plateauHeight/2; z++) {
-				std::shared_ptr<Entity> block = std::make_shared<Cube>(glm::vec3(x, 0, z), textures_block1);
+				std::shared_ptr<Block> block = std::make_shared<Cube>(glm::vec3(x, 0, z), textures_block4);
+				if (x % 2 == 0) {
+					block->setTextures(textures_block1);
+				} else if (x % 3 == 0) {
+					block->setTextures(textures_block2);
+				} else if (x % 4 == 0) {
+					block->setTextures(textures_block3);
+				} else {
+					block->setTextures(textures_block4);
+				}
 				_scene3D->addEntity(block);
 			}
 		}
@@ -248,16 +272,16 @@ bool Game::load() {
 			z = wallZ + k;
 			for (int i = 1; i<wallWidth-1; i++) {
 				x = wallX + i;
-				std::shared_ptr<Entity> wall_block1 = std::make_shared<Cube>(glm::vec3(x, z, wallY), textures_block2);
+				std::shared_ptr<Block> wall_block1 = std::make_shared<Cube>(glm::vec3(x, z, wallY), textures_block2);
 				_scene3D->addEntity(wall_block1);
-				std::shared_ptr<Entity> wall_block2 = std::make_shared<Cube>(glm::vec3(x, z, wallY+wallHeight-1), textures_block2);
+				std::shared_ptr<Block> wall_block2 = std::make_shared<Cube>(glm::vec3(x, z, wallY+wallHeight-1), textures_block2);
 				_scene3D->addEntity(wall_block2);
 			}
 			for (int j = 0; j<wallHeight; j++) {
 				y = wallY + j;
-				std::shared_ptr<Entity> wall_block1 = std::make_shared<Cube>(glm::vec3(wallX, z, y), textures_block2);
+				std::shared_ptr<Block> wall_block1 = std::make_shared<Cube>(glm::vec3(wallX, z, y), textures_block2);
 				_scene3D->addEntity(wall_block1);
-				std::shared_ptr<Entity> wall_block2 = std::make_shared<Cube>(glm::vec3(wallX+wallWidth-1, z, y), textures_block2);
+				std::shared_ptr<Block> wall_block2 = std::make_shared<Cube>(glm::vec3(wallX+wallWidth-1, z, y), textures_block2);
 				_scene3D->addEntity(wall_block2);
 			}
 		}
@@ -265,30 +289,30 @@ bool Game::load() {
 			x = wallX + i;
 			for (int j = 0; j<wallHeight; j++) {
 				y = wallY + j;
-				std::shared_ptr<Entity> floor_block = std::make_shared<Cube>(glm::vec3(x, wallZ, y), textures_block3);
+				std::shared_ptr<Block> floor_block = std::make_shared<Cube>(glm::vec3(x, wallZ, y), textures_block3);
 				_scene3D->addEntity(floor_block);
 			}
 		}
 		for (int i = 0; i<wallWidth; i++) {
 			x = wallX + i;
-			std::shared_ptr<Entity> stair_block1 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY+wallHeight), textures_block3);
+			std::shared_ptr<Block> stair_block1 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY+wallHeight), textures_block3);
 			_scene3D->addEntity(stair_block1);
-			std::shared_ptr<Entity> stair_block2 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY-1), textures_block3);
+			std::shared_ptr<Block> stair_block2 = std::make_shared<Stair>(glm::vec3(x, wallZ, wallY-1), textures_block3);
 			stair_block2->rotate(180.0f, AxisY); // rotation autour de l'axe y
 			_scene3D->addEntity(stair_block2);
 		}
 
 
-		std::shared_ptr<Entity> inner_stair_block1 = std::make_shared<InnerStair>(glm::vec3(-18,1,-18), textures_block3);
+		std::shared_ptr<Block> inner_stair_block1 = std::make_shared<InnerStair>(glm::vec3(-18,1,-18), textures_block3);
 		inner_stair_block1->rotate(0.0f, AxisY); // rotation autour de l'axe y
 		_scene3D->addEntity(inner_stair_block1);
-		std::shared_ptr<Entity> inner_stair_block2 = std::make_shared<InnerStair>(glm::vec3(-18,1,-17), textures_block3);
+		std::shared_ptr<Block> inner_stair_block2 = std::make_shared<InnerStair>(glm::vec3(-18,1,-17), textures_block3);
 		inner_stair_block2->rotate(90.0f, AxisY); // rotation autour de l'axe y
 		_scene3D->addEntity(inner_stair_block2);
-		std::shared_ptr<Entity> inner_stair_block3 = std::make_shared<InnerStair>(glm::vec3(-17,1,-18), textures_block3);
+		std::shared_ptr<Block> inner_stair_block3 = std::make_shared<InnerStair>(glm::vec3(-17,1,-18), textures_block3);
 		inner_stair_block3->rotate(180.0f, AxisY); // rotation autour de l'axe y
 		_scene3D->addEntity(inner_stair_block3);
-		std::shared_ptr<Entity> inner_stair_block4 = std::make_shared<InnerStair>(glm::vec3(-17,1,-17), textures_block3);
+		std::shared_ptr<Block> inner_stair_block4 = std::make_shared<InnerStair>(glm::vec3(-17,1,-17), textures_block3);
 		inner_stair_block4->rotate(270.0f, AxisY); // rotation autour de l'axe y
 		_scene3D->addEntity(inner_stair_block4);
 

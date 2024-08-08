@@ -44,6 +44,8 @@ public:
 
 	virtual std::array<glm::vec3, 8> getBoundingBoxCorners() const override;
 
+	virtual void setTextures(const std::array<std::shared_ptr<Texture>, 6> &textures);
+
 	virtual glm::vec3 &position() override;
 	virtual const glm::vec3 &position() const override;
 	virtual void position(const glm::vec3 &point) override;
