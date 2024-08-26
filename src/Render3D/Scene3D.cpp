@@ -38,6 +38,12 @@ bool Scene3D::isEnable() const {
 	return _enabled;
 }
 
+void Scene3D::setFog(float start, float end, const glm::vec4 &color) {
+	_fogStart = start;
+	_fogEnd = end;
+	_fogColor = color;
+}
+
 void Scene3D::addEntity(std::shared_ptr<Entity> entity) {
 	// on véririfie que l'entité n'est pas déjà dans la scène
 	if (std::find(_entities.begin(), _entities.end(), entity)!= _entities.end()) {
@@ -111,24 +117,32 @@ void Scene3D::render(float aspectRatio) const {
         // Matrices de vue et de projection
         glm::mat4 viewMatrix       = _camera->getViewMatrix();
         glm::mat4 projectionMatrix = _camera->getProjectionMatrix(aspectRatio);
-		//glm::mat4 viewProjMatrix = projectionMatrix * viewMatrix;
+		glm::mat4 viewProjMatrix = projectionMatrix * viewMatrix;
 
         // Génération du frustum
-        //Frustum frustum;
-		//frustum.CalculatePlanes(viewProjMatrix);
+        Frustum frustum;
+		frustum.CalculatePlanes(viewProjMatrix);
 
 		// Rendu des entités visibles
         for (const auto& entity : _entities) {
-            //auto corners = entity->getBoundingBoxCorners();
+            auto corners = entity->getBoundingBoxCorners();
+			// adapter les coordonnées pour des coins du cube dans l'espace de la scène
+			for (auto &corner : corners) {
+				corner = entity->modelMatrix() * glm::vec4(corner, 1.0f);
+			}
 
 			_shader3DTexture->use();
 			_shader3DTexture->setMat4("view", viewMatrix);
 			_shader3DTexture->setMat4("projection", projectionMatrix);
 			_shader3DTexture->setMat4("model", entity->modelMatrix());
+
+			_shader3DTexture->setFloat("fogStart", _fogStart);
+			_shader3DTexture->setFloat("fogEnd", _fogEnd);
+			_shader3DTexture->setVec4("fogColor", _fogColor);
             
-			//if (frustum.LeastOnePointIsInside(corners)) {
+			if (frustum.LeastOnePointIsInside(corners)) {
                 entity->render(*_shader3DTexture);
-            //}
+            }
         }
 
         // Utilisation du shader de lumière 3D

@@ -108,11 +108,11 @@ float Camera::getPitch() const {
 	return _pitch;
 }
 
-float Camera::getNearPlane() const {
+float Camera::getNear() const {
 	return _nearPlane;
 }
 
-float Camera::getFarPlane() const {
+float Camera::getFar() const {
 	return _farPlane;
 }
 

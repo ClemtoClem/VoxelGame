@@ -70,8 +70,8 @@ public:
 	float getZoom() const;
 	float getYaw() const;
 	float getPitch() const;
-	float getNearPlane() const;
-	float getFarPlane() const;
+	float getNear() const;
+	float getFar() const;
 	float getMovementSpeed() const;
 	float getMovementLowSpeed() const;
 	float getMovementHighSpeed() const;

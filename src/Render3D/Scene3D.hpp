@@ -49,6 +49,8 @@ public:
 	/// @return True si la scène est activée, false sinon
 	bool isEnable() const;
 
+	void setFog(float start, float end, const glm::vec4 &color);
+
 	void addEntity(std::shared_ptr<Entity> entity);
 	void removeEntity(std::shared_ptr<Entity> entity);
 	void clearEntities();
@@ -69,6 +71,10 @@ private:
 	std::shared_ptr<Shader> _shader3DLight;
 	std::vector<std::shared_ptr<Entity>> _entities;
 	std::vector<std::shared_ptr<Light>> _lights;
+
+	float _fogStart = 5.0f;
+	float _fogEnd = 30.0f;
+	glm::vec4 _fogColor = glm::vec4(0.7, 0.8, 0.9, 1.0); // bleu-gris
 
 	bool _enabled;
 };

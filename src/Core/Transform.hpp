@@ -4,6 +4,23 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+// builds and returns a translation matrix
+glm::mat4 buildTranslate(float x, float y, float z);
+
+// builds and returns a matrix that performs a rotation around the X axis
+glm::mat4 buildRotateX(float rad);
+
+// builds and returns a matrix that performs a rotation around the Y axis
+glm::mat4 buildRotateY(float rad);
+
+// builds and returns a matrix that performs a rotation around the Z axis
+glm::mat4 buildRotateZ(float rad);
+
+// builds and returns a scale matrix
+glm::mat4 buildScale(float x, float y, float z);
+
+
+
 class Transform {
 public:
     Transform(const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& rot = glm::vec3(0.0f), float sc = 1.0f)
