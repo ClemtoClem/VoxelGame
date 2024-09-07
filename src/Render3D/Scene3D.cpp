@@ -140,9 +140,9 @@ void Scene3D::render(float aspectRatio) const {
 			_shader3DTexture->setFloat("fogEnd", _fogEnd);
 			_shader3DTexture->setVec4("fogColor", _fogColor);
             
-			if (frustum.LeastOnePointIsInside(corners)) {
+			//if (frustum.LeastOnePointIsInside(corners)) {
                 entity->render(*_shader3DTexture);
-            }
+            //}
         }
 
         // Utilisation du shader de lumière 3D
