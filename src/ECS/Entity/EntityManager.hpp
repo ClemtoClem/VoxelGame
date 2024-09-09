@@ -1,7 +1,7 @@
 #ifndef ECS_ENTITY_ENTITYMANAGER_HPP
 #define ECS_ENTITY_ENTITYMANAGER_HPP
 
-#include "../EntitySet.hpp"
+#include "EntitySet.hpp"
 #include "../Base/Visitor.hpp"
 
 namespace ecs {
@@ -28,6 +28,14 @@ public:
 
     void reserve(std::size_t size) {
         mEntities.reserve(size);
+    }
+
+    std::size_t getEntityCount() const {
+        return mEntities.size();
+    }
+
+    std::size_t getReservedEntityCount() const {
+        return mEntities.capacity();
     }
 
     // Entities
