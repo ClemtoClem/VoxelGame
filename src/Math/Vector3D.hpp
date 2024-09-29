@@ -314,6 +314,67 @@ public:
         return Vector3D<T>(_x / len, _y / len, _z / len);
     }
 
+    /**
+     * Rotates the vector by a specified number of degrees around the Y axis and the specified center.
+     * @param angle The angle to rotate by.
+     * @param center The center of the rotation.
+     */
+    Vector3D<T> rotateXZBy(double angle, const Vector3D<T>& center) const {
+        double cos = std::cos(angle);
+        double sin = std::sin(angle);
+        return Vector3D<T>(
+            _x * cos - _z * sin + center._x,
+            _y + center._y,
+            _x * sin + _z * cos + center._z
+        );
+    }
+
+    /**
+     * Rotates the vector by a specified number of degrees around the X axis and the specified center.
+     * @param angle The angle to rotate by.
+     * @param center The center of the rotation.
+     */
+    Vector3D<T> rotateXY(double angle, const Vector3D<T>& center) const {
+        double cos = std::cos(angle);
+        double sin = std::sin(angle);
+        return Vector3D<T>(
+            _x + center._x,
+            _y * cos - _z * sin + center._y,
+            _y * sin + _z * cos + center._z
+        );
+    }
+
+    /**
+     * Rotates the vector by a specified number of degrees around the Z axis and the specified center.
+     * @param angle The angle to rotate by.
+     * @param center The center of the rotation.
+     */
+    Vector3D<T> rotateYZ(double angle, const Vector3D<T>& center) const {
+        double cos = std::cos(angle);
+        double sin = std::sin(angle);
+        return Vector3D<T>(
+            _x * cos - _y * sin + center._x,
+            _x * sin + _y * cos + center._y,
+            _z + center._z
+        );
+    }
+
+    /**
+     *  Creates an interpolated vector between this vector and another vector.
+     * @param v The vector to interpolate to.
+     * @param t The interpolation factor.
+     * @return The interpolated vector.
+     */
+    template <typename U>
+    Vector3D<T> interpolate(const Vector3D<U>& v, double t) const {
+        double invT = 1.0 - t;
+        return Vector3D<T>(
+            _x * t + static_cast<T>(v._x) * invT,
+            _y * t + static_cast<T>(v._y) * invT,
+            _z * t + static_cast<T>(v._z) * invT
+        );
+    }
+
     /* Utility functions how to use the vector as a point */
 
     /**
