@@ -69,7 +69,7 @@ private:
 	bool _isLoad;
 	bool _running;
 
-	Window		         _window;
+	Window _window;
 	std::shared_ptr<ResourcesManager> _resourcesManager;
 
 	Render3D::CameraPtr  _camera;

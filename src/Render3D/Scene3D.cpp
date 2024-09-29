@@ -10,6 +10,7 @@ Scene3D::Scene3D(std::shared_ptr<Camera> camera) : _camera(camera), _enabled(tru
 
 bool Scene3D::initialize() {
 	_shader3DTexture = std::make_shared<Shader>(PATH_SHADERS_3D + "shader_3d_texture.vert", PATH_SHADERS_3D + "shader_3d_texture.frag");
+	//_shader3DTexture = std::make_shared<Shader>(PATH_SHADERS_3D + "primitive_shader.vert", PATH_SHADERS_3D + "primitive_shader.frag");
 	const std::string &err1 = _shader3DTexture->getError();
 	if (!err1.empty()) {
 		LOG(Error) << err1;
