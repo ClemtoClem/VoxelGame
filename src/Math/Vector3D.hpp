@@ -315,52 +315,67 @@ public:
     }
 
     /**
-     * Rotates the vector by a specified number of degrees around the Y axis and the specified center.
+     * Rotates the vector by a specified number of radians around the Y axis and the specified center.
      * @param angle The angle to rotate by.
      * @param center The center of the rotation.
      */
     Vector3D<T> rotateXZBy(double angle, const Vector3D<T>& center) const {
         double cos = std::cos(angle);
         double sin = std::sin(angle);
-        return Vector3D<T>(
-            _x * cos - _z * sin + center._x,
-            _y + center._y,
-            _x * sin + _z * cos + center._z
+        T x = _x - center._x;
+        T z = _z - center._z;
+        Vector3D<T> result(
+            x * cos - z * sin,
+            center._y,
+            x * sin + z * cos
         );
+        result.x += center._x;
+        result.z += center._z;
+        return result;
     }
 
     /**
-     * Rotates the vector by a specified number of degrees around the X axis and the specified center.
+     * Rotates the vector by a specified number of radians around the X axis and the specified center.
      * @param angle The angle to rotate by.
      * @param center The center of the rotation.
      */
     Vector3D<T> rotateXY(double angle, const Vector3D<T>& center) const {
         double cos = std::cos(angle);
         double sin = std::sin(angle);
-        return Vector3D<T>(
-            _x + center._x,
-            _y * cos - _z * sin + center._y,
-            _y * sin + _z * cos + center._z
+        T x = _x - center._x;
+        T y = _y - center._y;
+        Vector3D<T> result(
+            x * cos - y * sin,
+            x * sin + y * cos,
+            _z
         );
+        result.x += center._x;
+        result.y += center._y;
+        return result;
     }
 
     /**
-     * Rotates the vector by a specified number of degrees around the Z axis and the specified center.
+     * Rotates the vector by a specified number of radians around the Z axis and the specified center.
      * @param angle The angle to rotate by.
      * @param center The center of the rotation.
      */
     Vector3D<T> rotateYZ(double angle, const Vector3D<T>& center) const {
         double cos = std::cos(angle);
         double sin = std::sin(angle);
-        return Vector3D<T>(
-            _x * cos - _y * sin + center._x,
-            _x * sin + _y * cos + center._y,
-            _z + center._z
+        T y = _y - center._y;
+        T z = _z - center._z;
+        Vector3D<T> result(
+            _x,
+            y * cos - z * sin,
+            y * sin + z * cos
         );
+        result.y += center._y;
+        result.z += center._z;
+        return result;
     }
 
     /**
-     *  Creates an interpolated vector between this vector and another vector.
+     * Creates an interpolated vector between this vector and another vector.
      * @param v The vector to interpolate to.
      * @param t The interpolation factor.
      * @return The interpolated vector.
@@ -373,6 +388,52 @@ public:
             _y * t + static_cast<T>(v._y) * invT,
             _z * t + static_cast<T>(v._z) * invT
         );
+    }
+
+    /**
+     * Creates a quadratically interpolated vector between this and two other vectors.
+     * @param v1 The first vector to interpolate between.
+     * @param v2 The second vector to interpolate between.
+     * @param t The interpolation factor.
+     */
+    template <typename U, typename V>
+    Vector3D<T> interpolateQuadratic(const Vector3D<U>& v1, const Vector3D<V>& v2, double t) const {
+        double inv = 1.0 - t;
+        double mul0 = inv * inv;
+        double mul1 = 2.0 * inv * t;
+        double mul2 = t * t;
+        return Vector3D<T>(
+            _x * mul0 + static_cast<T>(v1._x) * mul1 + static_cast<T>(v2._x) * mul2,
+            _y * mul0 + static_cast<T>(v1._y) * mul1 + static_cast<T>(v2._y) * mul2,
+            _z * mul0 + static_cast<T>(v1._z) * mul1 + static_cast<T>(v2._z) * mul2
+        );
+    }
+
+    /**
+     * Create a linearly interpolated vector between this and another vector.
+     * @param v1 The first vector to interpolate with, maximum at 1.0f
+     * @param v2 The second vector to interpolate with, maximum at 0.0f
+     * @param t Interpolation value between 0.0f (all vector v1) and 1.0f (all vector v2)
+     */
+    template <typename U, typename V>
+    Vector3D<T> interpolateLinear(const Vector3D<U>& v1, const Vector3D<V>& v2, double t) const {
+        return Vector3D<T>(
+            _x + static_cast<T>(v1._x) + (static_cast<T>(v1._x) - static_cast<T>(v2._x)) * t,
+            _y + static_cast<T>(v1._y) + (static_cast<T>(v1._y) - static_cast<T>(v2._y)) * t,
+            _z + static_cast<T>(v1._z) + (static_cast<T>(v1._z) - static_cast<T>(v2._z)) * t
+        );
+    }
+
+    /**
+     * Get the spherical coordinates of the vector.
+     * @return The spherical coordinates of the Euler vector.
+     * @note The returned vector is in the form of (azimuth, elevation, radius).
+     */
+    Vector3D<T> sphericalCoordinates() const {
+        double azimuth = std::atan2(_y, _x);
+        double elevation = std::atan2(_z, std::sqrt(_x * _x + _y * _y));
+        double radius = std::sqrt(_x * _x + _y * _y + _z * _z);
+        return Vector3D<T>(azimuth, elevation, radius);
     }
 
     /* Utility functions how to use the vector as a point */
